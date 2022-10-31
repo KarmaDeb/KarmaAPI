@@ -1,0 +1,11 @@
+# Project exclude paths
+/Bukkit/target/
+/BukkitPlugin/target/
+/Bundle/target/
+/Bungee/target/
+/BungeePlugin/target/
+/Common/target/
+/Servlet/target/
+/target/
+/Velocity/target/
+/VelocityPlugin/target/
