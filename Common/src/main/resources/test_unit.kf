@@ -1,0 +1,41 @@
+(
+    */Test unit karma file. You can delete this if you want to
+    'simple_key' -> true
+
+    */Test unit karma file. You can delete this if you want to
+    'concurrent_key' <-> true
+
+    */Test unit karma file. You can delete this if you want to
+    'array' -> {
+        'True'
+        'true'
+    }
+
+    */Test unit karma file. You can delete this if you want to
+    'concurrent_array' <-> {
+        'True'
+        'true'
+    }
+
+    */Test unit karma file. You can delete this if you want to
+    'map' -> {
+        'first_key' -> true
+        'second_key' -> true
+    }
+
+    */Test unit karma file. You can delete this if you want to
+    'concurrent_map' <-> {
+        'first_key' -> true
+        'second_key' -> true
+    }
+
+    */Test unit karma file. You can delete this if you want to
+    ("section"
+        'section_key' -> true
+        'concurrent_section_key' <-> true
+
+        ("sub_section"
+            'sub_key' -> true
+        )
+    )
+)
