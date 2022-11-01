@@ -6,7 +6,9 @@ import ml.karmaconfigs.api.common.utils.http.socket.SocketListener;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -19,7 +21,7 @@ public final class SocketEventHandler {
     /**
      * Add a listener
      *
-     * @param socket the socket to listen at
+     * @param socket   the socket to listen at
      * @param listener the socket listener
      */
     public static void addListener(final KarmaSocket socket, final SocketListener listener) {
@@ -31,7 +33,7 @@ public final class SocketEventHandler {
     /**
      * Remove a listener
      *
-     * @param socket the socket to listen at
+     * @param socket   the socket to listen at
      * @param listener the socket listener
      */
     public static void removeListener(final KarmaSocket socket, final SocketListener listener) {
@@ -44,7 +46,7 @@ public final class SocketEventHandler {
      * Call an event on a socket
      *
      * @param socket the socket
-     * @param event the event to call
+     * @param event  the event to call
      */
     public static void callEvent(final KarmaSocket socket, SocketEvent event) {
         Set<SocketListener> list = listeners.getOrDefault(socket, Collections.newSetFromMap(new ConcurrentHashMap<>()));

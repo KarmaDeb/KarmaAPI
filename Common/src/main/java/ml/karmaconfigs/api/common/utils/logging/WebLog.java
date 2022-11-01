@@ -37,7 +37,7 @@ public final class WebLog {
      * Initialize the web logging
      *
      * @param src the source that is uploading
-     *               the log
+     *            the log
      */
     public WebLog(final KarmaSource src) {
         source = src;
@@ -46,9 +46,9 @@ public final class WebLog {
     /**
      * Upload the current log
      *
-     * @param target the target were to upload logs
-     * @param extra extra POST data. Useful if the WebTarget requires
-     *              authentication
+     * @param target  the target were to upload logs
+     * @param extra   extra POST data. Useful if the WebTarget requires
+     *                authentication
      * @param headers the request headers
      * @throws UploadOverflowException if the source is trying to upload logs too fast
      */

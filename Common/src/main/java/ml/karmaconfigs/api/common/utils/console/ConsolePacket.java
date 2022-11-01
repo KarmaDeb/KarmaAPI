@@ -27,7 +27,7 @@ public final class ConsolePacket {
     /**
      * Initialize the console packet
      *
-     * @param string the packet text
+     * @param string   the packet text
      * @param replaces the packet text replaces
      */
     public ConsolePacket(final CharSequence string, final Object... replaces) {
@@ -51,8 +51,8 @@ public final class ConsolePacket {
     /**
      * Initialize the console packet
      *
-     * @param string the packet message
-     * @param level the packet level
+     * @param string   the packet message
+     * @param level    the packet level
      * @param replaces the packet text replaces
      */
     public ConsolePacket(final CharSequence string, final Level level, final Object[] replaces) {

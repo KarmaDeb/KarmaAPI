@@ -141,7 +141,8 @@ public class BukkitBridge extends BridgeLoader<KarmaPlugin> {
                     if (generated.contains(veryImportantData)) {
                         name = StringUtils.replaceLast(name, "_" + veryImportantData, "");
                     }
-                } catch (Throwable ignored) {}
+                } catch (Throwable ignored) {
+                }
             }
 
             if (config.debug(Level.INFO)) {

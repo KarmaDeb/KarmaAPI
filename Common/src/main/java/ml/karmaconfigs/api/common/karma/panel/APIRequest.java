@@ -52,7 +52,7 @@ public final class APIRequest {
 
     /**
      * Update the current profile
-     *
+     * <p>
      * PLEASE NOTE: If you make a custom API executor, you should
      * always call to this method after you create or fetch a profile
      * in order to keep a correct execution of the KarmaAPI.
@@ -66,7 +66,7 @@ public final class APIRequest {
     /**
      * Create a new profile
      *
-     * @param name the profile name
+     * @param name  the profile name
      * @param email the profile email
      * @return a new profile
      */
@@ -267,7 +267,7 @@ public final class APIRequest {
 
     /**
      * Get the active client
-     *
+     * <p>
      * PLEASE NOTE: For implementations in where there's a constant
      * call to {@link APIRequest#fetchProfile(int)} or {@link APIRequest#createProfile(String, String)}
      * this will return the last fetched/created profile, because we

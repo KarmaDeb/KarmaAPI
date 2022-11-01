@@ -84,7 +84,7 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
      * @param defineDefault if this source should be defined
      *                      as the default source
      * @throws SecurityException if the default module is already
-     * set
+     *                           set
      */
     public KarmaPlugin(final boolean defineDefault) throws SecurityException {
         if (!APISource.hasProvider(name())) {
@@ -224,7 +224,7 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
     /**
      * Create a player placeholder
      *
-     * @param key the placeholder key
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */
@@ -258,7 +258,7 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
     /**
      * Create a player placeholder
      *
-     * @param key the placeholder key
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */
@@ -292,7 +292,7 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
     /**
      * Create a player placeholder
      *
-     * @param key the placeholder key
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */
@@ -326,7 +326,7 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
     /**
      * Create a player placeholder
      *
-     * @param key the placeholder key
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */
@@ -360,8 +360,8 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
     /**
      * Create a player placeholder
      *
-     * @param <T> the placeholder type
-     * @param key the placeholder key
+     * @param <T>       the placeholder type
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */

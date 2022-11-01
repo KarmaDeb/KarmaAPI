@@ -47,7 +47,6 @@ import ml.karmaconfigs.api.velocity.loader.VelocityBridge;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Nullable;
 
-import javax.inject.Inject;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
@@ -94,11 +93,11 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
     /**
      * Initialize the KarmaPlugin
      *
-     * @param c the container
+     * @param c             the container
      * @param defineDefault if this source should be defined
      *                      as the default source
      * @throws SecurityException if the default module is already
-     * set
+     *                           set
      */
     public KarmaPlugin(final PluginContainer c, final boolean defineDefault) throws SecurityException {
         container = c;
@@ -261,7 +260,7 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
     /**
      * Create a player placeholder
      *
-     * @param key the placeholder key
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */
@@ -295,7 +294,7 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
     /**
      * Create a player placeholder
      *
-     * @param key the placeholder key
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */
@@ -329,7 +328,7 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
     /**
      * Create a player placeholder
      *
-     * @param key the placeholder key
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */
@@ -363,7 +362,7 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
     /**
      * Create a player placeholder
      *
-     * @param key the placeholder key
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */
@@ -397,8 +396,8 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
     /**
      * Create a player placeholder
      *
-     * @param <T> the placeholder type
-     * @param key the placeholder key
+     * @param <T>       the placeholder type
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */

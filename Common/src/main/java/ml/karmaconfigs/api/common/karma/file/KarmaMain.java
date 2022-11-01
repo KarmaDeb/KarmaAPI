@@ -22,7 +22,10 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,7 +51,7 @@ public class KarmaMain {
      * Initialize the file
      *
      * @throws IOException if the temporal file could not be
-     * created
+     *                     created
      */
     public KarmaMain() throws IOException {
         OptionsBuilder builder = RandomString.createBuilder()
@@ -79,7 +82,7 @@ public class KarmaMain {
 
                     //Must be migrated
                     //if (config.debug(Level.WARNING)) {
-                        source.console().debug("Preparing to migrate from legacy karma file {0} to modern format", Level.WARNING, PathUtilities.getPrettyPath(doc));
+                    source.console().debug("Preparing to migrate from legacy karma file {0} to modern format", Level.WARNING, PathUtilities.getPrettyPath(doc));
                     //}
 
                     try {
@@ -87,24 +90,24 @@ public class KarmaMain {
                         KarmaMain migrated = KarmaMain.fromLegacy(source, new KarmaFile(doc));
                         if (migrated.save(doc)) {
                             //if (config.debug(Level.OK)) {
-                                source.console().debug("Migrated successfully from legacy karma file {0}", Level.OK, PathUtilities.getPrettyPath(doc));
+                            source.console().debug("Migrated successfully from legacy karma file {0}", Level.OK, PathUtilities.getPrettyPath(doc));
                             //}
                         } else {
                             //if (config.log(Level.WARNING)) {
-                                source.logger().scheduleLog(Level.WARNING, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(doc));
+                            source.logger().scheduleLog(Level.WARNING, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(doc));
                             //}
                             //if (config.debug(Level.GRAVE)) {
-                                source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(doc));
+                            source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(doc));
                             //}
                         }
                     } catch (Throwable ex) {
                         //if (config.log(Level.GRAVE)) {
-                            source.logger().scheduleLog(Level.GRAVE, ex);
-                            source.logger().scheduleLog(Level.INFO, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(doc));
+                        source.logger().scheduleLog(Level.GRAVE, ex);
+                        source.logger().scheduleLog(Level.INFO, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(doc));
                         //}
 
                         //if (config.debug(Level.GRAVE)) {
-                            source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(doc));
+                        source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(doc));
                         //}
                     }
                 }
@@ -119,8 +122,8 @@ public class KarmaMain {
      * Initialize the file
      *
      * @param source the source file
-     * @param name the file name
-     * @param path the file path
+     * @param name   the file name
+     * @param path   the file path
      */
     public KarmaMain(final KarmaSource source, final String name, final String... path) {
         Path main = source.getDataPath();
@@ -140,7 +143,7 @@ public class KarmaMain {
 
                     //Must be migrated
                     //if (config.debug(Level.WARNING)) {
-                        source.console().debug("Preparing to migrate from legacy karma file {0} to modern format", Level.WARNING, PathUtilities.getPrettyPath(document));
+                    source.console().debug("Preparing to migrate from legacy karma file {0} to modern format", Level.WARNING, PathUtilities.getPrettyPath(document));
                     //}
 
                     try {
@@ -148,24 +151,24 @@ public class KarmaMain {
                         KarmaMain migrated = KarmaMain.fromLegacy(source, new KarmaFile(document));
                         if (migrated.save(document)) {
                             //if (config.debug(Level.OK)) {
-                                source.console().debug("Migrated successfully from legacy karma file {0}", Level.OK, PathUtilities.getPrettyPath(document));
+                            source.console().debug("Migrated successfully from legacy karma file {0}", Level.OK, PathUtilities.getPrettyPath(document));
                             //}
                         } else {
                             //if (config.log(Level.WARNING)) {
-                                source.logger().scheduleLog(Level.WARNING, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(document));
+                            source.logger().scheduleLog(Level.WARNING, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(document));
                             //}
                             //if (config.debug(Level.GRAVE)) {
-                                source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(document));
+                            source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(document));
                             //}
                         }
                     } catch (Throwable ex) {
                         //if (config.log(Level.GRAVE)) {
-                            source.logger().scheduleLog(Level.GRAVE, ex);
-                            source.logger().scheduleLog(Level.INFO, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(document));
+                        source.logger().scheduleLog(Level.GRAVE, ex);
+                        source.logger().scheduleLog(Level.INFO, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(document));
                         //}
 
                         //if (config.debug(Level.GRAVE)) {
-                            source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(document));
+                        source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(document));
                         //}
                     }
                 }
@@ -180,7 +183,7 @@ public class KarmaMain {
      *
      * @param doc the file that must be read
      * @throws IOException if the temporal file could not
-     * be created
+     *                     be created
      */
     public KarmaMain(final InputStream doc) throws IOException {
         OptionsBuilder builder = RandomString.createBuilder()
@@ -202,7 +205,7 @@ public class KarmaMain {
      *
      * @param raw the raw karma main data
      * @throws IOException if the temporal file could not
-     * be created
+     *                     be created
      */
     public KarmaMain(final String raw) throws IOException {
         OptionsBuilder builder = RandomString.createBuilder()
@@ -813,7 +816,7 @@ public class KarmaMain {
 
     /**
      * Export the default file, reading from internal.
-     *
+     * <p>
      * PLEASE NOTE:
      * Executing this method will replace all the file contents without
      * performing any type of check first
@@ -873,7 +876,7 @@ public class KarmaMain {
                 if (k.startsWith(tmpKey)) {
                     String[] keyData = k.split("\\.");
                     if (keyData[keyData.length - 2].equals(key.replaceFirst("main\\.", ""))) {
-                        section = new SectionContainer(this, k.replace( "." + keyData[keyData.length - 2] + "." + keyData[keyData.length - 1], ""), key.replaceFirst("main\\.", ""));
+                        section = new SectionContainer(this, k.replace("." + keyData[keyData.length - 2] + "." + keyData[keyData.length - 1], ""), key.replaceFirst("main\\.", ""));
                         break;
                     }
                 }
@@ -926,7 +929,7 @@ public class KarmaMain {
      * Get a key
      *
      * @param element the key value
-     * @param def the default key
+     * @param def     the default key
      * @return the key
      */
     public String get(final KarmaElement element, final String def) {
@@ -998,7 +1001,7 @@ public class KarmaMain {
     /**
      * Set a value
      *
-     * @param key the value key
+     * @param key     the value key
      * @param element the value
      */
     public void set(final String key, final KarmaElement element) {
@@ -1034,7 +1037,7 @@ public class KarmaMain {
      * Save the file
      *
      * @param flName the target file name
-     * @param sub the file subdirectories
+     * @param sub    the file subdirectories
      * @throws KarmaFormatException if the file could not be parsed correctly
      */
     public boolean save(final String flName, final String... sub) throws KarmaFormatException {
@@ -1845,7 +1848,7 @@ public class KarmaMain {
 
     /**
      * Clear raw cache
-     *
+     * <p>
      * ONLY RECOMMENDED DOING WHEN RELOADING THE FILE
      */
     public void clearCache() {
@@ -1893,7 +1896,7 @@ public class KarmaMain {
      * Load data from legacy karma file
      *
      * @param source the source that is converting from legacy
-     * @param kf the legacy karma file
+     * @param kf     the legacy karma file
      * @return the karma file
      * @throws IOException if something goes wrong
      */
@@ -1959,7 +1962,7 @@ public class KarmaMain {
      * Load data from legacy async karma file
      *
      * @param source the source that is converting from legacy
-     * @param kf the legacy karma file
+     * @param kf     the legacy karma file
      * @return the karma file
      */
     @SuppressWarnings("deprecation")
@@ -2100,7 +2103,8 @@ public class KarmaMain {
                         } catch (NumberFormatException by) {
                             try {
                                 number = Integer.parseInt(string);
-                            } catch (NumberFormatException ignored) {}
+                            } catch (NumberFormatException ignored) {
+                            }
                         }
                     }
                 }
@@ -2121,7 +2125,8 @@ public class KarmaMain {
 
         try {
             main.validate();
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
 
         return main;
     }

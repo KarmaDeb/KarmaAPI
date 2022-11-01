@@ -2,8 +2,6 @@ package ml.karmaconfigs.api.bukkit.tracker.property.flag;
 
 import ml.karmaconfigs.api.bukkit.tracker.property.PropertyValue;
 
-import java.io.Serializable;
-
 /**
  * Property implementation
  */

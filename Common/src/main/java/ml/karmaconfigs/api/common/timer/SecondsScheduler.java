@@ -25,14 +25,16 @@ package ml.karmaconfigs.api.common.timer;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.errors.IllegalTimerAccess;
 import ml.karmaconfigs.api.common.timer.scheduler.errors.TimerAlreadyStarted;
 import ml.karmaconfigs.api.common.timer.scheduler.errors.TimerNotFound;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -144,8 +146,8 @@ public final class SecondsScheduler extends SimpleScheduler {
     /**
      * Initialize the scheduler
      *
-     * @param owner the scheduler owner
-     * @param time the scheduler start time
+     * @param owner       the scheduler owner
+     * @param time        the scheduler start time
      * @param autoRestart if the scheduler should auto-restart
      *                    when it ends
      */
@@ -164,11 +166,11 @@ public final class SecondsScheduler extends SimpleScheduler {
     /**
      * Initialize the scheduler
      *
-     * @param owner the scheduler owner
+     * @param owner   the scheduler owner
      * @param builtId the scheduler ID
-     * @throws TimerNotFound if the scheduler does not exist
+     * @throws TimerNotFound      if the scheduler does not exist
      * @throws IllegalTimerAccess if the scheduler owner does not match with
-     * provided
+     *                            provided
      */
     @SuppressWarnings("unused")
     public SecondsScheduler(final KarmaSource owner, final int builtId) throws TimerNotFound, IllegalTimerAccess {
@@ -236,55 +238,55 @@ public final class SecondsScheduler extends SimpleScheduler {
                 //boolean run = (!cancelUnloaded || KarmaAPI.isLoaded(source));
 
                 //if (run) {
-                    if (!pause) {
-                        if (cancel || temp_restart) {
-                            if (!temp_restart) {
+                if (!pause) {
+                    if (cancel || temp_restart) {
+                        if (!temp_restart) {
+                            timersData.remove(id);
+                            Set<Integer> ids = runningTimers.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
+                            ids.remove(id);
+
+                            runningTimers.put(source, ids);
+                            if (cancelAction != null)
+                                runSecondsLongWithThread(cancelAction);
+
+                            cancel = false;
+                            pause = false;
+                            temp_restart = false;
+
+                            timer.shutdown();
+                        } else {
+                            back = original;
+                            onRestartTasks.forEach(this::runTaskWithThread);
+                            temp_restart = false;
+                        }
+                    } else {
+                        executeTasks();
+
+                        if (back == 0) {
+                            back = original;
+                            if (restart) {
+                                onRestartTasks.forEach(this::runTaskWithThread);
+                                back = original;
+                            } else {
+                                onEndTasks.forEach(this::runTaskWithThread);
+
                                 timersData.remove(id);
                                 Set<Integer> ids = runningTimers.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
                                 ids.remove(id);
 
                                 runningTimers.put(source, ids);
-                                if (cancelAction != null)
-                                    runSecondsLongWithThread(cancelAction);
 
                                 cancel = false;
                                 pause = false;
                                 temp_restart = false;
 
                                 timer.shutdown();
-                            } else {
-                                back = original;
-                                onRestartTasks.forEach(this::runTaskWithThread);
-                                temp_restart = false;
                             }
-                        } else {
-                            executeTasks();
-
-                            if (back == 0) {
-                                back = original;
-                                if (restart) {
-                                    onRestartTasks.forEach(this::runTaskWithThread);
-                                    back = original;
-                                } else {
-                                    onEndTasks.forEach(this::runTaskWithThread);
-
-                                    timersData.remove(id);
-                                    Set<Integer> ids = runningTimers.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-                                    ids.remove(id);
-
-                                    runningTimers.put(source, ids);
-
-                                    cancel = false;
-                                    pause = false;
-                                    temp_restart = false;
-
-                                    timer.shutdown();
-                                }
-                            }
-
-                            back--;
                         }
+
+                        back--;
                     }
+                }
                 /*} else {
                     timersData.remove(id);
                     Set<Integer> ids = runningTimers.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
@@ -542,10 +544,10 @@ public final class SecondsScheduler extends SimpleScheduler {
     /**
      * Add a conditional action
      *
-     * @param condition the condition that the timer
-     *                           must complete
+     * @param condition       the condition that the timer
+     *                        must complete
      * @param condition_value the timer second
-     * @param action the action to perform
+     * @param action          the action to perform
      * @return this instance
      */
     @Override
@@ -582,9 +584,9 @@ public final class SecondsScheduler extends SimpleScheduler {
     /**
      * Add a conditional action
      *
-     * @param condition the condition that the timer must complete
+     * @param condition       the condition that the timer must complete
      * @param condition_value the timer millisecond
-     * @param action the action to perform
+     * @param action          the action to perform
      * @return this instance
      */
     @Override

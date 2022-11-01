@@ -184,8 +184,8 @@ public final class BufferedLogger extends KarmaLogger implements Serializable {
      * Run the log function on a new
      * thread
      *
-     * @param level the log level
-     * @param info the info to log
+     * @param level    the log level
+     * @param info     the info to log
      * @param replaces the info replaces
      */
     @Override
@@ -209,9 +209,9 @@ public final class BufferedLogger extends KarmaLogger implements Serializable {
      * Run the log function on a new
      * thread
      *
-     * @param level the log level
-     * @param print print info to console
-     * @param info the info to log
+     * @param level    the log level
+     * @param print    print info to console
+     * @param info     the info to log
      * @param replaces the info replaces
      */
     @Override
@@ -236,8 +236,8 @@ public final class BufferedLogger extends KarmaLogger implements Serializable {
      * Run the log function on the main
      * known thread
      *
-     * @param level the log level
-     * @param info the info to log
+     * @param level    the log level
+     * @param info     the info to log
      * @param replaces the info replaces
      */
     @Override
@@ -261,9 +261,9 @@ public final class BufferedLogger extends KarmaLogger implements Serializable {
      * Run the log function on the main
      * known thread
      *
-     * @param level the log level
-     * @param print print info to console
-     * @param info the info to log
+     * @param level    the log level
+     * @param print    print info to console
+     * @param info     the info to log
      * @param replaces the info replaces
      */
     @Override
@@ -287,31 +287,31 @@ public final class BufferedLogger extends KarmaLogger implements Serializable {
     /**
      * Log info
      *
-     * @param level the info level
-     * @param print print info to console
-     * @param info the info
+     * @param level    the info level
+     * @param print    print info to console
+     * @param info     the info
      * @param replaces the info replaces
      */
     private void logInfo(final Level level, final boolean print, final CharSequence info, final Object... replaces) {
-            List<String> stored_log = buffer.getOrDefault(source, new ConcurrentList<>());
-            String time = fetchTime(calendar_type.getOrDefault(source, LogCalendar.GREGORIAN));
+        List<String> stored_log = buffer.getOrDefault(source, new ConcurrentList<>());
+        String time = fetchTime(calendar_type.getOrDefault(source, LogCalendar.GREGORIAN));
 
-            try {
-                if (!header_added.getOrDefault(source, false)) {
-                    stored_log.add(StringUtils.listToString(header.get(this.source), ListTransformation.NONE));
-                    header_added.put(source, true);
-                }
-
-                stored_log.add(StringUtils.formatString("[ {0} - {1} ] {2}<br>", level.name(), time, StringUtils.formatString(info, replaces)));
-
-                buffer.put(source, stored_log);
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-            } finally {
-                if (print) {
-                    source.console().send(info, level);
-                }
+        try {
+            if (!header_added.getOrDefault(source, false)) {
+                stored_log.add(StringUtils.listToString(header.get(this.source), ListTransformation.NONE));
+                header_added.put(source, true);
             }
+
+            stored_log.add(StringUtils.formatString("[ {0} - {1} ] {2}<br>", level.name(), time, StringUtils.formatString(info, replaces)));
+
+            buffer.put(source, stored_log);
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+        } finally {
+            if (print) {
+                source.console().send(info, level);
+            }
+        }
     }
 
     /**
@@ -363,13 +363,13 @@ public final class BufferedLogger extends KarmaLogger implements Serializable {
     /**
      * Flush the log data if the
      * log auto flush is turned off
-     *
+     * <p>
      * WARNING: This will replace all the log file
      * content, this should be used only for applications
      * that runs once -> generate a log file and then
      * switch log file. You can change the log file
      * by overriding {@link KarmaLogger#getLoggerFile(LogExtension)}
-     *
+     * <p>
      * DOES NOTHING ON {@link Logger}
      *
      * @return if the log could be flushed

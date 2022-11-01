@@ -1,7 +1,5 @@
 package ml.karmaconfigs.api.common.utils.http.socket;
 
-import okhttp3.WebSocket;
-
 /**
  * Socket event
  */

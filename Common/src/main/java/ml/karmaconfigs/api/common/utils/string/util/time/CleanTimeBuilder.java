@@ -42,7 +42,7 @@ public final class CleanTimeBuilder {
     /**
      * Initialize the clean time builder
      *
-     * @param n the time name
+     * @param n    the time name
      * @param time the time in milliseconds
      */
     public CleanTimeBuilder(final TimeName n, final long time) {
@@ -75,7 +75,7 @@ public final class CleanTimeBuilder {
         int hour = (int) (days != 0 ? Math.abs(days * 24 - hours) : hours);
         int minute = (int) (hours != 0 ? Math.abs(hours * 60 - minutes) : minutes);
         int second = (int) (minutes != 0 ? Math.abs(minutes * 60 - seconds) : seconds);
-        
+
         int[] numbers = new int[]{(int) year, month, week, day, hour, minute, second};
         int index = 0;
 

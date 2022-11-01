@@ -3,7 +3,6 @@ package ml.karmaconfigs.api.common.utils.http.listener;
 import ml.karmaconfigs.api.common.utils.http.socket.KarmaSocket;
 import ml.karmaconfigs.api.common.utils.http.socket.SocketEvent;
 import okhttp3.Response;
-import okhttp3.WebSocket;
 
 /**
  * Event when the socket connects successfully

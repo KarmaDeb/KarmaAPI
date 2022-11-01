@@ -73,7 +73,7 @@ public final class SplitIndex {
      * Create a new index
      *
      * @param start the start index
-     * @param end the end index
+     * @param end   the end index
      * @return the new index
      */
     public static SplitIndex newIndex(final int start, final int end) {

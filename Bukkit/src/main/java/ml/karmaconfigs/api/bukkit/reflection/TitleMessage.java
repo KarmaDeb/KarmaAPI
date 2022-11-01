@@ -38,7 +38,7 @@ import java.util.Objects;
  * Title message
  */
 public final class TitleMessage {
-    
+
     private final Player player;
     private final String title, subtitle;
 
@@ -63,8 +63,8 @@ public final class TitleMessage {
      * Initialize the title class
      *
      * @param plugin the caller
-     * @param p the player
-     * @param t the title text
+     * @param p      the player
+     * @param t      the title text
      */
     public TitleMessage(final JavaPlugin plugin, final Player p, @Nullable String t) {
         player = p;

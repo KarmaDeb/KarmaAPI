@@ -13,8 +13,8 @@ public interface PathFilter {
     /**
      * Accept the path
      *
-     * @param path the file path
-     * @param name the file name
+     * @param path      the file path
+     * @param name      the file name
      * @param extension the file extension ( dir = directory )
      * @return if the path is accepted
      */
@@ -26,7 +26,7 @@ public interface PathFilter {
      * Create a path to filter with the {@link PathFilter#accept(String, String, String)}
      *
      * @param source the source to start from
-     * @param sub the subdirectories
+     * @param sub    the subdirectories
      * @return the path
      */
     default String createPath(final KarmaSource source, final String... sub) {

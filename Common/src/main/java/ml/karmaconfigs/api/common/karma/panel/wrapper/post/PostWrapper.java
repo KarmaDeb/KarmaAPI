@@ -3,10 +3,7 @@ package ml.karmaconfigs.api.common.karma.panel.wrapper.post;
 import ml.karmaconfigs.api.common.karma.panel.wrapper.post.filter.Filterable;
 import ml.karmaconfigs.api.common.karma.panel.wrapper.post.meta.PostTagsContainer;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
-import org.omg.CORBA.UNKNOWN;
 
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTMLDocument;
 import java.util.List;
 
 /**

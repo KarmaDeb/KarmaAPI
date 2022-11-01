@@ -226,7 +226,7 @@ public final class BossMessage extends BossProvider<Player> {
     /**
      * Initialize the boss message
      *
-     * @param owner the boss message source
+     * @param owner    the boss message source
      * @param _message the boss bar message
      * @param duration the boss bar duration
      */
@@ -330,7 +330,7 @@ public final class BossMessage extends BossProvider<Player> {
                     if (!shown.contains(player.getUniqueId())) {
                         shown.add(player.getUniqueId());
                         Location location = player.getLocation();
-                        
+
                         Object c_world = craft_world.cast(player.getWorld());
                         Object w_server = craft_world_handle.invoke(c_world);
                         Object wither = wither_constructor.newInstance(w_server);
@@ -338,7 +338,7 @@ public final class BossMessage extends BossProvider<Player> {
                         wither.getClass().getMethod("setCustomName", String.class).invoke(wither, message);
                         wither.getClass().getMethod("setInvisible", Boolean.TYPE).invoke(wither, true);
                         wither.getClass().getMethod("setLocation", Double.TYPE, Double.TYPE, Double.TYPE, Float.TYPE, Float.TYPE).invoke(wither, location.getX(), location.getY(), location.getZ(), 0, 0);
-                        
+
                         Object packet = entity_living_constructor.newInstance(wither);
                         Object c_player = craft_player.cast(player);
                         Object e_player = craft_player_handle.invoke(c_player);
@@ -411,7 +411,7 @@ public final class BossMessage extends BossProvider<Player> {
                                 }
                             }
                         }).start();
-                        
+
                         SimpleScheduler hp_timer = new SourceScheduler(plugin, live_time - 1.0, SchedulerUnit.SECOND, false).cancelUnloaded(false);
                         hp_timer.changeAction(second -> {
                             if (!cancelled) {
@@ -587,7 +587,7 @@ public final class BossMessage extends BossProvider<Player> {
      * Update the boss bar
      *
      * @param _message the new boss bar text
-     * @param restart restart the bar progress
+     * @param restart  restart the bar progress
      * @return if the boss bar could be updated
      */
     @Override

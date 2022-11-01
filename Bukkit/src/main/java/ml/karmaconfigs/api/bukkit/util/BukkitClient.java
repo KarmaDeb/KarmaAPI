@@ -47,14 +47,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BukkitClient extends Client {
 
     private final static Set<KarmaPlugin> placeholders = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    
+
     private final KarmaPlugin plugin;
     private final Player player;
 
     /**
      * Initialize the bukkit client
      *
-     * @param owner the client owner
+     * @param owner  the client owner
      * @param client the client
      */
     public BukkitClient(final KarmaPlugin owner, final Player client) {
@@ -77,7 +77,7 @@ public class BukkitClient extends Client {
             engine = new GlobalPlaceholderEngine(KarmaAPI.source(true));
             message = engine.parse(message, player);
         }
-        
+
         player.sendMessage(StringUtils.toColor(message));
     }
 
@@ -106,7 +106,7 @@ public class BukkitClient extends Client {
             engine = new GlobalPlaceholderEngine(KarmaAPI.source(true));
             message = engine.parse(message, player);
         }
-        
+
         player.sendMessage(StringUtils.toColor(StringUtils.formatString(message, replaces)));
     }
 
@@ -129,7 +129,7 @@ public class BukkitClient extends Client {
             title = engine.parse(title, player);
             subtitle = engine.parse(subtitle, player);
         }
-        
+
         TitleMessage message = new TitleMessage(player, title, subtitle);
         message.send();
     }
@@ -156,7 +156,7 @@ public class BukkitClient extends Client {
             title = engine.parse(title, player);
             subtitle = engine.parse(subtitle, player);
         }
-        
+
         TitleMessage message = new TitleMessage(player, title, subtitle);
         message.send(showIn, keepIn, hideIn);
     }
@@ -218,7 +218,7 @@ public class BukkitClient extends Client {
             engine = new GlobalPlaceholderEngine(KarmaAPI.source(true));
             reason = engine.parse(reason, player);
         }
-        
+
         player.kickPlayer(StringUtils.toColor(StringUtils.listToString(reason, ListTransformation.NEW_LINES)));
     }
 
@@ -263,7 +263,7 @@ public class BukkitClient extends Client {
     /**
      * Set the current plugin placeholder status
      * for bukkit client
-     * 
+     *
      * @param status the placeholder status
      */
     public void setPlaceholders(final boolean status) {
@@ -275,9 +275,9 @@ public class BukkitClient extends Client {
     }
 
     /**
-     * Get if the current plugin has placeholders.contains(plugin) 
+     * Get if the current plugin has placeholders.contains(plugin)
      * enabled for bukkit client
-     * 
+     *
      * @return if the bukkit client uses placeholders.contains(plugin)
      * system
      */

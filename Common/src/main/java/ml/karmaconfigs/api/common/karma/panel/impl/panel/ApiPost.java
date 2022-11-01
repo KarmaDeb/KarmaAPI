@@ -249,7 +249,8 @@ public class ApiPost extends PostWrapper {
                                         modifiersField.setAccessible(false);
                                         code.setAccessible(false);
                                         //Restore everything, as if nothing had happen
-                                    } catch (Throwable ignored) {}
+                                    } catch (Throwable ignored) {
+                                    }
 
                                     return status;
                             }

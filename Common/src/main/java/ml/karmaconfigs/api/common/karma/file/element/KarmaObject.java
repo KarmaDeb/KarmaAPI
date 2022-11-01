@@ -52,6 +52,7 @@ public class KarmaObject extends KarmaElement {
         boo = obj;
         type = NumType.NOT_NUMBER;
     }
+
     /**
      * Get the object string
      *

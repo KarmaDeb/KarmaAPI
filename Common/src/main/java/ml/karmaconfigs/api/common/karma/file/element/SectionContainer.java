@@ -1,8 +1,6 @@
 package ml.karmaconfigs.api.common.karma.file.element;
 
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
-import ml.karmaconfigs.api.common.utils.string.util.SplitIndex;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -92,7 +90,7 @@ public class SectionContainer extends KarmaSection {
                 if (keyData.length > 2 && concurrent) {
                     if (tmp_key.startsWith(name + ".")) {
                         if (keyData.length == 3) {
-                            KarmaSection section = new SectionContainer(main, key.replaceFirst("\\." + original_keyData[original_keyData.length - 2] +  "\\." + original_keyData[original_keyData.length - 1], ""), original_keyData[original_keyData.length - 2]);
+                            KarmaSection section = new SectionContainer(main, key.replaceFirst("\\." + original_keyData[original_keyData.length - 2] + "\\." + original_keyData[original_keyData.length - 1], ""), original_keyData[original_keyData.length - 2]);
                             section.getChildren(true).forEach((subKey) -> {
                                 found_keys.add(key.replaceFirst(path + "\\.", ""));
                             });

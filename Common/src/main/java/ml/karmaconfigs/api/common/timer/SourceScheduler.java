@@ -26,15 +26,17 @@ package ml.karmaconfigs.api.common.timer;
  */
 
 import ml.karmaconfigs.api.common.karma.KarmaAPI;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.errors.IllegalTimerAccess;
 import ml.karmaconfigs.api.common.timer.scheduler.errors.TimerAlreadyStarted;
 import ml.karmaconfigs.api.common.timer.scheduler.errors.TimerNotFound;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -158,9 +160,9 @@ public final class SourceScheduler extends SimpleScheduler {
     /**
      * Initialize the scheduler
      *
-     * @param owner the scheduler owner
-     * @param time the scheduler start time
-     * @param unit the scheduler working unit
+     * @param owner       the scheduler owner
+     * @param time        the scheduler start time
+     * @param unit        the scheduler working unit
      * @param autoRestart if the scheduler should auto-restart
      *                    when it ends
      */
@@ -212,11 +214,11 @@ public final class SourceScheduler extends SimpleScheduler {
     /**
      * Initialize the scheduler
      *
-     * @param owner the scheduler owner
+     * @param owner   the scheduler owner
      * @param builtId the scheduler ID
-     * @throws TimerNotFound if the scheduler does not exist
+     * @throws TimerNotFound      if the scheduler does not exist
      * @throws IllegalTimerAccess if the scheduler owner does not match with
-     * provided
+     *                            provided
      */
     public SourceScheduler(final KarmaSource owner, final int builtId) throws TimerNotFound, IllegalTimerAccess {
         super(owner, SchedulerUnit.MILLISECOND);
@@ -359,7 +361,8 @@ public final class SourceScheduler extends SimpleScheduler {
                     for (Consumer<Integer> consumer : minuteActions) {
                         runWithThread(consumer, minutes.incrementAndGet());
                     }
-                    last_minute.set(passed);;
+                    last_minute.set(passed);
+                    ;
                 }
                 if (last_hour.get() + one_hour == passed) {
                     Set<Consumer<Integer>> hourActions = schedulerConsumer.getOrDefault(SchedulerUnit.HOUR, Collections.newSetFromMap(new ConcurrentHashMap<>()));
@@ -367,7 +370,8 @@ public final class SourceScheduler extends SimpleScheduler {
                         runWithThread(consumer, hours.incrementAndGet());
                     }
 
-                    last_hour.set(passed);;
+                    last_hour.set(passed);
+                    ;
                 }
                 if (last_day.get() + one_day == passed) {
                     Set<Consumer<Integer>> dayActions = schedulerConsumer.getOrDefault(SchedulerUnit.DAY, Collections.newSetFromMap(new ConcurrentHashMap<>()));
@@ -375,7 +379,8 @@ public final class SourceScheduler extends SimpleScheduler {
                         runWithThread(consumer, days.incrementAndGet());
                     }
 
-                    last_day.set(passed);;
+                    last_day.set(passed);
+                    ;
                 }
 
                 //System.out.println(back);
@@ -554,7 +559,7 @@ public final class SourceScheduler extends SimpleScheduler {
      * and or seconds, only with minutes, hours and days.
      *
      * @param action the action to perform
-     * @param unit     the time unit
+     * @param unit   the time unit
      * @return this instance
      */
     @Override
@@ -704,10 +709,10 @@ public final class SourceScheduler extends SimpleScheduler {
     /**
      * Add a conditional action
      *
-     * @param condition          the condition that the timer
-     *                           must complete
-     * @param condition_value           the time
-     * @param action             the action to perform
+     * @param condition       the condition that the timer
+     *                        must complete
+     * @param condition_value the time
+     * @param action          the action to perform
      * @return this instance
      */
     @Override
@@ -745,10 +750,10 @@ public final class SourceScheduler extends SimpleScheduler {
     /**
      * Add a conditional action
      *
-     * @param condition the condition that the timer
-     *                           must complete
+     * @param condition       the condition that the timer
+     *                        must complete
      * @param condition_value the timer second
-     * @param action the action to perform
+     * @param action          the action to perform
      * @return this instance
      * @deprecated Use {@link SimpleScheduler#condition(TimeCondition, long, Consumer)} instead
      */
@@ -787,9 +792,9 @@ public final class SourceScheduler extends SimpleScheduler {
     /**
      * Add a conditional action
      *
-     * @param condition the condition that the timer must complete
+     * @param condition       the condition that the timer must complete
      * @param condition_value the timer millisecond
-     * @param action the action to perform
+     * @param action          the action to perform
      * @return this instance
      * @deprecated Use {@link SimpleScheduler#condition(TimeCondition, long, Consumer)} instead
      */
@@ -932,7 +937,7 @@ public final class SourceScheduler extends SimpleScheduler {
      * Run a seconds task corresponding the current
      * thread configuration
      *
-     * @param task the task to run
+     * @param task  the task to run
      * @param value the int value
      */
     private void runWithThread(final Consumer<Integer> task, final int value) {

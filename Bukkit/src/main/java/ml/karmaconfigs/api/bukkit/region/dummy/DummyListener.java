@@ -38,7 +38,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.*;
@@ -177,9 +176,9 @@ public class DummyListener implements Listener {
                 e.setTo(entity.getLocation());
 
             Cuboid.getRegions().forEach((region) -> {
-                    Set<Entity> cached = entity_cache.getOrDefault(region, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-                    Set<Entity> insert = new HashSet<>();
-                    Set<Entity> remove = new HashSet<>();
+                Set<Entity> cached = entity_cache.getOrDefault(region, Collections.newSetFromMap(new ConcurrentHashMap<>()));
+                Set<Entity> insert = new HashSet<>();
+                Set<Entity> remove = new HashSet<>();
 
                 boolean changes = false;
                 if (region.isInside(entity)) {

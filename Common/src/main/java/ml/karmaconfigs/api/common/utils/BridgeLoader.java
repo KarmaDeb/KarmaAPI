@@ -26,8 +26,8 @@ package ml.karmaconfigs.api.common.utils;
  */
 
 import ml.karmaconfigs.api.common.karma.KarmaAPI;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.loader.BruteLoader;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 
@@ -38,7 +38,7 @@ import java.nio.file.Path;
 
 /**
  * KarmaAPI bridge connector.
- *
+ * <p>
  * This is used by KarmaAPI to load
  * KarmaSource modules at runtime
  * making a bridge with a main loader
@@ -54,7 +54,7 @@ public abstract class BridgeLoader<T extends KarmaSource> {
      * Initialize the bridge loader
      *
      * @param connection the connection source name
-     * @param instance the source class
+     * @param instance   the source class
      * @throws IllegalStateException if another bridge is already running
      */
     public BridgeLoader(final String connection, final T instance) throws IllegalStateException {
@@ -86,7 +86,7 @@ public abstract class BridgeLoader<T extends KarmaSource> {
      * Start the bridge loader
      *
      * @throws Throwable This is just if the bridge start method
-     * throws any error
+     *                   throws any error
      */
     public abstract void start() throws Throwable;
 
@@ -94,7 +94,7 @@ public abstract class BridgeLoader<T extends KarmaSource> {
      * Stop the bridge
      *
      * @throws Throwable This is just if the bridge stop method
-     * throws any error
+     *                   throws any error
      */
     public abstract void stop() throws Throwable;
 

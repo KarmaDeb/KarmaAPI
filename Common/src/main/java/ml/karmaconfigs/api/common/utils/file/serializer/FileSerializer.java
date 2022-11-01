@@ -56,7 +56,7 @@ public final class FileSerializer implements Serializable {
      * serializer
      *
      * @param start the start source
-     * @param main the main file serializer
+     * @param main  the main file serializer
      */
     FileSerializer(final File start, final FileSerializer main) {
         file = start.toPath().resolve(main.name);
@@ -74,7 +74,7 @@ public final class FileSerializer implements Serializable {
      * serializer
      *
      * @param start the start source
-     * @param main the main file serializer
+     * @param main  the main file serializer
      */
     FileSerializer(final Path start, final FileSerializer main) {
         file = start.resolve(main.name);
@@ -91,7 +91,7 @@ public final class FileSerializer implements Serializable {
      *
      * @param target the target file
      * @throws IllegalStateException if the file is a compressed
-     * file
+     *                               file
      */
     public FileSerializer(final File target) throws IllegalStateException {
         if (FileUtilities.isCompressedFile(target)) {
@@ -117,7 +117,7 @@ public final class FileSerializer implements Serializable {
      *
      * @param target the target file
      * @throws IllegalStateException if the file is a compressed
-     * file
+     *                               file
      */
     public FileSerializer(final Path target) throws IllegalStateException {
         if (PathUtilities.isCompressedFile(target)) {
@@ -153,7 +153,6 @@ public final class FileSerializer implements Serializable {
      * Parse the file and sub files
      *
      * @param filter the parse filter
-     *
      * @return a late scheduler for when
      * the action will be complete
      */
@@ -309,7 +308,7 @@ public final class FileSerializer implements Serializable {
      *
      * @param startSource the target folder where
      *                    to store serialized data
-     * @param serialized the serialized string
+     * @param serialized  the serialized string
      * @return the path
      */
     public static FileSerializer load(final File startSource, final String serialized) {
@@ -348,7 +347,7 @@ public final class FileSerializer implements Serializable {
      *
      * @param startSource the target folder where
      *                    to store serialized data
-     * @param serialized the serialized string
+     * @param serialized  the serialized string
      * @return the path
      */
     @Nullable

@@ -84,7 +84,6 @@ public final class TitleMessage {
                 TextComponent.ofChildren(Component.text().content(StringUtils.toColor(subtitle))), times);
 
 
-
         player.showTitle(server_title);
     }
 

@@ -25,8 +25,8 @@ package ml.karmaconfigs.api.common;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
 import ml.karmaconfigs.api.common.utils.enums.Level;
@@ -71,7 +71,7 @@ public final class ResourceDownloader {
      * Initialize the resource downloader
      *
      * @param destination the resource destination
-     * @param _url the resource download URL
+     * @param _url        the resource download URL
      */
     public ResourceDownloader(final File destination, final String _url) {
         this.destFile = destination;
@@ -82,7 +82,7 @@ public final class ResourceDownloader {
      * Initialize the resource downloader
      *
      * @param destination the resource destination
-     * @param _url the resource download URL
+     * @param _url        the resource download URL
      */
     public ResourceDownloader(final Path destination, final String _url) {
         this.destFile = destination.toFile();
@@ -92,10 +92,10 @@ public final class ResourceDownloader {
     /**
      * Download something to cache
      *
-     * @param source the resource source
-     * @param fileName the destination file name
+     * @param source      the resource source
+     * @param fileName    the destination file name
      * @param downloadURL the resource download URL
-     * @param sub the resource path
+     * @param sub         the resource path
      * @return a new resource download instance
      */
     public static ResourceDownloader toCache(final KarmaSource source, final String fileName, final String downloadURL, final String... sub) {

@@ -66,7 +66,7 @@ public final class SpigotRequest {
      *
      * @return the request result
      * @throws IllegalStateException if the request method does not
-     * match with this push or url/response is null
+     *                               match with this push or url/response is null
      */
     public JsonElement push() throws IllegalStateException {
         URL url;
@@ -107,7 +107,7 @@ public final class SpigotRequest {
      * @param data the data
      * @return the request result
      * @throws IllegalStateException if the request method does not
-     * match with this push or url/response is null
+     *                               match with this push or url/response is null
      */
     public JsonElement push(final int data) throws IllegalStateException {
         URL url;
@@ -161,7 +161,7 @@ public final class SpigotRequest {
      * @param type the argument type
      * @return the request result
      * @throws IllegalStateException if the request method does not
-     * match with this push or url/response is null
+     *                               match with this push or url/response is null
      */
     public JsonElement push(final int data, final VarType type) throws IllegalStateException {
         URL url;
@@ -214,11 +214,11 @@ public final class SpigotRequest {
     /**
      * Push the request
      *
-     * @param data the data
+     * @param data   the data
      * @param second the second data
      * @return the request result
      * @throws IllegalStateException if the request method does not
-     * match with this push or url/response is null
+     *                               match with this push or url/response is null
      */
     public JsonElement push(final int data, final int second) throws IllegalStateException {
         URL url;
@@ -274,7 +274,7 @@ public final class SpigotRequest {
      * @param data the data
      * @return the request result
      * @throws IllegalStateException if the request method does not
-     * match with this push or url/response is null
+     *                               match with this push or url/response is null
      */
     public JsonElement push(final String data) throws IllegalStateException {
         if (method.equals(Request.FIND_AUTHOR)) {
@@ -305,7 +305,7 @@ public final class SpigotRequest {
      *
      * @return the request result
      * @throws IllegalStateException if the request method does not
-     * match with this push or url/response is null
+     *                               match with this push or url/response is null
      */
     public String pushString() throws IllegalStateException {
         JsonElement element = push();
@@ -322,7 +322,7 @@ public final class SpigotRequest {
      * @param data the data
      * @return the request result
      * @throws IllegalStateException if the request method does not
-     * match with this push or url/response is null
+     *                               match with this push or url/response is null
      */
     public String pushString(final int data) throws IllegalStateException {
         JsonElement element = push(data);
@@ -340,7 +340,7 @@ public final class SpigotRequest {
      * @param type the argument type
      * @return the request result
      * @throws IllegalStateException if the request method does not
-     * match with this push or url/response is null
+     *                               match with this push or url/response is null
      */
     public String pushString(final int data, final VarType type) throws IllegalStateException {
         JsonElement element = push(data, type);
@@ -354,11 +354,11 @@ public final class SpigotRequest {
     /**
      * Push the request
      *
-     * @param data the data
+     * @param data   the data
      * @param second the second data
      * @return the request result
      * @throws IllegalStateException if the request method does not
-     * match with this push or url/response is null
+     *                               match with this push or url/response is null
      */
     public String pushString(final int data, final int second) throws IllegalStateException {
         JsonElement element = push(data, second);
@@ -375,7 +375,7 @@ public final class SpigotRequest {
      * @param data the data
      * @return the request result
      * @throws IllegalStateException if the request method does not
-     * match with this push or url/response is null
+     *                               match with this push or url/response is null
      */
     public String pushString(final String data) throws IllegalStateException {
         JsonElement element = push(data);

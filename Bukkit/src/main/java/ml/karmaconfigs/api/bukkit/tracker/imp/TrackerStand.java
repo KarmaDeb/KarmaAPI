@@ -6,15 +6,20 @@ import ml.karmaconfigs.api.bukkit.tracker.Tracker;
 import ml.karmaconfigs.api.bukkit.tracker.event.*;
 import ml.karmaconfigs.api.bukkit.tracker.property.PropertyValue;
 import ml.karmaconfigs.api.bukkit.tracker.property.flag.TrackerFlag;
+import ml.karmaconfigs.api.bukkit.util.LineOfSight;
+import ml.karmaconfigs.api.bukkit.util.sight.PointToEntity;
+import ml.karmaconfigs.api.bukkit.util.sight.PointToPoint;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.utils.string.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -23,7 +28,11 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.*;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -66,6 +75,786 @@ public class TrackerStand extends Tracker {
         location = l.clone();
         location.setYaw(180);
 
+        init();
+    }
+
+    /**
+     * Get the tracking entity
+     *
+     * @return the tracking entity
+     */
+    @Override
+    public LivingEntity getTracking() {
+        return tracking;
+    }
+
+    /**
+     * Get the tracker auto tracker
+     *
+     * @return the tracker auto tracker
+     */
+    @Override
+    public AutoTracker getTracker() {
+        return tracker;
+    }
+
+    /**
+     * Set the tracking stand property
+     *
+     * @param p the property name
+     * @param v the property value
+     * @return this instance
+     * @deprecated Trackers won't have properties anymore, they will use
+     * {@link TrackerFlag} instead. Which are better to "fetch". Use the method
+     * {@link Tracker#setProperty(PropertyValue)} instead of this
+     */
+    @Override
+    @Deprecated
+    public Tracker setProperty(final String p, final Object v) {
+        if (v != null) {
+            PropertyValue<?> prop = null;
+
+            for (PropertyValue<?> property : properties) {
+                if (property.getIdentifier().endsWith(p)) {
+                    if (property.matches(v)) {
+                        PropertyValue<?> new_value = property.getFlag().makeProperty(p);
+                        new_value.updateUnsafe(v);
+                        prop = new_value;
+                        break;
+                    } else {
+                        throw new IllegalStateException("Cannot modify tracker property because values type doesn't match");
+                    }
+                }
+            }
+
+            if (prop == null) {
+                prop = TrackerFlag.PROPERTY_OTHER.makeProperty(p);
+                prop.updateUnsafe(v);
+            }
+
+            updated_properties.add(prop);
+        }
+
+        return this;
+    }
+
+    /**
+     * Set the tracker property
+     * <p>
+     * PLEASE NOTE: A correctly setup {@link Tracker} should have
+     * all the expected properties with a default value. Otherwise, people
+     * could be able to mess up. So this method should be only an alternative
+     * to {@link Tracker#getProperty(TrackerFlag, String)} and then {@link PropertyValue#update(Object)} or
+     * {@link PropertyValue#updateUnsafe(Object)} methods respectively
+     *
+     * @param newProperty the property
+     * @param <T>         the property type
+     * @return this instance
+     * @throws IllegalStateException if the property value doesn't match with the stored property value.
+     */
+    @Override
+    public <T> Tracker setProperty(final PropertyValue<T> newProperty) throws IllegalStateException {
+        if (newProperty != null && newProperty.getValue() != null) {
+            PropertyValue<T> prop = null;
+
+            for (PropertyValue<?> property : properties) {
+                if (property.getIdentifier().equals(newProperty.getIdentifier())) {
+                    if (property.matches(newProperty.getValue())) {
+                        PropertyValue<T> new_value = property.getFlag().makeProperty(newProperty.getName());
+                        new_value.update(newProperty.getValue());
+                        prop = new_value;
+                        break;
+                    } else {
+                        throw new IllegalStateException("Cannot modify tracker property because values type doesn't match");
+                    }
+                }
+            }
+
+            if (prop == null) {
+                prop = TrackerFlag.PROPERTY_OTHER.makeProperty(newProperty.getName());
+                prop.update(newProperty.getValue());
+            }
+
+            updated_properties.add(prop);
+        }
+
+        return this;
+    }
+
+    /**
+     * Get the tracker property
+     *
+     * @param flag the flag to get for
+     * @param name the property name
+     * @param <T>  the property type
+     * @return the tracker property
+     */
+    @Override
+    public @SuppressWarnings("unchecked") <T> PropertyValue<T> getProperty(final TrackerFlag flag, final String name) {
+        PropertyValue<T> prop = null;
+
+        for (PropertyValue<?> property : properties) {
+            if (property.getIdentifier().equals(flag.getPrefix() + "_" + name)) {
+                try {
+                    prop = (PropertyValue<T>) property;
+                } catch (ClassCastException ex) {
+                    return null;
+                }
+                break;
+            }
+        }
+
+        return prop;
+    }
+
+    /**
+     * Get if the tracker has line of sigh for the
+     * entity
+     *
+     * @return if the tracker has line of sigh for the entity
+     * @deprecated This method has been deprecated with the implementation of
+     * the API line of sight class. The method {@link Tracker#getLineOfSight()}
+     * should be used instead
+     */
+    @Deprecated
+    public boolean hasLineOfSight() {
+        if (tracking != null) {
+            Location stand = getLocation().clone().add(getLocation().getDirection());
+
+            Vector facing = tracking.getLocation().toVector().subtract(getLocation().toVector()).normalize();
+            Location backwards = tracking.getLocation().clone().subtract(facing);
+
+            Block feet = backwards.getBlock();
+
+            double speed = 0.1d;
+            double speed_offset = 0.120;
+            if (!feet.getType().equals(Material.AIR)) {
+                speed_offset = 0.157;
+            }
+
+            double distance = tracking.getEyeLocation().subtract(0, 1.5, 0).distance(stand);
+            PropertyValue<Number> max_distance_property = getProperty(TrackerFlag.TRACKER_NUMBER, "scanDistance");
+            double max_distance = max_distance_property.getValue().doubleValue();
+
+            int blocks_away = (int) max_distance - (int) distance;
+            for (double i = blocks_away; i < max_distance; i++) {
+                speed = speed + speed_offset;
+            }
+
+            LineOfSight p2p = new PointToPoint(stand, tracking.getLocation());
+            return p2p.inLineOfSight(max_distance);
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the tracker line of sight
+     *
+     * @return the tracker line of sight
+     */
+    @Override
+    public LineOfSight getLineOfSight() {
+        return new PointToEntity(getLocation().clone().add(0, 1.5, 0), (tracking != null ? tracking : stand));
+    }
+
+    /**
+     * Get the tracker location
+     *
+     * @return the tracker location
+     */
+    @Override
+    public Location getLocation() {
+        if (stand != null) {
+            Location clone = stand.getLocation().clone();
+            clone.setYaw(yaw);
+            clone.setPitch(pitch);
+
+            return clone;
+        }
+
+        return location;
+    }
+
+    /**
+     * Get the tracker world
+     *
+     * @return the tracker world
+     */
+    @Override
+    public World getWorld() {
+        if (stand != null) {
+            return stand.getWorld();
+        }
+
+        return location.getWorld();
+    }
+
+    /**
+     * Get the tracker entity
+     *
+     * @return the tracker entity
+     */
+    @Override
+    public LivingEntity getEntity() {
+        return stand;
+    }
+
+    /**
+     * Get the direction in where the player is
+     *
+     * @return the direction in where the player is
+     */
+    @Override
+    public Vector getDirection() {
+        if (stand != null && tracking != null) {
+            Location standLocation = stand.getLocation().clone();
+            Location trackLocation = tracking.getLocation().clone();
+
+            return trackLocation.toVector().subtract(standLocation.toVector()).normalize();
+        }
+
+        return location.toVector();
+    }
+
+    /**
+     * Set up the tracker auto tracker. Once the auto
+     * tracker is set. The method {@link Tracker#setTracking(LivingEntity)}
+     * will be locked and no longer work unless we set our
+     * auto tracker to null.
+     *
+     * @param auto the auto tracker
+     */
+    @Override
+    public void setAutoTracker(final AutoTracker auto) {
+        tracker = auto;
+    }
+
+    /**
+     * Set the tracking entity
+     *
+     * @param entity the entity to track
+     */
+    @Override
+    public void setTracking(final LivingEntity entity) {
+        if (entity != null && tracker == null) {
+            tracking = entity;
+        }
+    }
+
+    /**
+     * Start the track task
+     */
+    @Override
+    public void start() {
+        if (task == null) {
+            if (stand == null || stand.isDead() || !stand.isValid()) {
+                if (stand != null) stand.remove();
+
+                World world = location.getWorld();
+                if (world != null) {
+                    Event event = new TrackerSpawnEvent(this, stand != null);
+                    Bukkit.getServer().getPluginManager().callEvent(event);
+
+                    stand = world.spawn(location, ArmorStand.class);
+
+                    stand.setNoDamageTicks(20 * 5); //5 seconds of spawn invulnerability
+
+                    update();
+                }
+            }
+
+            AtomicLong start = new AtomicLong(System.currentTimeMillis());
+            AtomicInteger last_second = new AtomicInteger(0);
+            long period = Math.max(1, ((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "scanPeriod").getUnsafe()).longValue());
+
+            task = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+                if (reset_task) {
+                    reset_task = false;
+
+                    task.cancel();
+                    task = null;
+                    reset_time = true;
+
+                    start();
+                    return;
+                }
+
+                if (reset_time) {
+                    reset_time = false;
+                    start.set(System.currentTimeMillis());
+                }
+
+                boolean always_track = getProperty(TrackerFlag.TRACKER_BOOLEAN, "ignoreLineOfSight").getUnsafe();
+                double offset = ((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "angleOffset").getUnsafe()).doubleValue();
+                double max_dist = Math.abs(((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "scanDistance").getUnsafe()).doubleValue());
+                boolean track_lock = getProperty(TrackerFlag.TRACKER_BOOLEAN, "leapAtTarget").getUnsafe();
+                if (tracker != null && stand != null && !stand.isDead() && stand.isValid()) {
+                    tracking = tracker.track(this, max_dist);
+                }
+
+                if (tracking != null) {
+                    if (track_lock && last_track != null && last_track.isValid() && !last_track.isDead()) {
+                        tracking = last_track;
+                    }
+
+                    last_track = tracking;
+
+                    if (tracking.isDead() || !tracking.isValid()) {
+                        if (!kill_queue.contains(tracking.getUniqueId())) {
+                            last_killed = tracking.getUniqueId();
+                            last_track = null;
+                            kill_queue.add(last_killed);
+
+                            Event event = new TrackerTargetDiedEvent(this, tracking);
+                            Bukkit.getServer().getPluginManager().callEvent(event);
+                        }
+
+                        tracking = null;
+                        return;
+                    }
+
+                    if (stand != null) {
+                        if (stand.isDead() || !stand.isValid()) {
+                            Event event = new TrackerDiedEvent(this);
+                            Bukkit.getServer().getPluginManager().callEvent(event);
+
+                            tracking = null;
+
+                            return;
+                        }
+                    } else {
+                        return;
+                    }
+
+                    Location trackLocation = tracking.getEyeLocation().clone();
+                    Location standLocation = stand.getLocation().clone();
+                    LineOfSight lineOfSight = getLineOfSight();
+
+                    if ((lineOfSight.inLineOfSight(max_dist) && standLocation.distance(trackLocation) <= max_dist) || always_track) {
+                        Vector vector = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
+                        if (standLocation.distance(trackLocation) >= (max_dist / 3)) {
+                            double tmp_offset = Math.abs((standLocation.distance(trackLocation) - max_dist)) / 100;
+                            vector = trackLocation.add(0, tmp_offset, 0).toVector().subtract(standLocation.toVector()).normalize();
+                        }
+
+                        if (offset != 0) {
+                            if (offset >= 0) {
+                                vector = trackLocation.add(0, offset, 0).toVector().subtract(standLocation.toVector()).normalize();
+                            } else {
+                                vector = trackLocation.subtract(0, Math.abs(offset), 0).toVector().subtract(standLocation.toVector()).normalize();
+                            }
+                        }
+
+                        double angle_x = vector.getY() * (-1);
+                        double x = vector.getX();
+                        double z = vector.getZ();
+                        double angle_y = 180F - Math.toDegrees(Math.atan2(x, z));
+
+                        yaw = (float) angle_y - 180F;
+                        pitch = (180.0F - (float) Math.toDegrees(Math.acos(vector.getY()))) * (-1);
+
+                        plugin.console().debug("Stand yaw: {0} (From: {1})", Level.INFO, yaw, (180 + yaw));
+                        plugin.console().debug("Stand pitch: {0} (From: {1})", Level.INFO, pitch, (180 + pitch));
+
+                        EulerAngle angle = new EulerAngle(angle_x, Math.toRadians(angle_y), 0);
+                        stand.setHeadPose(angle);
+
+                        long end = System.currentTimeMillis();
+                        int seconds = (int) (end - start.get()) / 1000;
+
+                        Event event = new TrackerTickEvent(this, tracking, 1);
+                        Bukkit.getServer().getPluginManager().callEvent(event);
+                        if (last_second.get() != seconds) {
+                            last_second.set(seconds);
+
+                            Event second = new TrackerSecondEvent(this, tracking, seconds);
+                            Bukkit.getServer().getPluginManager().callEvent(second);
+                        }
+                    }
+                } else {
+                    if (last_track != null && !last_track.isDead() && last_track.isValid()) {
+                        Event event = new TrackerLostEvent(this, last_track);
+                        Bukkit.getServer().getPluginManager().callEvent(event);
+
+                        last_track = null;
+                    }
+
+                    if (last_killed != null) {
+                        kill_queue.remove(last_killed);
+                        last_killed = null;
+                        kill_queue.trimToSize();
+                        last_track = null;
+                    }
+                }
+            }, 0, period);
+        }
+    }
+
+    /**
+     * Update the tracker
+     */
+    @Override
+    public void update() {
+        if (stand != null) {
+            boolean updateLocation = false;
+
+            for (PropertyValue<?> property : updated_properties) {
+                String keyName = property.getIdentifier();
+
+                switch (keyName) {
+                    case "tracker_boolean_scanPeriod":
+                        reset_task = true;
+                        break;
+                    case "property_number_x":
+                        location.setX(property.getUnsafe());
+                        updateLocation = true;
+                        break;
+                    case "property_number_y":
+                        location.setY(property.getUnsafe());
+                        updateLocation = true;
+                        break;
+                    case "property_number_z":
+                        location.setZ(property.getUnsafe());
+                        updateLocation = true;
+                        break;
+                    case "property_uuid_world":
+                        World world = plugin.getServer().getWorld((UUID) property.getUnsafe());
+                        if (world != null) {
+                            location.setWorld(world);
+                            updateLocation = true;
+                        }
+                        break;
+                    case "property_boolean_small":
+                        stand.setSmall(property.getUnsafe());
+                        break;
+                    case "property_boolean_basePlate":
+                        stand.setBasePlate(property.getUnsafe());
+                        break;
+                    case "property_boolean_marker":
+                        try {
+                            Method setMarker = stand.getClass().getMethod("setMarker", boolean.class);
+
+                            boolean marker = property.getUnsafe();
+                            setMarker.invoke(stand, marker);
+                        } catch (Throwable ignored) {
+                        }
+                        break;
+                    case "property_boolean_invincible":
+                        try {
+                            Method setInvulnerable = stand.getClass().getMethod("setInvulnerable", boolean.class);
+
+                            boolean invulnerable = property.getUnsafe();
+                            setInvulnerable.invoke(stand, invulnerable);
+                        } catch (Throwable ex) {
+                            stand.setNoDamageTicks((property.getUnsafe() ? Integer.MAX_VALUE : 0));
+                        }
+                        break;
+                    case "property_boolean_showName":
+                        stand.setCustomNameVisible(property.getUnsafe());
+                        break;
+                    case "property_boolean_arms":
+                        stand.setArms(property.getUnsafe());
+                        break;
+                    case "property_boolean_takeoffItems":
+                        stand.setCanPickupItems(property.getUnsafe());
+                        break;
+                    case "property_text_customName":
+                        stand.setCustomName(StringUtils.toColor((String) property.getUnsafe()));
+                        break;
+                    case "property_object_leftArmAngle":
+                        stand.setLeftArmPose(property.getUnsafe());
+                        break;
+                    case "property_object_rightArmAngle":
+                        stand.setRightArmPose(property.getUnsafe());
+                        break;
+                    case "property_object_leftLegAngle":
+                        stand.setLeftLegPose(property.getUnsafe());
+                        break;
+                    case "property_object_rightLegAngle":
+                        stand.setRightLegPose(property.getUnsafe());
+                        break;
+                    case "property_object_bodyAngle":
+                        stand.setBodyPose(property.getUnsafe());
+                        break;
+                    case "property_object_equipmentLeftArm":
+                        try {
+                            EntityEquipment equipment = stand.getEquipment();
+                            Method setItemInOffHand = equipment.getClass().getMethod("setItemInOffHand", ItemStack.class, boolean.class);
+
+                            ItemStack stack = property.getUnsafe();
+                            setItemInOffHand.invoke(equipment, stack, true);
+                        } catch (Throwable ex) {
+                            try {
+                                EntityEquipment equipment = stand.getEquipment();
+                                Method setItemInOffHand = equipment.getClass().getMethod("setItemInOffHand", ItemStack.class);
+
+                                ItemStack stack = property.getUnsafe();
+                                setItemInOffHand.invoke(equipment, stack);
+                            } catch (Throwable exc) {
+                                try {
+                                    EntityEquipment equipment = stand.getEquipment();
+                                    Method setItem = equipment.getClass().getMethod("setItem", EquipmentSlot.class, ItemStack.class);
+
+                                    ItemStack stack = property.getUnsafe();
+                                    setItem.invoke(equipment, EquipmentSlot.valueOf("OFF_HAND"), stack);
+                                } catch (Throwable ignored) {
+                                }
+                            }
+                        }
+                        break;
+                    case "property_object_equipmentRightArm":
+                        try {
+                            EntityEquipment equipment = stand.getEquipment();
+                            Method setItemInOffHand = equipment.getClass().getMethod("setItemInMainHand", ItemStack.class, boolean.class);
+
+                            ItemStack stack = property.getUnsafe();
+                            setItemInOffHand.invoke(equipment, stack, true);
+                        } catch (Throwable ex) {
+                            try {
+                                EntityEquipment equipment = stand.getEquipment();
+                                Method setItemInOffHand = equipment.getClass().getMethod("setItemInMainHand", ItemStack.class);
+
+                                ItemStack stack = property.getUnsafe();
+                                setItemInOffHand.invoke(equipment, stack);
+                            } catch (Throwable exc) {
+                                try {
+                                    EntityEquipment equipment = stand.getEquipment();
+                                    Method setItem = equipment.getClass().getMethod("setItem", EquipmentSlot.class, ItemStack.class);
+
+                                    ItemStack stack = property.getUnsafe();
+                                    setItem.invoke(equipment, EquipmentSlot.valueOf("HAND"), stack);
+                                } catch (Throwable exce) {
+                                    try {
+                                        EntityEquipment equipment = stand.getEquipment();
+                                        Method setItem = equipment.getClass().getMethod("setItem", EquipmentSlot.class, ItemStack.class);
+
+                                        ItemStack stack = property.getUnsafe();
+                                        setItem.invoke(equipment, EquipmentSlot.valueOf("MAIN_HAND"), stack);
+                                    } catch (Throwable excep) {
+                                        try {
+                                            Method setItem = stand.getClass().getMethod("setItemInHand", ItemStack.class);
+
+                                            ItemStack stack = property.getUnsafe();
+                                            setItem.invoke(stand, stack);
+                                        } catch (Throwable ignored) {
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "property_object_equipmentHelmet":
+                        try {
+                            EntityEquipment equipment = stand.getEquipment();
+                            Method setEquipment = equipment.getClass().getMethod("setHelmet", ItemStack.class, boolean.class);
+
+                            ItemStack stack = property.getUnsafe();
+                            setEquipment.invoke(equipment, stack, true);
+                        } catch (Throwable ex) {
+                            try {
+                                EntityEquipment equipment = stand.getEquipment();
+                                Method setEquipment = equipment.getClass().getMethod("setHelmet", ItemStack.class);
+
+                                ItemStack stack = property.getUnsafe();
+                                setEquipment.invoke(equipment, stack);
+                            } catch (Throwable exc) {
+                                try {
+                                    EntityEquipment equipment = stand.getEquipment();
+                                    Method setEquipment = equipment.getClass().getMethod("setItem", EquipmentSlot.class, ItemStack.class);
+
+                                    ItemStack stack = property.getUnsafe();
+                                    setEquipment.invoke(equipment, EquipmentSlot.valueOf("HEAD"), stack);
+                                } catch (Throwable exce) {
+                                    try {
+                                        EntityEquipment equipment = stand.getEquipment();
+                                        Method setEquipment = equipment.getClass().getMethod("setItem", EquipmentSlot.class, ItemStack.class);
+
+                                        ItemStack stack = property.getUnsafe();
+                                        setEquipment.invoke(equipment, EquipmentSlot.valueOf("HELMET"), stack);
+                                    } catch (Throwable excep) {
+                                        try {
+                                            Method setEquipment = stand.getClass().getMethod("setHelmet", ItemStack.class);
+
+                                            ItemStack stack = property.getUnsafe();
+                                            setEquipment.invoke(stand, stack);
+                                        } catch (Throwable ignored) {
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "property_object_equipmentChestplate":
+                        try {
+                            EntityEquipment equipment = stand.getEquipment();
+                            Method setEquipment = equipment.getClass().getMethod("setChestplate", ItemStack.class, boolean.class);
+
+                            ItemStack stack = property.getUnsafe();
+                            setEquipment.invoke(equipment, stack, true);
+                        } catch (Throwable ex) {
+                            try {
+                                EntityEquipment equipment = stand.getEquipment();
+                                Method setEquipment = equipment.getClass().getMethod("setChestplate", ItemStack.class);
+
+                                ItemStack stack = property.getUnsafe();
+                                setEquipment.invoke(equipment, stack);
+                            } catch (Throwable exc) {
+                                try {
+                                    EntityEquipment equipment = stand.getEquipment();
+                                    Method setEquipment = equipment.getClass().getMethod("setItem", EquipmentSlot.class, ItemStack.class);
+
+                                    ItemStack stack = property.getUnsafe();
+                                    setEquipment.invoke(equipment, EquipmentSlot.valueOf("CHESTPLATE"), stack);
+                                } catch (Throwable exce) {
+                                    try {
+                                        Method setEquipment = stand.getClass().getMethod("setChestplate", ItemStack.class);
+
+                                        ItemStack stack = property.getUnsafe();
+                                        setEquipment.invoke(stand, stack);
+                                    } catch (Throwable ignored) {
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "property_object_equipmentLeggings":
+                        try {
+                            EntityEquipment equipment = stand.getEquipment();
+                            Method setEquipment = equipment.getClass().getMethod("setLeggings", ItemStack.class, boolean.class);
+
+                            ItemStack stack = property.getUnsafe();
+                            setEquipment.invoke(equipment, stack, true);
+                        } catch (Throwable ex) {
+                            try {
+                                EntityEquipment equipment = stand.getEquipment();
+                                Method setEquipment = equipment.getClass().getMethod("setLeggings", ItemStack.class);
+
+                                ItemStack stack = property.getUnsafe();
+                                setEquipment.invoke(equipment, stack);
+                            } catch (Throwable exc) {
+                                try {
+                                    EntityEquipment equipment = stand.getEquipment();
+                                    Method setEquipment = equipment.getClass().getMethod("setItem", EquipmentSlot.class, ItemStack.class);
+
+                                    ItemStack stack = property.getUnsafe();
+                                    setEquipment.invoke(equipment, EquipmentSlot.valueOf("LEGGINGS"), stack);
+                                } catch (Throwable exce) {
+                                    try {
+                                        Method setEquipment = stand.getClass().getMethod("setLeggings", ItemStack.class);
+
+                                        ItemStack stack = property.getUnsafe();
+                                        setEquipment.invoke(stand, stack);
+                                    } catch (Throwable ignored) {
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "property_object_equipmentBoots":
+                        try {
+                            EntityEquipment equipment = stand.getEquipment();
+                            Method setEquipment = equipment.getClass().getMethod("setBoots", ItemStack.class, boolean.class);
+
+                            ItemStack stack = property.getUnsafe();
+                            setEquipment.invoke(equipment, stack, true);
+                        } catch (Throwable ex) {
+                            try {
+                                EntityEquipment equipment = stand.getEquipment();
+                                Method setEquipment = equipment.getClass().getMethod("setBoots", ItemStack.class);
+
+                                ItemStack stack = property.getUnsafe();
+                                setEquipment.invoke(equipment, stack);
+                            } catch (Throwable exc) {
+                                try {
+                                    EntityEquipment equipment = stand.getEquipment();
+                                    Method setEquipment = equipment.getClass().getMethod("setItem", EquipmentSlot.class, ItemStack.class);
+
+                                    ItemStack stack = property.getUnsafe();
+                                    setEquipment.invoke(equipment, EquipmentSlot.valueOf("BOOTS"), stack);
+                                } catch (Throwable exce) {
+                                    try {
+                                        Method setEquipment = stand.getClass().getMethod("setBoots", ItemStack.class);
+
+                                        ItemStack stack = property.getUnsafe();
+                                        setEquipment.invoke(stand, stack);
+                                    } catch (Throwable ignored) {
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                }
+
+                PropertyValue<?> stored_property = getProperty(property.getFlag(), property.getName());
+                if (stored_property != null) {
+                    stored_property.update(property.getUnsafe());
+                } else {
+                    properties.add(property);
+                }
+            }
+
+            if (updateLocation) stand.teleport(location);
+        }
+    }
+
+    /**
+     * Reset the tracking time
+     */
+    @Override
+    public void resetTime() {
+        reset_time = true;
+    }
+
+    /**
+     * Destroy the tracking stand
+     */
+    @Override
+    public void destroy() {
+        stand.remove();
+    }
+
+    /**
+     * Kill the tracker entity
+     *
+     * @deprecated As of build of 16/10/2022 this does the same as
+     * {@link Tracker#destroy()}. Previously, destroy would kill the
+     * tracker entity, and also remove from memory. Now it will be only
+     * killed to keep a solid respawn value at {@link ml.karmaconfigs.api.bukkit.tracker.event.TrackerSpawnEvent}
+     */
+    @Deprecated
+    public @ApiStatus.ScheduledForRemoval(inVersion = "1.3.4-SNAPSHOT") void kill() {
+        stand.remove();
+    }
+
+    /**
+     * If the tracker gets killed, this method
+     * should "re-spawn" it
+     */
+    @Override
+    public void respawn() {
+        if (stand == null || stand.isDead() || !stand.isValid()) {
+            if (stand != null) stand.remove();
+
+            World world = location.getWorld();
+            if (world != null) {
+                Event event = new TrackerSpawnEvent(this, stand != null);
+                Bukkit.getServer().getPluginManager().callEvent(event);
+
+                stand = world.spawn(location, ArmorStand.class);
+
+                stand.setNoDamageTicks(20 * 5); //5 seconds of spawn invulnerability
+                stand.setMetadata("tracker", new FixedMetadataValue(plugin, id));
+
+                update();
+            }
+        }
+    }
+
+    /**
+     * Initialize the stand
+     */
+    protected void init() {
         PropertyValue<Number> LOCATION_X = TrackerFlag.PROPERTY_NUMBER.makeProperty("x");
         PropertyValue<Number> LOCATION_Y = TrackerFlag.PROPERTY_NUMBER.makeProperty("y");
         PropertyValue<Number> LOCATION_Z = TrackerFlag.PROPERTY_NUMBER.makeProperty("z");
@@ -178,597 +967,5 @@ public class TrackerStand extends Tracker {
         properties.add(STAND_EQUIP_CH);
         properties.add(STAND_EQUIP_LE);
         properties.add(STAND_EQUIP_BO);
-    }
-
-    /**
-     * Get the tracking entity
-     *
-     * @return the tracking entity
-     */
-    @Override
-    public LivingEntity getTracking() {
-        return tracking;
-    }
-
-    /**
-     * Get the tracker auto tracker
-     *
-     * @return the tracker auto tracker
-     */
-    @Override
-    public AutoTracker getTracker() {
-        return tracker;
-    }
-
-    /**
-     * Set the tracking stand property
-     *
-     * @param p the property name
-     * @param v    the property value
-     * @return this instance
-     * @deprecated Trackers won't have properties anymore, they will use
-     * {@link TrackerFlag} instead. Which are better to "fetch". Use the method
-     * {@link Tracker#setProperty(PropertyValue)} instead of this
-     */
-    @Override
-    @Deprecated
-    public Tracker setProperty(final String p, final Object v) {
-        if (v != null) {
-            PropertyValue<?> prop = null;
-
-            for (PropertyValue<?> property : properties) {
-                if (property.getIdentifier().endsWith(p)) {
-                    if (property.matches(v)) {
-                        PropertyValue<?> new_value = property.getFlag().makeProperty(p);
-                        new_value.updateUnsafe(v);
-                        prop = new_value;
-                        break;
-                    } else {
-                        throw new IllegalStateException("Cannot modify tracker property because values type doesn't match");
-                    }
-                }
-            }
-
-            if (prop == null) {
-                prop = TrackerFlag.PROPERTY_OTHER.makeProperty(p);
-                prop.updateUnsafe(v);
-            }
-
-            updated_properties.add(prop);
-        }
-
-        return this;
-    }
-
-    /**
-     * Set the tracker property
-     * <p>
-     * PLEASE NOTE: A correctly setup {@link Tracker} should have
-     * all the expected properties with a default value. Otherwise, people
-     * could be able to mess up. So this method should be only an alternative
-     * to {@link Tracker#getProperty(TrackerFlag, String)} and then {@link PropertyValue#update(Object)} or
-     * {@link PropertyValue#updateUnsafe(Object)} methods respectively
-     *
-     * @param newProperty the property
-     * @return this instance
-     * @param <T> the property type
-     * @throws IllegalStateException if the property value doesn't match with the stored property value.
-     */
-    @Override
-    public <T> Tracker setProperty(final PropertyValue<T> newProperty) throws IllegalStateException {
-        if (newProperty != null && newProperty.getValue() != null) {
-            PropertyValue<T> prop = null;
-
-            for (PropertyValue<?> property : properties) {
-                if (property.getIdentifier().equals(newProperty.getIdentifier())) {
-                    if (property.matches(newProperty.getValue())) {
-                        PropertyValue<T> new_value = property.getFlag().makeProperty(newProperty.getName());
-                        new_value.update(newProperty.getValue());
-                        prop = new_value;
-                        break;
-                    } else {
-                        throw new IllegalStateException("Cannot modify tracker property because values type doesn't match");
-                    }
-                }
-            }
-
-            if (prop == null) {
-                prop = TrackerFlag.PROPERTY_OTHER.makeProperty(newProperty.getName());
-                prop.update(newProperty.getValue());
-            }
-
-            updated_properties.add(prop);
-        }
-
-        return this;
-    }
-
-    /**
-     * Get the tracker property
-     *
-     * @param flag the flag to get for
-     * @param name the property name
-     * @return the tracker property
-     * @param <T> the property type
-     */
-    @Override
-    public @SuppressWarnings("unchecked") <T> PropertyValue<T> getProperty(final TrackerFlag flag, final String name) {
-        PropertyValue<T> prop = null;
-
-        for (PropertyValue<?> property : properties) {
-            if (property.getIdentifier().equals(flag.getPrefix() + "_" + name)) {
-                try {
-                    prop = (PropertyValue<T>) property;
-                } catch (ClassCastException ex) {
-                    return null;
-                }
-                break;
-            }
-        }
-
-        return prop;
-    }
-
-    /**
-     * Get if the tracker has line of sigh for the
-     * entity
-     *
-     * @return if the tracker has line of sigh for the entity
-     */
-    @Override
-    public boolean hasLineOfSight() {
-        if (tracking != null) {
-            return stand.hasLineOfSight(tracking);
-        }
-
-        return false;
-    }
-
-    /**
-     * Get the tracker location
-     *
-     * @return the tracker location
-     */
-    @Override
-    public Location getLocation() {
-        if (stand != null) {
-            Location clone = stand.getLocation().clone();
-            clone.setYaw(yaw);
-            clone.setPitch(pitch);
-
-            return clone;
-        }
-
-        return location;
-    }
-
-    /**
-     * Get the tracker world
-     *
-     * @return the tracker world
-     */
-    @Override
-    public World getWorld() {
-        if (stand != null) {
-            return stand.getWorld();
-        }
-
-        return location.getWorld();
-    }
-
-    /**
-     * Get the tracker entity
-     *
-     * @return the tracker entity
-     */
-    @Override
-    public LivingEntity getEntity() {
-        return stand;
-    }
-
-    /**
-     * Get the direction in where the player is
-     *
-     * @return the direction in where the player is
-     */
-    @Override
-    public Vector getDirection() {
-        if (stand != null) {
-            Location standLocation = stand.getLocation();
-            if (tracking != null) {
-                Location trackLocation = tracking.getLocation();
-
-                return trackLocation.toVector().subtract(standLocation.toVector()).normalize();
-            }
-        }
-
-        return location.toVector();
-    }
-
-    /**
-     * Set up the tracker auto tracker. Once the auto
-     * tracker is set. The method {@link Tracker#setTracking(LivingEntity)}
-     * will be locked and no longer work unless we set our
-     * auto tracker to null.
-     *
-     * @param auto the auto tracker
-     */
-    @Override
-    public void setAutoTracker(final AutoTracker auto) {
-        tracker = auto;
-    }
-
-    /**
-     * Set the tracking entity
-     *
-     * @param entity the entity to track
-     */
-    @Override
-    public void setTracking(final LivingEntity entity) {
-        if (entity != null && tracker == null) {
-            tracking = entity;
-        }
-    }
-
-    /**
-     * Start the track task
-     */
-    @Override
-    public void start() {
-        if (task == null) {
-            if (stand == null || stand.isDead() || !stand.isValid()) {
-                if (stand != null) stand.remove();
-
-                World world = location.getWorld();
-                if (world != null) {
-                    Event event = new TrackerSpawnEvent(this, stand != null);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
-
-                    stand = world.spawn(location, ArmorStand.class);
-
-                    stand.setNoDamageTicks(20 * 5); //5 seconds of spawn invulnerability
-
-                    update();
-                }
-            }
-
-            AtomicLong start = new AtomicLong(System.currentTimeMillis());
-            AtomicInteger last_second = new AtomicInteger(0);
-            long period = Math.max(1, ((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "scanPeriod").getUnsafe()).longValue());
-
-            task = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-                if (reset_task) {
-                    reset_task = false;
-
-                    task.cancel();
-                    task = null;
-                    reset_time = true;
-
-                    start();
-                    return;
-                }
-
-                if (reset_time) {
-                    reset_time = false;
-                    start.set(System.currentTimeMillis());
-                }
-
-                boolean always_track = getProperty(TrackerFlag.TRACKER_BOOLEAN, "ignoreLineOfSight").getUnsafe();
-                double offset = ((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "angleOffset").getUnsafe()).doubleValue();
-                double max_dist = Math.abs(((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "scanDistance").getUnsafe()).doubleValue());
-                boolean track_lock = getProperty(TrackerFlag.TRACKER_BOOLEAN, "leapAtTarget").getUnsafe();
-                if (tracker != null && stand != null && !stand.isDead() && stand.isValid()) {
-                    tracking = tracker.track(this, max_dist);
-                }
-
-                if (tracking != null) {
-                    if (track_lock) {
-                        if (last_track != null && last_track.isValid() && !last_track.isDead()) {
-                            tracking = last_track;
-                        }
-                    }
-                    last_track = tracking;
-
-                    if (tracking.isDead() || !tracking.isValid()) {
-                        if (!kill_queue.contains(tracking.getUniqueId())) {
-                            last_killed = tracking.getUniqueId();
-                            last_track = null;
-                            kill_queue.add(last_killed);
-
-                            Event event = new TrackerTargetDiedEvent(this, tracking);
-                            Bukkit.getServer().getPluginManager().callEvent(event);
-                        }
-
-                        tracking = null;
-                        return;
-                    }
-
-                    if (stand != null) {
-                        if (stand.isDead() || !stand.isValid()) {
-                            Event event = new TrackerDiedEvent(this);
-                            Bukkit.getServer().getPluginManager().callEvent(event);
-
-                            tracking = null;
-
-                            return;
-                        }
-                    } else {
-                        return;
-                    }
-
-                    Location trackLocation = tracking.getEyeLocation().clone();
-                    Location standLocation = stand.getLocation().clone();
-                    if (((stand.hasLineOfSight(tracking) || tracking.hasLineOfSight(stand)) && standLocation.distance(trackLocation) <= max_dist) || always_track) {
-                        Vector vector = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
-                        if (standLocation.distance(trackLocation) >= (max_dist / 3)) {
-                            double tmp_offset = Math.abs((standLocation.distance(trackLocation) - max_dist)) / 100;
-                            vector = trackLocation.add(0, tmp_offset, 0).toVector().subtract(standLocation.toVector()).normalize();
-                        }
-
-                        if (offset != 0) {
-                            if (offset >= 0) {
-                                vector = trackLocation.add(0, offset, 0).toVector().subtract(standLocation.toVector()).normalize();
-                            } else {
-                                vector = trackLocation.subtract(0, Math.abs(offset), 0).toVector().subtract(standLocation.toVector()).normalize();
-                            }
-                        }
-
-                        double angle_x = vector.getY() * (-1);
-                        double x = vector.getX();
-                        double z = vector.getZ();
-                        double angle_y = 180F - Math.toDegrees(Math.atan2(x, z));
-
-                        yaw = (float) angle_y - 180F;
-                        pitch = (180.0F - (float) Math.toDegrees(Math.acos(vector.getY()))) * (-1);
-
-                        plugin.console().debug("Stand yaw: {0} (From: {1})", Level.INFO, yaw, (180 + yaw));
-                        plugin.console().debug("Stand pitch: {0} (From: {1})", Level.INFO, pitch, (180 + pitch));
-
-                        EulerAngle angle = new EulerAngle(angle_x, Math.toRadians(angle_y), 0);
-                        stand.setHeadPose(angle);
-
-                        long end = System.currentTimeMillis();
-                        int seconds = (int) (end - start.get()) / 1000;
-
-                        Event event = new TrackerTickEvent(this, tracking, 1);
-                        Bukkit.getServer().getPluginManager().callEvent(event);
-                        if (last_second.get() != seconds) {
-                            last_second.set(seconds);
-
-                            Event second = new TrackerSecondEvent(this, tracking, seconds);
-                            Bukkit.getServer().getPluginManager().callEvent(second);
-                        }
-                    }
-                } else {
-                    if (last_track != null) {
-                        if (!last_track.isDead() && last_track.isValid()) {
-                            Event event = new TrackerLostEvent(this, last_track);
-                            Bukkit.getServer().getPluginManager().callEvent(event);
-
-                            last_track = null;
-                        }
-                    }
-
-                    if (last_killed != null) {
-                        kill_queue.remove(last_killed);
-                        last_killed = null;
-                        kill_queue.trimToSize();
-                        last_track = null;
-                    }
-                }
-            }, 0, period);
-        }
-    }
-
-    /**
-     * Update the tracker
-     */
-    @Override
-    @SuppressWarnings({"deprecation"})
-    public void update() {
-        if (stand != null) {
-            boolean updateLocation = false;
-
-            for (PropertyValue<?> property : updated_properties) {
-                String keyName = property.getIdentifier();
-
-                switch (keyName) {
-                    case "tracker_boolean_scanPeriod":
-                        reset_task = true;
-                        break;
-                    case "property_number_x":
-                        location.setX(property.getUnsafe());
-                        updateLocation = true;
-                        break;
-                    case "property_number_y":
-                        location.setY(property.getUnsafe());
-                        updateLocation = true;
-                        break;
-                    case "property_number_z":
-                        location.setZ(property.getUnsafe());
-                        updateLocation = true;
-                        break;
-                    case "property_uuid_world":
-                        World world = plugin.getServer().getWorld((UUID) property.getUnsafe());
-                        if (world != null) {
-                            location.setWorld(world);
-                            updateLocation = true;
-                        }
-                        break;
-                    case "property_boolean_small":
-                        stand.setSmall(property.getUnsafe());
-                        break;
-                    case "property_boolean_basePlate":
-                        stand.setBasePlate(property.getUnsafe());
-                        break;
-                    case "property_boolean_marker":
-                        try {
-                            stand.setMarker(property.getUnsafe());
-                        } catch (Throwable ignored) {}
-                        break;
-                    case "property_boolean_invincible":
-                        try {
-                            stand.setInvulnerable(property.getUnsafe());
-                        } catch (Throwable ex) {
-                            stand.setNoDamageTicks((property.getUnsafe() ? Integer.MAX_VALUE : 0));
-                        }
-                        break;
-                    case "property_boolean_showName":
-                        stand.setCustomNameVisible(property.getUnsafe());
-                        break;
-                    case "property_boolean_arms":
-                        stand.setArms(property.getUnsafe());
-                        break;
-                    case "property_boolean_takeoffItems":
-                        stand.setCanPickupItems(property.getUnsafe());
-                        break;
-                    case "property_text_customName":
-                        stand.setCustomName(StringUtils.toColor((String) property.getUnsafe()));
-                        break;
-                    case "property_object_leftArmAngle":
-                        stand.setLeftArmPose(property.getUnsafe());
-                        break;
-                    case "property_object_rightArmAngle":
-                        stand.setRightArmPose(property.getUnsafe());
-                        break;
-                    case "property_object_leftLegAngle":
-                        stand.setLeftLegPose(property.getUnsafe());
-                        break;
-                    case "property_object_rightLegAngle":
-                        stand.setRightLegPose(property.getUnsafe());
-                        break;
-                    case "property_object_bodyAngle":
-                        stand.setBodyPose(property.getUnsafe());
-                        break;
-                    case "property_object_equipmentLeftArm":
-                        try {
-                            if (stand.getEquipment() != null) stand.getEquipment().setItemInOffHand(property.getUnsafe(), true);
-                        } catch (Throwable ex) {
-                            try {
-                                if (stand.getEquipment() != null) stand.getEquipment().setItem(EquipmentSlot.OFF_HAND, property.getUnsafe());
-                            } catch (Throwable exception) {
-                                stand.setItemInHand(property.getUnsafe());
-                            }
-                        }
-                        break;
-                    case "property_object_equipmentRightArm":
-                        try {
-                            if (stand.getEquipment() != null) stand.getEquipment().setItemInMainHand(property.getUnsafe(), true);
-                        } catch (Throwable ex) {
-                            try {
-                                if (stand.getEquipment() != null) stand.getEquipment().setItem(EquipmentSlot.HAND, property.getUnsafe());
-                            } catch (Throwable exception) {
-                                stand.setItemInHand(property.getUnsafe());
-                            }
-                        }
-                        break;
-                    case "property_object_equipmentHelmet":
-                        try {
-                            if (stand.getEquipment() != null) stand.getEquipment().setHelmet(property.getUnsafe(), true);
-                        } catch (Throwable ex) {
-                            try {
-                                if (stand.getEquipment() != null) stand.getEquipment().setItem(EquipmentSlot.HEAD, property.getUnsafe());
-                            } catch (Throwable exception) {
-                                stand.setHelmet(property.getUnsafe());
-                            }
-                        }
-                        break;
-                    case "property_object_equipmentChestplate":
-                        try {
-                            if (stand.getEquipment() != null) stand.getEquipment().setChestplate(property.getUnsafe(), true);
-                        } catch (Throwable ex) {
-                            try {
-                                if (stand.getEquipment() != null) stand.getEquipment().setItem(EquipmentSlot.CHEST, property.getUnsafe());
-                            } catch (Throwable exception) {
-                                stand.setChestplate(property.getUnsafe());
-                            }
-                        }
-                        break;
-                    case "property_object_equipmentLeggings":
-                        try {
-                            if (stand.getEquipment() != null) stand.getEquipment().setLeggings(property.getUnsafe(), true);
-                        } catch (Throwable ex) {
-                            try {
-                                if (stand.getEquipment() != null) stand.getEquipment().setItem(EquipmentSlot.LEGS, property.getUnsafe());
-                            } catch (Throwable exception) {
-                                stand.setLeggings(property.getUnsafe());
-                            }
-                        }
-                        break;
-                    case "property_object_equipmentBoots":
-                        try {
-                            if (stand.getEquipment() != null) stand.getEquipment().setBoots(property.getUnsafe(), true);
-                        } catch (Throwable ex) {
-                            try {
-                                if (stand.getEquipment() != null) stand.getEquipment().setItem(EquipmentSlot.FEET, property.getUnsafe());
-                            } catch (Throwable exception) {
-                                stand.setBoots(property.getUnsafe());
-                            }
-                        }
-                        break;
-                }
-
-                PropertyValue<?> stored_property = getProperty(property.getFlag(), property.getName());
-                if (stored_property != null) {
-                    stored_property.update(property.getUnsafe());
-                } else {
-                    properties.add(property);
-                }
-            }
-
-            if (updateLocation) stand.teleport(location);
-        }
-    }
-
-    /**
-     * Reset the tracking time
-     */
-    @Override
-    public void resetTime() {
-        reset_time = true;
-    }
-
-    /**
-     * Destroy the tracking stand
-     */
-    @Override
-    public void destroy() {
-        stand.remove();
-    }
-
-    /**
-     * Kill the tracker entity
-     * @deprecated As of build of 16/10/2022 this does the same as
-     * {@link Tracker#destroy()}. Previously, destroy would kill the
-     * tracker entity, and also remove from memory. Now it will be only
-     * killed to keep a solid respawn value at {@link ml.karmaconfigs.api.bukkit.tracker.event.TrackerSpawnEvent}
-     */
-    @Deprecated
-    public @ApiStatus.ScheduledForRemoval(inVersion = "1.3.4-SNAPSHOT") void kill() {
-        stand.remove();
-    }
-
-    /**
-     * If the tracker gets killed, this method
-     * should "re-spawn" it
-     */
-    @Override
-    public void respawn() {
-        if (stand == null || stand.isDead() || !stand.isValid()) {
-            if (stand != null) stand.remove();
-
-            World world = location.getWorld();
-            if (world != null) {
-                Event event = new TrackerSpawnEvent(this, stand != null);
-                Bukkit.getServer().getPluginManager().callEvent(event);
-
-                stand = world.spawn(location, ArmorStand.class);
-
-                stand.setNoDamageTicks(20 * 5); //5 seconds of spawn invulnerability
-                stand.setMetadata("tracker", new FixedMetadataValue(plugin, id));
-
-                update();
-            }
-        }
     }
 }

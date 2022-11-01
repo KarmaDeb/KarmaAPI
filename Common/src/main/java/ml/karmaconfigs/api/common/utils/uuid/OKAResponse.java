@@ -25,7 +25,6 @@ package ml.karmaconfigs.api.common.utils.uuid;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.utils.UUIDUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,8 +43,8 @@ public final class OKAResponse {
      * Initialize the response
      *
      * @param name the response name
-     * @param off the response offline uuid
-     * @param on the response online uuid
+     * @param off  the response offline uuid
+     * @param on   the response online uuid
      */
     public OKAResponse(final String name, final UUID off, final UUID on) {
         nick = name;

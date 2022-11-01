@@ -53,8 +53,8 @@ public final class BoundedBufferedReader extends BufferedReader implements Seria
     /**
      * Initialize the bounded buffered reader
      *
-     * @param reader the reader
-     * @param maxLines the maximum amount of lines
+     * @param reader     the reader
+     * @param maxLines   the maximum amount of lines
      * @param maxLineLen the maximum length of the lines
      */
     public BoundedBufferedReader(final Reader reader, final int maxLines, final int maxLineLen) {

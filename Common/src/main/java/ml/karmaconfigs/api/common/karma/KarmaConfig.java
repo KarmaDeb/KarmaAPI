@@ -61,7 +61,7 @@ public final class KarmaConfig {
      * Get the console default prefix
      *
      * @param source the source for the prefix
-     * @param lvl the level for the prefix
+     * @param lvl    the level for the prefix
      * @return the console level prefix
      */
     public String consolePrefix(final KarmaSource source, final Level lvl) {

@@ -2,8 +2,6 @@ package ml.karmaconfigs.api.common.karma;
 
 import ml.karmaconfigs.api.common.utils.security.token.TokenGenerator;
 
-import java.nio.file.Path;
-
 /**
  * Identifiable object
  */

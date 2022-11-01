@@ -39,7 +39,7 @@ public interface LateScheduler<A> extends CancellableScheduler {
      * Set the complete action
      *
      * @param paramRunnable the action to perform
-     *               when the scheduler is completed
+     *                      when the scheduler is completed
      * @return this instance
      */
     LateScheduler<A> whenComplete(final Runnable paramRunnable);
@@ -48,7 +48,7 @@ public interface LateScheduler<A> extends CancellableScheduler {
      * Set the complete action
      *
      * @param paramConsumer the action to perform
-     *               when the scheduler is completed
+     *                      when the scheduler is completed
      * @return this instance
      */
     LateScheduler<A> whenComplete(final Consumer<A> paramConsumer);
@@ -57,7 +57,7 @@ public interface LateScheduler<A> extends CancellableScheduler {
      * Set the complete action
      *
      * @param paramBiConsumer the action to perform
-     *               when the scheduler is completed
+     *                        when the scheduler is completed
      * @return this instance
      */
     LateScheduler<A> whenComplete(final BiConsumer<A, Throwable> paramBiConsumer);
@@ -86,7 +86,7 @@ public interface LateScheduler<A> extends CancellableScheduler {
     /**
      * Complete the scheduler
      *
-     * @param paramA the type A object
+     * @param paramA         the type A object
      * @param paramThrowable any error that has been thrown
      */
     void complete(final A paramA, final Throwable paramThrowable);

@@ -91,7 +91,7 @@ public final class TokenStorage {
     /**
      * Destroy a token
      *
-     * @param tokenID the token ID
+     * @param tokenID  the token ID
      * @param password the token password
      */
     public void destroy(final UUID tokenID, final String password) {
@@ -117,8 +117,8 @@ public final class TokenStorage {
     /**
      * Store a token
      *
-     * @param token the token
-     * @param password the token password
+     * @param token      the token
+     * @param password   the token password
      * @param expiration the token expiration date (null for no expiration)
      * @return the token ID
      */
@@ -148,12 +148,11 @@ public final class TokenStorage {
     /**
      * Load a token
      *
-     * @param tokenID the token ID
+     * @param tokenID  the token ID
      * @param password the token password
      * @return the token
-     *
-     * @throws TokenNotFoundException if the token couldn't be found
-     * @throws TokenExpiredException if the token is expired
+     * @throws TokenNotFoundException          if the token couldn't be found
+     * @throws TokenExpiredException           if the token is expired
      * @throws TokenIncorrectPasswordException if the token password's is incorrect
      */
     public String load(final UUID tokenID, final String password) throws TokenNotFoundException, TokenExpiredException, TokenIncorrectPasswordException {

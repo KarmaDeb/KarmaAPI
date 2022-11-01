@@ -62,9 +62,8 @@ public final class AsyncKarmaFile implements Serializable {
      * Initialize the karma file
      *
      * @param source the file source
-     * @param name the file name
-     * @param dir the file path
-     *
+     * @param name   the file name
+     * @param dir    the file path
      * @throws IllegalStateException if the target path is not a valid path
      */
     public AsyncKarmaFile(final KarmaSource source, final String name, final String... dir) throws IllegalStateException {
@@ -316,9 +315,8 @@ public final class AsyncKarmaFile implements Serializable {
     /**
      * Set a new value
      *
-     * @param path the key path
+     * @param path  the key path
      * @param value the value
-     *
      * @return the result
      */
     public LateScheduler<Void> set(String path, final Object value) {
@@ -397,7 +395,6 @@ public final class AsyncKarmaFile implements Serializable {
      *
      * @param path the key path
      * @param list the values
-     *
      * @return the result
      */
     public LateScheduler<Void> set(String path, final List<?> list) {
@@ -571,7 +568,7 @@ public final class AsyncKarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     @NotNull
@@ -615,7 +612,7 @@ public final class AsyncKarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     @NotNull
@@ -657,7 +654,7 @@ public final class AsyncKarmaFile implements Serializable {
     /**
      * Get a value
      *
-     * @param path the value path
+     * @param path             the value path
      * @param default_contents the default values
      * @return the value
      */
@@ -671,33 +668,33 @@ public final class AsyncKarmaFile implements Serializable {
         source(true).async().queue("async_file_get", () -> {
             List<Object> values = new ArrayList<>();
             isSet(finalPath).whenComplete((rs) -> {
-               if (rs && exists()) {
-                   BufferedReader reader = null;
-                   try {
-                       reader = Files.newBufferedReader(this.file.toPath(), StandardCharsets.UTF_8);
-                       boolean adding = false;
-                       Object line;
-                       while ((line = reader.readLine()) != null) {
-                           if (isOpenList(line.toString(), finalPath))
-                               adding = true;
-                           if (isCloseList(line.toString(), finalPath))
-                               adding = false;
-                           if (adding &&
-                                   !isOpenList(line.toString(), finalPath))
-                               if (!line.toString().startsWith("/// ") && !line.toString().endsWith(" -->"))
-                                   values.add(line);
-                       }
+                if (rs && exists()) {
+                    BufferedReader reader = null;
+                    try {
+                        reader = Files.newBufferedReader(this.file.toPath(), StandardCharsets.UTF_8);
+                        boolean adding = false;
+                        Object line;
+                        while ((line = reader.readLine()) != null) {
+                            if (isOpenList(line.toString(), finalPath))
+                                adding = true;
+                            if (isCloseList(line.toString(), finalPath))
+                                adding = false;
+                            if (adding &&
+                                    !isOpenList(line.toString(), finalPath))
+                                if (!line.toString().startsWith("/// ") && !line.toString().endsWith(" -->"))
+                                    values.add(line);
+                        }
 
-                       result.complete(values);
-                   } catch (Throwable ex) {
-                       result.complete(values, ex);
-                   } finally {
-                       closeStreams(reader);
-                   }
-               } else {
-                   values.addAll(Arrays.asList(default_contents));
-                   result.complete(values);
-               }
+                        result.complete(values);
+                    } catch (Throwable ex) {
+                        result.complete(values, ex);
+                    } finally {
+                        closeStreams(reader);
+                    }
+                } else {
+                    values.addAll(Arrays.asList(default_contents));
+                    result.complete(values);
+                }
             });
         });
 
@@ -707,7 +704,7 @@ public final class AsyncKarmaFile implements Serializable {
     /**
      * Get a value
      *
-     * @param path the value path
+     * @param path             the value path
      * @param default_contents the default values
      * @return the value
      */
@@ -759,7 +756,7 @@ public final class AsyncKarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public LateScheduler<Boolean> getBoolean(String path, final boolean def) {
@@ -885,7 +882,7 @@ public final class AsyncKarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public LateScheduler<Integer> getInt(String path, final int def) {
@@ -927,7 +924,7 @@ public final class AsyncKarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public LateScheduler<Double> getDouble(String path, final double def) {
@@ -970,7 +967,7 @@ public final class AsyncKarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public LateScheduler<Long> getLong(String path, final long def) {

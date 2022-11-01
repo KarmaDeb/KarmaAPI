@@ -61,10 +61,11 @@ public final class APISource implements KarmaSource {
 
             PrefixConsoleData data = new PrefixConsoleData(this);
             data.setPrefix(Level.OK, "&7[ KarmaAPI ] &3");
-            data.setPrefix(Level.INFO,"&b[ KarmaAPI ] &3");
-            data.setPrefix(Level.WARNING,"&e[ KarmaAPI ] &3");
-            data.setPrefix(Level.GRAVE,"&c[ KarmaAPI ] &3");
-        } catch (IllegalStateException ignored) {}
+            data.setPrefix(Level.INFO, "&b[ KarmaAPI ] &3");
+            data.setPrefix(Level.WARNING, "&e[ KarmaAPI ] &3");
+            data.setPrefix(Level.GRAVE, "&c[ KarmaAPI ] &3");
+        } catch (IllegalStateException ignored) {
+        }
     }
 
     /**
@@ -92,11 +93,10 @@ public final class APISource implements KarmaSource {
     /**
      * Update a source provider
      *
-     * @param name the original source name
+     * @param name   the original source name
      * @param target the new source
-     *
      * @throws IllegalStateException if the new source replacement
-     * is not the same as the stored one
+     *                               is not the same as the stored one
      */
     public static void updateProvider(final String name, final KarmaSource target) throws IllegalStateException {
         String identifier = name.toLowerCase();
@@ -160,7 +160,7 @@ public final class APISource implements KarmaSource {
 
     /**
      * Define the default source that KarmaAPI will use.
-     *
+     * <p>
      * Differently from {@link APISource#DEFAULT_SOURCE static} is that
      * method throws {@link SecurityException error} if there's already
      * a default source set.

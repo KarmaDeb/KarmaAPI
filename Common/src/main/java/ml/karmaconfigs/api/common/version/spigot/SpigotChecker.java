@@ -29,9 +29,9 @@ import com.google.gson.*;
 import ml.karmaconfigs.api.common.karma.KarmaAPI;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
+import ml.karmaconfigs.api.common.utils.string.StringUtils;
 import ml.karmaconfigs.api.common.utils.url.HttpUtil;
 import ml.karmaconfigs.api.common.utils.url.URLUtils;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
 
 import java.net.URL;
 
@@ -146,7 +146,7 @@ public final class SpigotChecker {
                             result.complete(null, new Exception("Failed to fetch last update for project with id " + resource_id + " #003"));
                         }
                     } else {
-                        result.complete(null, new Exception("Failed to fetch last update for project with id " +resource_id + " #004"));
+                        result.complete(null, new Exception("Failed to fetch last update for project with id " + resource_id + " #004"));
                     }
                 }
             } catch (Throwable ex) {

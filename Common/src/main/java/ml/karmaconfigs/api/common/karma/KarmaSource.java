@@ -41,7 +41,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -97,7 +96,7 @@ public interface KarmaSource extends Serializable {
      * Get the authors using a custom separator
      *
      * @param firstSeparator if the first object should have separator
-     * @param separator the separator
+     * @param separator      the separator
      * @return the authors using the separator options
      */
     default String authors(final boolean firstSeparator, final String separator) {
@@ -188,7 +187,7 @@ public interface KarmaSource extends Serializable {
     /**
      * Load a source resource
      *
-     * @param name the resource name
+     * @param name      the resource name
      * @param directory the resource path
      * @return the resource
      */

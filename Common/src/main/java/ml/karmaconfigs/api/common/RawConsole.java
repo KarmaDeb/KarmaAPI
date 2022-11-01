@@ -49,7 +49,7 @@ public class RawConsole {
     /**
      * Initialize a new console
      *
-     * @param src the console source
+     * @param src       the console source
      * @param onMessage the console message action
      */
     public RawConsole(final KarmaSource src, final Consumer<String> onMessage) {
@@ -143,7 +143,7 @@ public class RawConsole {
     /**
      * Send a message to the console
      *
-     * @param message the message to send
+     * @param message  the message to send
      * @param replaces the message replaces
      */
     public void send(final CharSequence message, final Object... replaces) {
@@ -161,7 +161,7 @@ public class RawConsole {
             tmpMessage = engine.parse(tmpMessage);
 
         if (messageAction == null) {
-            System.out.println("\033[0m" +  StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode()) + tmpMessage + StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode()));
+            System.out.println("\033[0m" + StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode()) + tmpMessage + StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode()));
         } else {
             messageAction.accept(tmpMessage);
         }
@@ -171,7 +171,7 @@ public class RawConsole {
      * Send a message to the console
      *
      * @param message the message to send
-     * @param level the message level
+     * @param level   the message level
      */
     public void send(final @NotNull CharSequence message, final @NotNull Level level) {
         Consumer<String> messageAction = messageActions.getOrDefault(source, null);
@@ -188,7 +188,7 @@ public class RawConsole {
         if (messageAction == null) {
             if (tmpMessage.contains("\n")) {
                 for (String msg : tmpMessage.split("\n"))
-                    send( msg);
+                    send(msg);
             } else {
                 send(prefix + tmpMessage);
             }
@@ -204,7 +204,7 @@ public class RawConsole {
      * Send a message to the console
      *
      * @param message the message to send
-     * @param level the message level
+     * @param level   the message level
      */
     public void debug(final @NotNull CharSequence message, final @NotNull Level level) {
         KarmaConfig config = new KarmaConfig();
@@ -241,7 +241,7 @@ public class RawConsole {
      * Send a message to the console
      *
      * @param message the message to send
-     * @param level the message level
+     * @param level   the message level
      */
     public void debugFile(final @NotNull CharSequence message, final @NotNull Level level) {
         KarmaConfig config = new KarmaConfig();
@@ -278,7 +278,7 @@ public class RawConsole {
      * Send a message to the console
      *
      * @param message the message to send
-     * @param level the message level
+     * @param level   the message level
      */
     public void debugUtil(final @NotNull CharSequence message, final @NotNull Level level) {
         KarmaConfig config = new KarmaConfig();
@@ -314,8 +314,8 @@ public class RawConsole {
     /**
      * Send a message to the console
      *
-     * @param message the message to send
-     * @param level the message level
+     * @param message  the message to send
+     * @param level    the message level
      * @param replaces the message replaces
      */
     public void send(final @NotNull CharSequence message, final @NotNull Level level, final @NotNull Object... replaces) {
@@ -354,8 +354,8 @@ public class RawConsole {
     /**
      * Send a message to the console
      *
-     * @param message the message to send
-     * @param level the message level
+     * @param message  the message to send
+     * @param level    the message level
      * @param replaces the message replaces
      */
     public void debug(final @NotNull CharSequence message, final @NotNull Level level, final @NotNull Object... replaces) {
@@ -398,8 +398,8 @@ public class RawConsole {
     /**
      * Send a message to the console
      *
-     * @param message the message to send
-     * @param level the message level
+     * @param message  the message to send
+     * @param level    the message level
      * @param replaces the message replaces
      */
     public void debugFile(final @NotNull CharSequence message, final @NotNull Level level, final @NotNull Object... replaces) {
@@ -442,8 +442,8 @@ public class RawConsole {
     /**
      * Send a message to the console
      *
-     * @param message the message to send
-     * @param level the message level
+     * @param message  the message to send
+     * @param level    the message level
      * @param replaces the message replaces
      */
     public void debugUtil(final @NotNull CharSequence message, final @NotNull Level level, final @NotNull Object... replaces) {

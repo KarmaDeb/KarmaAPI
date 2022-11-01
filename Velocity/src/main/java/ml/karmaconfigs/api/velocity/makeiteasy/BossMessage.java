@@ -124,7 +124,7 @@ public final class BossMessage extends BossProvider<Player> {
     /**
      * Initialize the boss message
      *
-     * @param owner the boss message source
+     * @param owner    the boss message source
      * @param _message the boss bar message
      * @param duration the boss bar duration
      */
@@ -213,9 +213,9 @@ public final class BossMessage extends BossProvider<Player> {
 
         BossBar bar = BossBar.bossBar(
                 Component.text().content(StringUtils.toColor(message)),
-                        1.0f,
-                        BossBar.Color.valueOf(color.name()),
-                        BossBar.Overlay.valueOf(type.name().replace("SEGMENTED", "NOTCHED").replace("SOLID", "PROGRESS")));
+                1.0f,
+                BossBar.Color.valueOf(color.name()),
+                BossBar.Overlay.valueOf(type.name().replace("SEGMENTED", "NOTCHED").replace("SOLID", "PROGRESS")));
         for (Player player : fixed)
             player.showBossBar(bar);
 
@@ -344,7 +344,7 @@ public final class BossMessage extends BossProvider<Player> {
      * Update the boss bar
      *
      * @param _message the new boss bar text
-     * @param restart restart the bar progress
+     * @param restart  restart the bar progress
      * @return if the boss bar could be updated
      */
     @Override

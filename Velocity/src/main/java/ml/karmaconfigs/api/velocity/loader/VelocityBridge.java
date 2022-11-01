@@ -27,8 +27,8 @@ package ml.karmaconfigs.api.velocity.loader;
 
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.utils.BridgeLoader;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 
@@ -45,8 +45,8 @@ public class VelocityBridge extends BridgeLoader<KarmaSource> {
      * Initialize the bridge loader
      *
      * @param source the source class
-     * @param sv the server where the bridge will be done
-     * @param owner the bridge owner
+     * @param sv     the server where the bridge will be done
+     * @param owner  the bridge owner
      */
     public VelocityBridge(final KarmaSource source, final ProxyServer sv, final PluginContainer owner) {
         super("Velocity", source);

@@ -26,19 +26,19 @@ package ml.karmaconfigs.api.common.version;
  */
 
 import ml.karmaconfigs.api.common.Logger;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
 import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
 import ml.karmaconfigs.api.common.karmafile.KarmaFile;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
-import ml.karmaconfigs.api.common.utils.url.URLUtils;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.utils.file.FileUtilities;
 import ml.karmaconfigs.api.common.utils.string.ComparatorBuilder;
 import ml.karmaconfigs.api.common.utils.string.StringUtils;
 import ml.karmaconfigs.api.common.utils.string.VersionComparator;
+import ml.karmaconfigs.api.common.utils.url.URLUtils;
 import ml.karmaconfigs.api.common.version.util.VersionCheckType;
 import ml.karmaconfigs.api.common.version.util.VersionResolver;
 
@@ -284,7 +284,7 @@ public abstract class VersionUpdater {
          * @param resolver the version resolver
          * @return this instance
          * @throws IllegalStateException if the version type is not
-         * resolvable ID
+         *                               resolvable ID
          */
         public final VersionBuilder withVersionResolver(final VersionResolver resolver) throws IllegalStateException {
             if (this.versionType == VersionCheckType.RESOLVABLE_ID) {

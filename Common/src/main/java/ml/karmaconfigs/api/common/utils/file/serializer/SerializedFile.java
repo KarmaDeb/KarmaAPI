@@ -19,8 +19,8 @@ public final class SerializedFile {
     /**
      * Initialize the serialized file
      *
-     * @param dir the directory
-     * @param n the file name
+     * @param dir     the directory
+     * @param n       the file name
      * @param content the file contents
      */
     public SerializedFile(final boolean dir, final String n, final byte[] content) {

@@ -17,7 +17,7 @@ public class NotTypeError extends RuntimeException {
      *
      * @param element the element that is being tried
      *                to be cast
-     * @param type the element cast target
+     * @param type    the element cast target
      */
     public NotTypeError(final KarmaElement element, final Class<? extends KarmaElement> type) {
         super("The element " + element + " cannot be converted to " + type);

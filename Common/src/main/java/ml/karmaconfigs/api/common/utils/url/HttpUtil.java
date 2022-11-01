@@ -89,10 +89,12 @@ public final class HttpUtil {
         try {
             HttpGet httpget = new HttpGet(url);
             httpClient.execute(httpget);
-        } catch (Throwable ignored) {} finally {
+        } catch (Throwable ignored) {
+        } finally {
             try {
                 httpClient.close();
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
     }
 
@@ -100,7 +102,7 @@ public final class HttpUtil {
      * Connect and instantly disconnect from a URL.
      * This method may be called only when actually needed
      *
-     * @param data the post data
+     * @param data    the post data
      * @param headers the request headers
      */
     public void push(final Post data, final Header... headers) {
@@ -129,10 +131,12 @@ public final class HttpUtil {
             }
 
             httpClient.execute(postRequest);
-        } catch (Throwable ignored) {} finally {
+        } catch (Throwable ignored) {
+        } finally {
             try {
                 httpClient.close();
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
     }
 
@@ -149,17 +153,19 @@ public final class HttpUtil {
                 postRequest.addHeader(h);
 
             httpClient.execute(postRequest);
-        } catch (Throwable ignored) {} finally {
+        } catch (Throwable ignored) {
+        } finally {
             try {
                 httpClient.close();
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
     }
 
     /**
      * Get the response
      *
-     * @param data the post data
+     * @param data    the post data
      * @param headers the request headers
      * @return the url response
      */
@@ -216,7 +222,8 @@ public final class HttpUtil {
 
                     //Set json to pretty print
                     response = gson.toJson(object);
-                } catch (Throwable ignored) {}
+                } catch (Throwable ignored) {
+                }
             }
         } catch (HttpHostConnectException ex) {
             response = "403 - Connection refused";
@@ -225,7 +232,8 @@ public final class HttpUtil {
         } finally {
             try {
                 httpClient.close();
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
 
         return response;
@@ -260,7 +268,7 @@ public final class HttpUtil {
             Scanner sc = new Scanner(httpresponse.getEntity().getContent());
 
             StringBuilder sb = new StringBuilder();
-            while(sc.hasNext()) {
+            while (sc.hasNext()) {
                 sb.append(sc.next()).append(" ");
             }
 
@@ -280,7 +288,8 @@ public final class HttpUtil {
         } finally {
             try {
                 httpClient.close();
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
 
         return response;

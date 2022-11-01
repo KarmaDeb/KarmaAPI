@@ -48,9 +48,9 @@ public final class EntityDieAtRegionEvent extends EntityEvent {
      * Initialize the entity die region event
      *
      * @param ent the entity
-     * @param f the entity forensics
-     * @param rg the region the entity
-     *           has left
+     * @param f   the entity forensics
+     * @param rg  the region the entity
+     *            has left
      */
     public EntityDieAtRegionEvent(final Entity ent, final Forensics f, final Cuboid rg) {
         super(ent);

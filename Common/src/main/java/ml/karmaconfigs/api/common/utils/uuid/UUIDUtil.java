@@ -66,7 +66,7 @@ public final class UUIDUtil {
      * engine database API
      *
      * @param identifiable an identifiable source
-     * @param name the client name
+     * @param name         the client name
      */
     public static void registerMinecraftClient(final Identifiable identifiable, final String name) {
         URL first = URLUtils.getOrBackup("https://karmadev.es/?nick=" + name,
@@ -280,10 +280,12 @@ public final class UUIDUtil {
 
                                             try {
                                                 off = UUID.fromString(offlineData.get("id").getAsString());
-                                            } catch (Throwable ignored) {}
+                                            } catch (Throwable ignored) {
+                                            }
                                             try {
                                                 on = UUID.fromString(onlineData.get("id").getAsString());
-                                            } catch (Throwable ignored) {}
+                                            } catch (Throwable ignored) {
+                                            }
 
                                             if (nick.equals(name)) {
                                                 result = new OKAResponse(name, off, on);
@@ -369,7 +371,7 @@ public final class UUIDUtil {
                     if (utils != null) {
                         api.console().debug("HTTP utilities validated at {0}", Level.INFO, url);
                         String response = utils.getResponse();
-                        
+
                         if (!StringUtils.isNullOrEmpty(response)) {
                             api.console().debug("Response is valid at {0}", Level.INFO, url);
 
@@ -478,10 +480,12 @@ public final class UUIDUtil {
 
                                                 try {
                                                     off = UUID.fromString(offlineData.get("id").getAsString());
-                                                } catch (Throwable ignored) {}
+                                                } catch (Throwable ignored) {
+                                                }
                                                 try {
                                                     on = UUID.fromString(onlineData.get("id").getAsString());
-                                                } catch (Throwable ignored) {}
+                                                } catch (Throwable ignored) {
+                                                }
 
                                                 OKAResponse tmp = new OKAResponse(nick, off, on);
                                                 okaData.add(tmp);
@@ -493,7 +497,8 @@ public final class UUIDUtil {
                         }
                     }
                 }
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
 
             result.complete(okaData);
         });

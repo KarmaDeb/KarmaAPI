@@ -123,7 +123,7 @@ public final class BossMessage extends BossProvider<ProxiedPlayer> {
     /**
      * Initialize the boss message
      *
-     * @param owner the boss message source
+     * @param owner    the boss message source
      * @param _message the boss bar message
      * @param duration the boss bar duration
      */
@@ -347,7 +347,7 @@ public final class BossMessage extends BossProvider<ProxiedPlayer> {
      * Update the boss bar
      *
      * @param _message the new boss bar text
-     * @param restart restart the bar progress
+     * @param restart  restart the bar progress
      * @return if the boss bar could be updated
      */
     @Override

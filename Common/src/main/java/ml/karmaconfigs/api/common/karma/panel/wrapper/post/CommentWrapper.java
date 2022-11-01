@@ -3,8 +3,6 @@ package ml.karmaconfigs.api.common.karma.panel.wrapper.post;
 
 import ml.karmaconfigs.api.common.karma.panel.wrapper.post.filter.Filterable;
 
-import java.time.Instant;
-
 /**
  * Post comment wrapper
  */

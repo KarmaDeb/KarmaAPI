@@ -44,8 +44,8 @@ public final class EntityLeaveRegionEvent extends EntityEvent {
      * Initialize the entity leave region event
      *
      * @param ent the entity
-     * @param rg the region the entity
-     *           has left
+     * @param rg  the region the entity
+     *            has left
      */
     public EntityLeaveRegionEvent(final Entity ent, final Cuboid rg) {
         super(ent);

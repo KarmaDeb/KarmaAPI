@@ -170,8 +170,8 @@ public final class StringUtils {
     /**
      * Replace the last regex in the text
      *
-     * @param text the text to search in
-     * @param regex the text to find
+     * @param text    the text to search in
+     * @param regex   the text to find
      * @param replace the text to replace with
      * @return the replaced text
      */
@@ -194,13 +194,13 @@ public final class StringUtils {
     /**
      * Insert a text each amount of characters
      *
-     * @param text the original text
+     * @param text   the original text
      * @param insert the text to insert
      * @param period the amount of characters
      * @return the formatted text
      */
     public static String insertInEach(final String text, final String insert, final int period) {
-        StringBuilder builder = new StringBuilder(text.length() + insert.length() * (text.length()/period)+1);
+        StringBuilder builder = new StringBuilder(text.length() + insert.length() * (text.length() / period) + 1);
 
         int index = 0;
         String prefix = "";
@@ -238,11 +238,11 @@ public final class StringUtils {
      * Replace the max amount of characters starting from
      * the specified index
      *
-     * @param text the text to replace
+     * @param text        the text to replace
      * @param replacement the character to replace with
-     * @param start the beginning index of scan
-     * @param max the max index to scan
-     * @param ignored the ignored characters
+     * @param start       the beginning index of scan
+     * @param max         the max index to scan
+     * @param ignored     the ignored characters
      * @return the replaced text
      */
     public static String smartReplace(final String text, final char replacement, final int start, final int max, char... ignored) {
@@ -277,9 +277,9 @@ public final class StringUtils {
      * Insert a text each amount of characters as
      * soon as the character is a space/empty
      *
-     * @param text the original text
-     * @param insert the text to insert
-     * @param period the amount of characters
+     * @param text         the original text
+     * @param insert       the text to insert
+     * @param period       the amount of characters
      * @param replaceSpace replace the empty
      *                     character with the insert
      * @return the formatted text
@@ -307,7 +307,7 @@ public final class StringUtils {
     /**
      * Split a text by each characters
      *
-     * @param text the original text
+     * @param text   the original text
      * @param period the amount of characters
      * @return the split text
      */
@@ -323,8 +323,8 @@ public final class StringUtils {
      * Split a text by each characters
      * if it's a space
      *
-     * @param text the original text
-     * @param period the amount of characters
+     * @param text         the original text
+     * @param period       the amount of characters
      * @param replaceSpace replace the empty
      *                     character with the insert
      * @return the split text
@@ -340,9 +340,9 @@ public final class StringUtils {
     /**
      * Split a text between the specified indexes
      *
-     * @param text the text to split
+     * @param text  the text to split
      * @param start the start index
-     * @param end the end index
+     * @param end   the end index
      * @return the split text
      */
     public static String[] splitBetween(final String text, final int start, final int end) {
@@ -374,7 +374,7 @@ public final class StringUtils {
     /**
      * Split a text between the specified indexes
      *
-     * @param text the text to split
+     * @param text    the text to split
      * @param indexes the indexes
      * @return the split text
      */
@@ -875,7 +875,7 @@ public final class StringUtils {
     /**
      * Format the specified text
      *
-     * @param text the text to format
+     * @param text     the text to format
      * @param replaces the text replaces
      * @return the formatted text
      */
@@ -901,10 +901,9 @@ public final class StringUtils {
     /**
      * Format the specified text
      *
-     * @param text the text to format
+     * @param text     the text to format
      * @param replaces the text replaces
      * @return the formatted text
-     *
      * @deprecated It's better to use {@link ml.karmaconfigs.api.common.utils.placeholder.util.PlaceholderEngine now}. By
      * default, KarmaAPI uses {@link ml.karmaconfigs.api.common.utils.placeholder.GlobalPlaceholderEngine} with a implementation
      * of {@link ml.karmaconfigs.api.common.utils.placeholder.util.Placeholder} as {@link ml.karmaconfigs.api.common.utils.placeholder.SimplePlaceholder}. For
@@ -932,7 +931,7 @@ public final class StringUtils {
      * Format the specified text
      *
      * @param owner the text owner
-     * @param text the text to format
+     * @param text  the text to format
      * @param level the text level
      * @return the formatted text
      */
@@ -948,9 +947,9 @@ public final class StringUtils {
     /**
      * Format the specified text
      *
-     * @param owner the text owner
-     * @param text the text to format
-     * @param level the text level
+     * @param owner    the text owner
+     * @param text     the text to format
+     * @param level    the text level
      * @param replaces the text replaces
      * @return the formatted text
      */
@@ -987,7 +986,7 @@ public final class StringUtils {
     /**
      * Transform a list of texts into a single text line
      *
-     * @param lines the lines
+     * @param lines  the lines
      * @param spaces replace new lines with spaces, otherwise,
      *               new lines will be replaced with nothing and '\n'
      *               will be added at the end of the line
@@ -1014,7 +1013,7 @@ public final class StringUtils {
     /**
      * Transform a list of texts into a single text line
      *
-     * @param lines the lines
+     * @param lines          the lines
      * @param transformation the list transformation
      * @return the list of texts as single line text
      */
@@ -1088,7 +1087,7 @@ public final class StringUtils {
     /**
      * Serialize an object into a text
      *
-     * @param <T> the objet type
+     * @param <T>      the objet type
      * @param instance the object instance
      * @return the serialized object
      */
@@ -1128,7 +1127,7 @@ public final class StringUtils {
      * object
      *
      * @param instance the instance
-     * @param <T> the type
+     * @param <T>      the type
      * @return the instance type
      */
     @Nullable
@@ -1238,7 +1237,7 @@ public final class StringUtils {
      *
      * @param checkAll if false, it will return true as soon
      *                 as any of the objects, are null or empty
-     * @param checks the objects to check
+     * @param checks   the objects to check
      * @return if the objects are null or empty
      */
     public static boolean areNullOrEmpty(final boolean checkAll, final Object... checks) {
@@ -1414,7 +1413,7 @@ public final class StringUtils {
      * Parse only the numbers from the text
      *
      * @param original the original text
-     * @param keep the characters to allow
+     * @param keep     the characters to allow
      * @return the parsed text
      */
     public static String parseNumbers(final CharSequence original, final Character... keep) {
@@ -1432,7 +1431,7 @@ public final class StringUtils {
      * Parse only the letters from the text
      *
      * @param original the original text
-     * @param keep the characters to allow
+     * @param keep     the characters to allow
      * @return the parsed text
      */
     public static String parseLetters(final CharSequence original, final Character... keep) {
@@ -1463,7 +1462,7 @@ public final class StringUtils {
      * into a readable time string format
      *
      * @param milliseconds the milliseconds
-     * @param name the unit names
+     * @param name         the unit names
      * @return the time in seconds
      */
     public static String timeToString(final long milliseconds, final TimeName name) {
@@ -1475,7 +1474,7 @@ public final class StringUtils {
      * Parse an array to a set
      *
      * @param array the array
-     * @param <T> the array type
+     * @param <T>   the array type
      * @return the {@link T[] array} as {@link Set<T> set}
      */
     public static <T> Set<T> arrayToSet(final T[] array) {

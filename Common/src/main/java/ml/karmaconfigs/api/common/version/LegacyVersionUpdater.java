@@ -26,16 +26,16 @@ package ml.karmaconfigs.api.common.version;
  */
 
 import ml.karmaconfigs.api.common.Logger;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
-import ml.karmaconfigs.api.common.utils.url.URLUtils;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.utils.file.FileUtilities;
 import ml.karmaconfigs.api.common.utils.string.ComparatorBuilder;
 import ml.karmaconfigs.api.common.utils.string.StringUtils;
 import ml.karmaconfigs.api.common.utils.string.VersionComparator;
+import ml.karmaconfigs.api.common.utils.url.URLUtils;
 import ml.karmaconfigs.api.common.version.util.VersionCheckType;
 import ml.karmaconfigs.api.common.version.util.VersionResolver;
 

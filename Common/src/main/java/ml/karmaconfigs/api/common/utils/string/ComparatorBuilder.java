@@ -42,7 +42,8 @@ public final class ComparatorBuilder {
     /**
      * Initialize the comparator builder
      */
-    ComparatorBuilder() {}
+    ComparatorBuilder() {
+    }
 
     /**
      * Set the current version

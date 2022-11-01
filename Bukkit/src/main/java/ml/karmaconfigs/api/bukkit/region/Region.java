@@ -30,6 +30,7 @@ import ml.karmaconfigs.api.bukkit.region.corner.BottomCorner;
 import ml.karmaconfigs.api.bukkit.region.corner.TopCorner;
 import ml.karmaconfigs.api.bukkit.region.corner.util.Corner;
 import ml.karmaconfigs.api.bukkit.region.error.RegionNotFound;
+import ml.karmaconfigs.api.bukkit.region.flag.RegionFlag;
 import ml.karmaconfigs.api.bukkit.region.wall.RegionWall;
 import ml.karmaconfigs.api.bukkit.region.wall.util.Wall;
 import ml.karmaconfigs.api.bukkit.region.wall.util.WallType;
@@ -47,9 +48,8 @@ import org.bukkit.entity.Entity;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Karma region
@@ -70,6 +70,20 @@ public class Region extends Cuboid implements Serializable {
      * The region token
      */
     private final String token = TokenGenerator.generateLiteral(16);
+
+    /**
+     * The region flags.
+     * <p></p>
+     * Why transient?
+     * <p></p>
+     * As some flag values may not be serializable, and the region
+     * stores a serialized instances of itself. Serializing would
+     * be no more an option when storing the region, so, making this
+     * transient and storing separately the serializable flags in the
+     * region file is the best option.
+     */
+    private final transient Set<RegionFlag<?>> flags = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final transient Set<Cuboid> children = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     /**
      * Region block x min
@@ -130,6 +144,10 @@ public class Region extends Cuboid implements Serializable {
      */
     private final UUID worldId;
 
+    private int priority = 1;
+
+    private transient Cuboid parent;
+
     /**
      * Initialize the region
      *
@@ -157,18 +175,31 @@ public class Region extends Cuboid implements Serializable {
 
         uniqueId = source.uniqueId;
         worldId = source.worldId;
+        priority = source.priority;
+
+        for (Cuboid exiting : Cuboid.getRegions()) {
+            if (isInside(exiting)) {
+                children.add(exiting);
+            } else {
+                if (exiting.isInside(this)) {
+                    parent = exiting;
+                }
+            }
+        }
     }
 
     /**
      * Initialize the region
      *
-     * @param n the region name
+     * @param n      the region name
      * @param point1 the first point
      * @param point2 the second point
      * @throws IllegalArgumentException if the locations doesn't have the same world
-     * or if any of the worlds are null
+     *                                  or if any of the worlds are null
      */
     public Region(final String n, final Location point1, final Location point2) throws IllegalArgumentException {
+        super();
+
         name = n;
 
         StringBuilder internalNameBuilder = new StringBuilder();
@@ -210,6 +241,16 @@ public class Region extends Cuboid implements Serializable {
         } else {
             throw new IllegalArgumentException("Cannot initialize because point1 or point2 location world's are null or not the same");
         }
+
+        for (Cuboid exiting : Cuboid.getRegions()) {
+            if (isInside(exiting)) {
+                children.add(exiting);
+            } else {
+                if (exiting.isInside(this)) {
+                    parent = exiting;
+                }
+            }
+        }
     }
 
     /**
@@ -240,6 +281,90 @@ public class Region extends Cuboid implements Serializable {
     @Override
     public String getInternalName() {
         return internal;
+    }
+
+    /**
+     * Get the region priority
+     *
+     * @return the region priority
+     */
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+
+    /**
+     * Get the global region of this region. For example,
+     * if this region is inside another, this method will
+     * return the region this one is inside of
+     *
+     * @return the main region
+     */
+    @Override
+    public Cuboid getGlobal() {
+        return parent;
+    }
+
+    /**
+     * Get the regions inside this region
+     *
+     * @return the regions inside this region
+     */
+    @Override
+    public Set<Cuboid> getInside() {
+        return new HashSet<>(children);
+    }
+
+    /**
+     * Get a region flag
+     *
+     * @param key the flag key
+     * @return the flag
+     */
+    @Override
+    public RegionFlag<?> getFlag(final String key) {
+        for (RegionFlag<?> flag : flags) {
+            if (flag.getKey().equalsIgnoreCase(key)) {
+                return flag;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get a region flag unsafely
+     *
+     * @param key the flag key
+     * @return the region flag
+     */
+    @Override
+    public @SuppressWarnings("unchecked") <T> RegionFlag<T> getUnsafeFlag(final String key) {
+        for (RegionFlag<?> flag : flags) {
+            if (flag.getKey().equalsIgnoreCase(key)) {
+                return (RegionFlag<T>) flag;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Set a region flag
+     *
+     * @param flag the flag to add/modify
+     * @return if the flag could be changed
+     */
+    @Override
+    public boolean addFlag(final RegionFlag<?> flag) {
+        RegionFlag<?> exiting = null;
+        for (RegionFlag<?> exiting_flag : flags) {
+            if (exiting_flag.getKey().equalsIgnoreCase(flag.getKey())) {
+                exiting = exiting_flag;
+            }
+        }
+
+        return (exiting != null ? exiting.matchesType(flag) && exiting.updateUnsafe(flag.getValue()) : flags.add(flag));
     }
 
     /**
@@ -400,6 +525,24 @@ public class Region extends Cuboid implements Serializable {
     }
 
     /**
+     * Get if a region is inside this region
+     *
+     * @param region the other region
+     * @return if the region is inside this one
+     */
+    @Override
+    public boolean isInside(final Cuboid region) {
+        Iterator<Block> blocks = region.getBlocks();
+        while (blocks.hasNext()) {
+            if (isInside(blocks.next())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get if the entity is inside the
      * region
      *
@@ -546,6 +689,16 @@ public class Region extends Cuboid implements Serializable {
         KarmaMain file = new KarmaMain(owner, regionFile);
         file.set("region", new KarmaObject(StringUtils.serialize(this)));
         file.save();
+    }
+
+    /**
+     * Set the region priority
+     *
+     * @param p the new region priority
+     */
+    @Override
+    public void setPriority(final int p) {
+        priority = p;
     }
 
     /**

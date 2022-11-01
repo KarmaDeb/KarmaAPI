@@ -1,7 +1,6 @@
 package ml.karmaconfigs.api.common.karma.file.element;
 
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
-import ml.karmaconfigs.api.common.karma.file.error.KarmaFormatException;
 
 import java.util.Set;
 
@@ -83,7 +82,7 @@ public abstract class KarmaSection {
      * Get a key
      *
      * @param element the key value
-     * @param def the default key
+     * @param def     the default key
      * @return the key
      */
     public abstract String get(final KarmaElement element, final String def);

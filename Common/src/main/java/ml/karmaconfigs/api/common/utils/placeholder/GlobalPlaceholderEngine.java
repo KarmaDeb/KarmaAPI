@@ -195,7 +195,8 @@ public final class GlobalPlaceholderEngine extends PlaceholderEngine {
      */
     @Override
     @Unstable(reason = "Return method may differ from stored method")
-    public @Nullable @SuppressWarnings("unchecked") <T> Placeholder<T> getPlaceholder(final String key) {
+    public @Nullable
+    @SuppressWarnings("unchecked") <T> Placeholder<T> getPlaceholder(final String key) {
         Set<Placeholder<?>> registered = sourcePlaceholders.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
 
         Placeholder<T> result = null;
@@ -203,7 +204,8 @@ public final class GlobalPlaceholderEngine extends PlaceholderEngine {
             if (placeholder.getKey().equals(key)) {
                 try {
                     result = (Placeholder<T>) placeholder;
-                } catch (Throwable ignored) {}
+                } catch (Throwable ignored) {
+                }
             }
         }
 
@@ -213,7 +215,7 @@ public final class GlobalPlaceholderEngine extends PlaceholderEngine {
     /**
      * Parse a message
      *
-     * @param message the message
+     * @param message    the message
      * @param containers the placeholder containers
      * @return the parsed message
      */
@@ -267,7 +269,8 @@ public final class GlobalPlaceholderEngine extends PlaceholderEngine {
                     } else {
                         try {
                             finalMessage = finalMessage.replace(placeholderKey, String.valueOf(placeholder.getValue(null)));
-                        } catch (Throwable ignored) {}
+                        } catch (Throwable ignored) {
+                        }
                     }
                 }
             }

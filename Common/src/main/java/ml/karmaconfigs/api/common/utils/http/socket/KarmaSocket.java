@@ -46,7 +46,7 @@ public abstract class KarmaSocket {
     /**
      * This method should be run instead of {@link WebSocket#close(int, String)}
      *
-     * @param code the close code ( defaults to 1000 at {@link KarmaSocket#close()}
+     * @param code   the close code ( defaults to 1000 at {@link KarmaSocket#close()}
      * @param reason the close reason ( defaults to 'Normal' at {@link KarmaSocket#close()}
      * @return if the socket could be closed
      */

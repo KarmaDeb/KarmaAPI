@@ -45,7 +45,7 @@ public final class NameComponent {
     /**
      * Initialize the name component
      *
-     * @param n the component name
+     * @param n         the component name
      * @param directory if the component is a directory
      */
     NameComponent(final String n, final boolean directory) {
@@ -221,8 +221,8 @@ public final class NameComponent {
      * Create a new name component for file
      * purposes
      *
-     * @param name the file name
-     * @param extension the file extension
+     * @param name         the file name
+     * @param extension    the file extension
      * @param subDirectory the file parent directory tree
      * @return the file name component
      */

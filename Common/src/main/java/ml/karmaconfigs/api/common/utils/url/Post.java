@@ -29,7 +29,7 @@ public final class Post {
     /**
      * Add data to the post data
      *
-     * @param key the data key
+     * @param key   the data key
      * @param value the data value
      * @return this instance
      */

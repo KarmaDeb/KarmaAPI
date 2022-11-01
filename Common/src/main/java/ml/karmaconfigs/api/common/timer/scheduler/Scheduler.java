@@ -28,8 +28,6 @@ package ml.karmaconfigs.api.common.timer.scheduler;
 import ml.karmaconfigs.api.common.timer.worker.ScheduledTask;
 import ml.karmaconfigs.api.common.timer.worker.event.TaskListener;
 
-import java.util.function.Consumer;
-
 /**
  * Karma scheduler
  */
@@ -52,7 +50,7 @@ public abstract class Scheduler {
     /**
      * Queue another task to the scheduler
      *
-     * @param name the task name
+     * @param name          the task name
      * @param paramRunnable the task to perform
      */
     public abstract void queue(final String name, final Runnable paramRunnable);

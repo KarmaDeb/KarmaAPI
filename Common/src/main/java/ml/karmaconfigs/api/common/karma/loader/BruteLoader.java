@@ -49,11 +49,11 @@ import static ml.karmaconfigs.api.common.karma.KarmaAPI.source;
 
 /**
  * Brute source loader
- *
+ * <p>
  * This new way of loading sources to the project class
  * path export all the modules to all the modules
  * "ExportAllToAll" using BurningWave utility class.
- *
+ * <p>
  * That way, there's no need to create any class loader
  * nor bootstrap
  */
@@ -104,7 +104,7 @@ public final class BruteLoader {
      * into the API
      *
      * @param downloadURL the source download URL
-     * @param name the source name, use {@link NameComponent#forFile(CharSequence, String, String...)}
+     * @param name        the source name, use {@link NameComponent#forFile(CharSequence, String, String...)}
      */
     public void downloadAndInject(final URL downloadURL, final NameComponent name) {
         //Dependencies will always be inside ./KarmaAPI/cache/dependencies/...
@@ -154,16 +154,16 @@ public final class BruteLoader {
                 JarFile jarFile = new JarFile(source.getFile());
                 Enumeration<JarEntry> e = jarFile.entries();
 
-                URL[] urls = { new URL("jar:file:" + FileUtilities.getPrettyFile(new File(source.getFile())) + "!/") };
+                URL[] urls = {new URL("jar:file:" + FileUtilities.getPrettyFile(new File(source.getFile())) + "!/")};
                 URLClassLoader cl = URLClassLoader.newInstance(urls);
 
                 while (e.hasMoreElements()) {
                     JarEntry je = e.nextElement();
-                    if(je.isDirectory() || !je.getName().endsWith(".class")){
+                    if (je.isDirectory() || !je.getName().endsWith(".class")) {
                         continue;
                     }
 
-                    String className = je.getName().substring(0,je.getName().length()-6);
+                    String className = je.getName().substring(0, je.getName().length() - 6);
                     className = className.replace('/', '.');
                     if (!className.endsWith("module-info")) {
                         Class<?> clazz = cl.loadClass(className);
@@ -210,16 +210,16 @@ public final class BruteLoader {
                 JarFile jarFile = new JarFile(source);
                 Enumeration<JarEntry> e = jarFile.entries();
 
-                URL[] urls = { new URL("jar:file:" + FileUtilities.getPrettyFile(source) + "!/") };
+                URL[] urls = {new URL("jar:file:" + FileUtilities.getPrettyFile(source) + "!/")};
                 URLClassLoader cl = URLClassLoader.newInstance(urls);
 
                 while (e.hasMoreElements()) {
                     JarEntry je = e.nextElement();
-                    if(je.isDirectory() || !je.getName().endsWith(".class")){
+                    if (je.isDirectory() || !je.getName().endsWith(".class")) {
                         continue;
                     }
 
-                    String className = je.getName().substring(0,je.getName().length()-6);
+                    String className = je.getName().substring(0, je.getName().length() - 6);
                     if (!className.endsWith("module-info")) {
                         Class<?> clazz = cl.loadClass(className);
                         method.invoke(loader, clazz);
@@ -266,16 +266,16 @@ public final class BruteLoader {
                 JarFile jarFile = new JarFile(source.toFile());
                 Enumeration<JarEntry> e = jarFile.entries();
 
-                URL[] urls = { new URL("jar:file:" + PathUtilities.getPrettyPath(source) + "!/") };
+                URL[] urls = {new URL("jar:file:" + PathUtilities.getPrettyPath(source) + "!/")};
                 URLClassLoader cl = URLClassLoader.newInstance(urls);
 
                 while (e.hasMoreElements()) {
                     JarEntry je = e.nextElement();
-                    if(je.isDirectory() || !je.getName().endsWith(".class")){
+                    if (je.isDirectory() || !je.getName().endsWith(".class")) {
                         continue;
                     }
 
-                    String className = je.getName().substring(0,je.getName().length()-6);
+                    String className = je.getName().substring(0, je.getName().length() - 6);
                     if (!className.endsWith("module-info")) {
                         Class<?> clazz = cl.loadClass(className);
                         method.invoke(loader, clazz);

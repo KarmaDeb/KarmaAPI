@@ -176,7 +176,7 @@ public final class AsyncBiLateScheduler<A, B> implements BiLateScheduler<A, B> {
     /**
      * Complete the scheduler
      *
-     * @param target the type A object
+     * @param target    the type A object
      * @param subTarget the type B object
      */
     @Override
@@ -216,9 +216,9 @@ public final class AsyncBiLateScheduler<A, B> implements BiLateScheduler<A, B> {
     /**
      * Complete the scheduler
      *
-     * @param target the type A object
+     * @param target    the type A object
      * @param subTarget the type B object
-     * @param error any error that has been thrown
+     * @param error     any error that has been thrown
      */
     @Override
     public void complete(final A target, final B subTarget, final Throwable error) {

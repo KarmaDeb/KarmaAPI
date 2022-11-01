@@ -1,7 +1,6 @@
 package ml.karmaconfigs.api.bukkit.tracker.event;
 
 import ml.karmaconfigs.api.bukkit.tracker.Tracker;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;

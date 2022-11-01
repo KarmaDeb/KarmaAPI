@@ -33,7 +33,8 @@
             <name>GSA-GPL 1.2</name>
             <comments>The classes that not contains any license information
                 on the header are under GSA-GPL, which means requires you extra steps to
-                use them, otherwise legal actions may be taken.</comments>
+                use them, otherwise legal actions may be taken.
+            </comments>
             <url>https://raw.githubusercontent.com/KarmaConfigs/KarmaAPI/main/LICENSE</url>
             <distribution>repo</distribution>
         </license>
@@ -123,8 +124,6 @@
         <module>BukkitPlugin</module>
         <module>VelocityPlugin</module>
         <module>BungeePlugin</module>
-        <!--<module>Servlet</module>
-        <module>BukkitNMS</module>-->
     </modules>
 
     <repositories/>

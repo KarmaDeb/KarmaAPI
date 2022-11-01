@@ -47,9 +47,9 @@ public class DragonEggAtRegionEvent extends BlockEvent implements Cancellable {
     /**
      * Initialize the generic block event
      *
-     * @param bl the block
+     * @param bl  the block
      * @param src the block source
-     * @param rg the region
+     * @param rg  the region
      */
     public DragonEggAtRegionEvent(final Block bl, final Block src, final Cuboid rg) {
         super(bl);

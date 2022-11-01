@@ -37,8 +37,8 @@ public class IllegalTimerAccess extends RuntimeException {
     /**
      * Initialize the exception
      *
-     * @param issuer the source that tried to access another
-     *               timer
+     * @param issuer    the source that tried to access another
+     *                  timer
      * @param scheduler the scheduler that has been tried to access
      */
     public IllegalTimerAccess(final KarmaSource issuer, final SimpleScheduler scheduler) {

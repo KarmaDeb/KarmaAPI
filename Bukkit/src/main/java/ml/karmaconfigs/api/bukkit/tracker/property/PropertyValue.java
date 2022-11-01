@@ -51,8 +51,8 @@ public abstract class PropertyValue<T> {
      * Get the value forcing it to be
      * the desired value
      *
-     * @return the forced value
      * @param <U> the unsafe type
+     * @return the forced value
      */
     public abstract <U> U getUnsafe();
 

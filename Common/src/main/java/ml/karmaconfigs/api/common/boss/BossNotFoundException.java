@@ -43,7 +43,7 @@ public final class BossNotFoundException extends Exception {
      * Initialize the exception
      *
      * @param bossId the boss id
-     * @param ids the valid boss bar ids
+     * @param ids    the valid boss bar ids
      */
     public BossNotFoundException(final int bossId, final Set<Integer> ids) {
         super("BossMessage with id " + bossId + " not found");

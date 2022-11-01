@@ -47,8 +47,8 @@ public class EntityPreJoinRegionEvent extends EntityEvent implements Cancellable
      * Initialize the entity pre join region event
      *
      * @param ent the entity
-     * @param rg the region the entity
-     *           will join
+     * @param rg  the region the entity
+     *            will join
      */
     public EntityPreJoinRegionEvent(final Entity ent, final Cuboid rg) {
         super(ent);

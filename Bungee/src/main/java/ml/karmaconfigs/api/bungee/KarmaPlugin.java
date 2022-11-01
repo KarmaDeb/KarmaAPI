@@ -34,9 +34,6 @@ import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
 import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
 import ml.karmaconfigs.api.common.karma.file.element.KarmaObject;
-import ml.karmaconfigs.api.common.timer.scheduler.Scheduler;
-import ml.karmaconfigs.api.common.timer.worker.AsyncScheduler;
-import ml.karmaconfigs.api.common.timer.worker.SyncScheduler;
 import ml.karmaconfigs.api.common.utils.KarmaLogger;
 import ml.karmaconfigs.api.common.utils.placeholder.GlobalPlaceholderEngine;
 import ml.karmaconfigs.api.common.utils.placeholder.util.Placeholder;
@@ -88,7 +85,7 @@ public abstract class KarmaPlugin extends Plugin implements KarmaSource, Identif
      * @param defineDefault if this source should be defined
      *                      as the default source
      * @throws SecurityException if the default module is already
-     * set
+     *                           set
      */
     public KarmaPlugin(final boolean defineDefault) throws SecurityException {
         if (!APISource.hasProvider(name())) {
@@ -228,7 +225,7 @@ public abstract class KarmaPlugin extends Plugin implements KarmaSource, Identif
     /**
      * Create a player placeholder
      *
-     * @param key the placeholder key
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */
@@ -262,7 +259,7 @@ public abstract class KarmaPlugin extends Plugin implements KarmaSource, Identif
     /**
      * Create a player placeholder
      *
-     * @param key the placeholder key
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */
@@ -296,7 +293,7 @@ public abstract class KarmaPlugin extends Plugin implements KarmaSource, Identif
     /**
      * Create a player placeholder
      *
-     * @param key the placeholder key
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */
@@ -330,7 +327,7 @@ public abstract class KarmaPlugin extends Plugin implements KarmaSource, Identif
     /**
      * Create a player placeholder
      *
-     * @param key the placeholder key
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */
@@ -364,8 +361,8 @@ public abstract class KarmaPlugin extends Plugin implements KarmaSource, Identif
     /**
      * Create a player placeholder
      *
-     * @param <T> the placeholder type
-     * @param key the placeholder key
+     * @param <T>       the placeholder type
+     * @param key       the placeholder key
      * @param onRequest on placeholder request
      * @return the placeholder
      */

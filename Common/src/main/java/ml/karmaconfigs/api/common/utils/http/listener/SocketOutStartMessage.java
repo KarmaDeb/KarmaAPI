@@ -2,7 +2,6 @@ package ml.karmaconfigs.api.common.utils.http.listener;
 
 import ml.karmaconfigs.api.common.utils.http.socket.KarmaSocket;
 import ml.karmaconfigs.api.common.utils.http.socket.SocketEvent;
-import okhttp3.WebSocket;
 
 /**
  * Event when a message is about to be sent

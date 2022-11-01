@@ -49,11 +49,11 @@ public class PlayerInteractAtRegionEvent extends EntityEvent implements Cancella
     /**
      * Initialize the entity interact at region event
      *
-     * @param ent the entity
+     * @param ent    the entity
      * @param issuer the player that interacted
      *               with entity
-     * @param rg the region the entity
-     *           has interacted in
+     * @param rg     the region the entity
+     *               has interacted in
      */
     public PlayerInteractAtRegionEvent(final Entity ent, final Player issuer, final Cuboid rg) {
         super(ent);

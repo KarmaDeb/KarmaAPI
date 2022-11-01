@@ -40,7 +40,8 @@ public class VersionComparator {
     /**
      * Initialize the version comparator
      */
-    private VersionComparator() {}
+    private VersionComparator() {
+    }
 
     /**
      * Initialize the version comparator
@@ -69,7 +70,8 @@ public class VersionComparator {
                     return VersionDiff.OUTDATED;
                 if (currentPart > checkPart)
                     return VersionDiff.OVERDATED;
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
 
         return VersionDiff.UPDATED;

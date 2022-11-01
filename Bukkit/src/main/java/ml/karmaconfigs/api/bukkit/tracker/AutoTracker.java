@@ -14,7 +14,7 @@ public interface AutoTracker {
     /**
      * Track an entity
      *
-     * @param tracker the tracker
+     * @param tracker    the tracker
      * @param max_radius the max search radius
      * @return the living entity, or null if none
      */

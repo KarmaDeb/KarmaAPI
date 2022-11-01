@@ -25,7 +25,6 @@ package ml.karmaconfigs.api.common.rgb;
  *  SOFTWARE.
  */
 
-import com.google.gson.JsonObject;
 import ml.karmaconfigs.api.common.utils.string.StringUtils;
 
 import java.io.Serializable;
@@ -60,7 +59,7 @@ public final class RGBTextComponent implements Serializable {
      * Initialize the RGB text component
      *
      * @param simple parse simple rgb
-     * @param hex parse hex rgb
+     * @param hex    parse hex rgb
      */
     public RGBTextComponent(final boolean simple, final boolean hex) {
         this.parseSimple = simple;
@@ -161,9 +160,9 @@ public final class RGBTextComponent implements Serializable {
      * @return the rgb variant from the hex
      */
     private int[] hexToRGB(final String hex) {
-        int red = Integer.valueOf(hex.substring( 1, 3 ), 16);
-        int green = Integer.valueOf(hex.substring( 3, 5 ), 16);
-        int blue = Integer.valueOf(hex.substring( 5, 7 ), 16);
+        int red = Integer.valueOf(hex.substring(1, 3), 16);
+        int green = Integer.valueOf(hex.substring(3, 5), 16);
+        int blue = Integer.valueOf(hex.substring(5, 7), 16);
 
         return new int[]{red, green, blue};
     }

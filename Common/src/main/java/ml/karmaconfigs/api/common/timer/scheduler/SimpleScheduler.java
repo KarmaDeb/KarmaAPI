@@ -25,8 +25,8 @@ package ml.karmaconfigs.api.common.timer.scheduler;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.timer.SchedulerUnit;
 import ml.karmaconfigs.api.common.timer.TimeCondition;
 import ml.karmaconfigs.api.common.timer.scheduler.errors.TimerAlreadyStarted;
@@ -72,7 +72,7 @@ public abstract class SimpleScheduler {
     /**
      * Initialize the scheduler
      *
-     * @param owner the scheduler source
+     * @param owner       the scheduler source
      * @param workingUnit the scheduler working unit
      */
     public SimpleScheduler(final KarmaSource owner, final SchedulerUnit workingUnit) {
@@ -158,11 +158,11 @@ public abstract class SimpleScheduler {
     /**
      * Add an action to perform when the timer reaches
      * the specified time
-     *
+     * <p>
      * Please note; the consumer will be always second if the working unit is second or over.
      * It's impossible to retrieve change action as ms when using seconds or over
      *
-     * @param paramInt the time
+     * @param paramInt      the time
      * @param paramRunnable the action to perform
      * @return this instance
      */
@@ -170,7 +170,7 @@ public abstract class SimpleScheduler {
 
     /**
      * Add an action when the timer passes a time
-     *
+     * <p>
      * Please note; the consumer will be always second if the working unit is second or over.
      * It's impossible to retrieve change action as ms when using seconds or over. For more specific triggers
      * take a look to {@link SimpleScheduler#changeSpecificAction(Consumer, SchedulerUnit)} (Consumer, SchedulerUnit)}
@@ -182,12 +182,12 @@ public abstract class SimpleScheduler {
 
     /**
      * Add an action when the timer passes a time
-     *
+     * <p>
      * This will add a specific action when a specific time unit changes. This won't work with milliseconds
      * and or seconds, only with minutes, hours and days.
      *
      * @param paramConsumer the action to perform
-     * @param paramUnit the time unit
+     * @param paramUnit     the time unit
      * @return this instance
      */
     public abstract SimpleScheduler changeSpecificAction(final Consumer<Integer> paramConsumer, SchedulerUnit paramUnit);
@@ -196,7 +196,7 @@ public abstract class SimpleScheduler {
      * Add an action to perform when the timer reaches
      * the specified second
      *
-     * @param paramInt the second
+     * @param paramInt      the second
      * @param paramRunnable the action to perform
      * @return this instance
      * @deprecated Use {@link SimpleScheduler#exactAction(long, Runnable)} instead
@@ -208,7 +208,7 @@ public abstract class SimpleScheduler {
      * Add an action to perform when the timer reaches
      * the specified millisecond
      *
-     * @param paramLong the millisecond
+     * @param paramLong     the millisecond
      * @param paramRunnable the action to perform
      * @return this instance
      * @deprecated Use {@link SimpleScheduler#exactAction(long, Runnable)} instead
@@ -282,8 +282,8 @@ public abstract class SimpleScheduler {
      *
      * @param paramTimeCondition the condition that the timer
      *                           must complete
-     * @param paramInt the time
-     * @param paramConsumer the action to perform
+     * @param paramInt           the time
+     * @param paramConsumer      the action to perform
      * @return this instance
      */
     public abstract SimpleScheduler condition(final TimeCondition paramTimeCondition, final long paramInt, final Consumer<Long> paramConsumer);
@@ -293,8 +293,8 @@ public abstract class SimpleScheduler {
      *
      * @param paramTimeCondition the condition that the timer
      *                           must complete
-     * @param paramInt the timer second
-     * @param paramConsumer the action to perform
+     * @param paramInt           the timer second
+     * @param paramConsumer      the action to perform
      * @return this instance
      * @deprecated Use {@link SimpleScheduler#condition(TimeCondition, long, Consumer)} instead
      */
@@ -305,8 +305,8 @@ public abstract class SimpleScheduler {
      * Add a conditional action
      *
      * @param paramTimeCondition the condition that the timer must complete
-     * @param paramLong the timer millisecond
-     * @param paramConsumer the action to perform
+     * @param paramLong          the timer millisecond
+     * @param paramConsumer      the action to perform
      * @return this instance
      * @deprecated Use {@link SimpleScheduler#condition(TimeCondition, long, Consumer)} instead
      */

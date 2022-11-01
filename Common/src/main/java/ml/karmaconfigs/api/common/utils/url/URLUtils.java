@@ -90,7 +90,8 @@ public final class URLUtils {
             if (code == HttpURLConnection.HTTP_OK) {
                 return url;
             }
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
 
         return null;
     }

@@ -22,9 +22,9 @@ public class ExplosionBreakAtRegionEvent extends BlockEvent implements Cancellab
     /**
      * Initialize the generic block event
      *
-     * @param bl the block
+     * @param bl  the block
      * @param src the block that started the explosion
-     * @param rg the region
+     * @param rg  the region
      */
     public ExplosionBreakAtRegionEvent(final Block bl, final Block src, final Cuboid rg) {
         super(bl);

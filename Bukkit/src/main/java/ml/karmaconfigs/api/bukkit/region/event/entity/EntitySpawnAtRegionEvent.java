@@ -47,8 +47,8 @@ public class EntitySpawnAtRegionEvent extends EntityEvent implements Cancellable
      * Initialize the entity spawn at region event
      *
      * @param ent the entity
-     * @param rg the region the entity
-     *           has spawned in
+     * @param rg  the region the entity
+     *            has spawned in
      */
     public EntitySpawnAtRegionEvent(final Entity ent, final Cuboid rg) {
         super(ent);

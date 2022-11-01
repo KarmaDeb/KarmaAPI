@@ -25,8 +25,8 @@ package ml.karmaconfigs.api.common.utils;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.utils.string.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
@@ -47,22 +47,26 @@ public final class PrefixConsoleData implements Serializable {
     /**
      * Map containing source => ok prefix
      */
-    @Deprecated @ApiStatus.ScheduledForRemoval
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     private static final HashMap<KarmaSource, String> okPrefix = new HashMap<>();
     /**
      * Map containing source => info prefix
      */
-    @Deprecated @ApiStatus.ScheduledForRemoval
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     private static final HashMap<KarmaSource, String> infoPrefix = new HashMap<>();
     /**
      * Map containing source => warning prefix
      */
-    @Deprecated @ApiStatus.ScheduledForRemoval
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     private static final HashMap<KarmaSource, String> warnPrefix = new HashMap<>();
     /**
      * Map containing source => grave prefix
      */
-    @Deprecated @ApiStatus.ScheduledForRemoval
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     private static final HashMap<KarmaSource, String> gravPrefix = new HashMap<>();
 
     /**
@@ -101,7 +105,8 @@ public final class PrefixConsoleData implements Serializable {
      * @param prefix the prefix
      * @deprecated Use the method {@link PrefixConsoleData#setPrefix(Level, String)} instead
      */
-    @Deprecated @ApiStatus.ScheduledForRemoval
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     public void setOkPrefix(final @NotNull String prefix) {
         okPrefix.put(this.source, StringUtils.toAnyOsColor(prefix));
     }
@@ -112,7 +117,8 @@ public final class PrefixConsoleData implements Serializable {
      * @param prefix the prefix
      * @deprecated Use the method {@link PrefixConsoleData#setPrefix(Level, String)} instead
      */
-    @Deprecated @ApiStatus.ScheduledForRemoval
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     public void setInfoPrefix(final @NotNull String prefix) {
         infoPrefix.put(this.source, StringUtils.toAnyOsColor(prefix));
     }
@@ -123,7 +129,8 @@ public final class PrefixConsoleData implements Serializable {
      * @param prefix the prefix
      * @deprecated Use the method {@link PrefixConsoleData#setPrefix(Level, String)} instead
      */
-    @Deprecated @ApiStatus.ScheduledForRemoval
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     public void setWarnPrefix(final @NotNull String prefix) {
         warnPrefix.put(this.source, StringUtils.toAnyOsColor(prefix));
     }
@@ -134,7 +141,8 @@ public final class PrefixConsoleData implements Serializable {
      * @param prefix the prefix
      * @deprecated Use the method {@link PrefixConsoleData#setPrefix(Level, String)} instead
      */
-    @Deprecated @ApiStatus.ScheduledForRemoval
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     public void setGravePrefix(final @NotNull String prefix) {
         gravPrefix.put(this.source, StringUtils.toAnyOsColor(prefix));
     }

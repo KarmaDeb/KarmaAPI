@@ -48,10 +48,10 @@ public class EntityPickupItemAtRegionEvent extends EntityEvent implements Cancel
     /**
      * Initialize the entity join region event
      *
-     * @param i the item
+     * @param i   the item
      * @param src the item source
-     * @param rg the region the entity
-     *           has joined
+     * @param rg  the region the entity
+     *            has joined
      */
     public EntityPickupItemAtRegionEvent(final Item i, final LivingEntity src, final Cuboid rg) {
         super(src);

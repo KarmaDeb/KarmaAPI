@@ -36,7 +36,8 @@ import org.bukkit.event.block.BlockEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Generic block listener
@@ -54,10 +55,10 @@ public class BlockModifiedAtRegionEvent extends BlockEvent implements Cancellabl
     /**
      * Initialize the generic block event
      *
-     * @param bl the block
+     * @param bl     the block
      * @param issuer the entity that modified a block
-     * @param act the block action
-     * @param rg the region
+     * @param act    the block action
+     * @param rg     the region
      */
     public BlockModifiedAtRegionEvent(final Block bl, final Object issuer, final BlockAction act, final Cuboid rg) {
         super(bl);
@@ -69,10 +70,10 @@ public class BlockModifiedAtRegionEvent extends BlockEvent implements Cancellabl
     /**
      * Initialize the generic block event
      *
-     * @param src the block
+     * @param src      the block
      * @param affected the affected blocks
-     * @param act the block action
-     * @param rg the region
+     * @param act      the block action
+     * @param rg       the region
      */
     public BlockModifiedAtRegionEvent(final Block src, final Collection<Block> affected, final BlockAction act, final Cuboid rg) {
         super(src);

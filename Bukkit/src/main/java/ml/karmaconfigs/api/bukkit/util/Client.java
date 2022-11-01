@@ -20,7 +20,7 @@ public abstract class Client {
     /**
      * Send a message to the client
      *
-     * @param message the message
+     * @param message  the message
      * @param replaces the message replaces
      */
     public abstract void sendMessage(final String message, final Object... replaces);
@@ -28,7 +28,7 @@ public abstract class Client {
     /**
      * Send a title to the client
      *
-     * @param title the title
+     * @param title    the title
      * @param subtitle the subtitle
      */
     public abstract void sendTitle(final String title, final String subtitle);
@@ -36,11 +36,11 @@ public abstract class Client {
     /**
      * Send a title to the client
      *
-     * @param title the title
+     * @param title    the title
      * @param subtitle the subtitle
-     * @param showIn the time to show in
-     * @param keepIn the time to keep in
-     * @param hideIn the time to hide in
+     * @param showIn   the time to show in
+     * @param keepIn   the time to keep in
+     * @param hideIn   the time to hide in
      */
     public abstract void sendTitle(final String title, final String subtitle, final int showIn, final int keepIn, final int hideIn);
 
@@ -55,7 +55,7 @@ public abstract class Client {
     /**
      * Send an action bar to the client
      *
-     * @param message the action bar message
+     * @param message    the action bar message
      * @param persistent if the action bar should be visible for ever
      */
     public abstract void sendActionBar(final String message, final boolean persistent);

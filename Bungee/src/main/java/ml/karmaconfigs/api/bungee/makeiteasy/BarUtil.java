@@ -81,9 +81,9 @@ final class BarUtil {
     /**
      * Creates a new boss bar
      *
-     * @param title boss bar title
-     * @param color boss bar color
-     * @param style boss bar style
+     * @param title  boss bar title
+     * @param color  boss bar color
+     * @param style  boss bar style
      * @param health boss bar health. Should be a number between 0.1 and 1
      * @throws IllegalStateException if the health is not a valid health value
      */
@@ -239,7 +239,7 @@ final class BarUtil {
             sendToAffected(packet);
         }
     }
-    
+
     /**
      * Sets a (new) color of the boss bar
      *
@@ -387,7 +387,7 @@ final class BarUtil {
 
     /**
      * Get the boss bar as string
-     * 
+     *
      * @return boss bar util as string
      */
     @Override
@@ -407,7 +407,7 @@ final class BarUtil {
                 ", players=" + players +
                 ')';
     }
-    
+
     /**
      * Creates a new boss bar builder
      *
@@ -451,7 +451,7 @@ final class BarUtil {
          * Players that will see the boss bar
          */
         private final List<ProxiedPlayer> players;
-        
+
         /**
          * If the boss bar is visible
          */
@@ -472,7 +472,7 @@ final class BarUtil {
 
         /**
          * Set the boss bar title
-         * 
+         *
          * @param title the boss bar title
          * @return this instance
          */
@@ -483,7 +483,7 @@ final class BarUtil {
 
         /**
          * Add a player to the boss bar
-         * 
+         *
          * @param playerArray the players to add
          * @return this instance
          */
@@ -494,7 +494,7 @@ final class BarUtil {
 
         /**
          * Set the boss bar health
-         * 
+         *
          * @param health the boss bar health
          * @return this instance
          */
@@ -505,7 +505,7 @@ final class BarUtil {
 
         /**
          * Set the boss bar flags
-         * 
+         *
          * @param flags the boss bar flags
          * @return this instance
          */
@@ -516,7 +516,7 @@ final class BarUtil {
 
         /**
          * Set the boss bar color
-         * 
+         *
          * @param color the boss bar color
          * @return this instance
          */
@@ -527,7 +527,7 @@ final class BarUtil {
 
         /**
          * Set the boss bar style
-         * 
+         *
          * @param style the boss bar style
          * @return this instance
          */
@@ -538,7 +538,7 @@ final class BarUtil {
 
         /**
          * Set if the boss bar is visible
-         * 
+         *
          * @param visible if the boss bar is visible
          * @return this instance
          */
@@ -549,7 +549,7 @@ final class BarUtil {
 
         /**
          * Build the boss bar
-         * 
+         *
          * @return a new bar util instance
          */
         public BarUtil build() {
@@ -563,7 +563,7 @@ final class BarUtil {
 
     /**
      * Serialize the boss bar flags
-     * 
+     *
      * @return the serialized flags
      */
     private byte serializeFlags() {
@@ -582,7 +582,7 @@ final class BarUtil {
 
     /**
      * Set boss bar division
-     * 
+     *
      * @param color the boss bar color
      * @param style the boss bar style
      */
@@ -595,7 +595,7 @@ final class BarUtil {
 
     /**
      * Update the boss bar flags
-     * 
+     *
      * @return this instance
      */
     private BossBar updateFlags() {
@@ -607,7 +607,7 @@ final class BarUtil {
 
     /**
      * Get the boss bar add packet
-     * 
+     *
      * @return the boss bar add packet
      */
     private BossBar addPacket() {
@@ -623,7 +623,7 @@ final class BarUtil {
 
     /**
      * Send the boss bar to the specified players
-     * 
+     *
      * @param packet the boss bar to send
      */
     private void sendToAffected(final @NotNull DefinedPacket packet) {
@@ -636,8 +636,8 @@ final class BarUtil {
 
     /**
      * Send a packet to the player
-     * 
-     * @param player the player 
+     *
+     * @param player the player
      * @param packet the packet
      */
     private void sendPacket(final @NotNull ProxiedPlayer player, final @NotNull DefinedPacket packet) {
@@ -648,7 +648,7 @@ final class BarUtil {
 
     /**
      * Remove the boss bar
-     * 
+     *
      * @return a clean boss bar
      */
     private BossBar removePacket() {

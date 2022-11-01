@@ -44,8 +44,8 @@ public class EntityJoinRegionEvent extends EntityEvent {
      * Initialize the entity join region event
      *
      * @param ent the entity
-     * @param rg the region the entity
-     *           has joined
+     * @param rg  the region the entity
+     *            has joined
      */
     public EntityJoinRegionEvent(final Entity ent, final Cuboid rg) {
         super(ent);

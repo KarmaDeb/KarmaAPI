@@ -93,7 +93,8 @@ public final class FileEncryptor {
 
             Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING);
             return true;
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
 
         return false;
     }
@@ -125,7 +126,8 @@ public final class FileEncryptor {
 
             Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING);
             return true;
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
 
         return false;
     }

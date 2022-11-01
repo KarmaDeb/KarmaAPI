@@ -13,33 +13,38 @@ public abstract class SocketListenerAdapter implements SocketListener {
      *
      * @param event the event
      */
-    public void onConnectionSuccess(final SocketConnected event) {}
+    public void onConnectionSuccess(final SocketConnected event) {
+    }
 
     /**
      * Socket listener
      *
      * @param event the event
      */
-    public void onDisconnection(final SocketDisconnected event) {}
+    public void onDisconnection(final SocketDisconnected event) {
+    }
 
     /**
      * Socket listener
      *
      * @param event the event
      */
-    public void onMessageResponse(final SocketInReceiveMessage event) {}
+    public void onMessageResponse(final SocketInReceiveMessage event) {
+    }
 
     /**
      * Socket listener
      *
      * @param event the event
      */
-    public void onMessageSend(final SocketOutSendMessage event) {}
+    public void onMessageSend(final SocketOutSendMessage event) {
+    }
 
     /**
      * Socket listener
      *
      * @param event the event
      */
-    public void onMessagePrepare(final SocketOutStartMessage event) {}
+    public void onMessagePrepare(final SocketOutStartMessage event) {
+    }
 }

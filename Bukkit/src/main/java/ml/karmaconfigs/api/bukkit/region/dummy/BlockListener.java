@@ -25,8 +25,11 @@ package ml.karmaconfigs.api.bukkit.region.dummy;
  *  SOFTWARE.
  */
 
+import ml.karmaconfigs.api.bukkit.KarmaPlugin;
 import ml.karmaconfigs.api.bukkit.region.Cuboid;
 import ml.karmaconfigs.api.bukkit.region.event.block.*;
+import ml.karmaconfigs.api.bukkit.region.flag.FlagState;
+import ml.karmaconfigs.api.bukkit.region.flag.RegionFlag;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -38,84 +41,236 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Dummy block events listener
  */
 public class BlockListener implements Listener {
 
+    private final Set<Integer> parsed = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
     /**
      * Initialize the block listener
      */
-    public BlockListener() {}
+    public BlockListener() {
+    }
 
     /**
      * Generic event listener
      *
      * @param e the event
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent e) {
-        Block block = e.getBlock();
-        Player player = e.getPlayer();
+        if (parsed.contains(e.hashCode())) {
+            Block block = e.getBlock();
+            Player player = e.getPlayer();
 
-        Cuboid.getRegions().forEach((region) -> {
-            if (region.isInside(block)) {
-                BlockModifiedAtRegionEvent event = new BlockModifiedAtRegionEvent(block, player, BlockAction.BUILD, region);
-                Bukkit.getServer().getPluginManager().callEvent(event);
+            Cuboid.getRegions().forEach((region) -> {
+                if (region.isInside(block)) {
+                    Cuboid event_region = region;
 
-                e.setCancelled(event.isCancelled());
-            }
-        });
-    }
+                    Cuboid global = region.getGlobal();
+                    Cuboid high_child = region;
+                    Set<Cuboid> children = region.getInside();
+                    for (Cuboid inside : children) {
+                        if (inside.getPriority() > high_child.getPriority()) {
+                            high_child = inside;
+                        }
+                    }
 
-    /**
-     * Generic event listener
-     *
-     * @param e the event
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onBlockBreak(BlockBreakEvent e) {
-        Block block = e.getBlock();
-        Player player = e.getPlayer();
+                    if (global.getPriority() > high_child.getPriority()) {
+                        if (global.isInside(block)) {
+                            event_region = global;
+                        } else {
+                            if (high_child.isInside(block)) {
+                                event_region = high_child;
+                            }
+                        }
+                    } else {
+                        if (high_child.isInside(block)) {
+                            event_region = high_child;
+                        } else {
+                            if (global.isInside(block)) {
+                                event_region = global;
+                            }
+                        }
+                    }
 
-        Cuboid.getRegions().forEach((region) -> {
-            if (region.isInside(block)) {
-                BlockModifiedAtRegionEvent event = new BlockModifiedAtRegionEvent(block, player, BlockAction.DESTROY, region);
-                Bukkit.getServer().getPluginManager().callEvent(event);
+                    BlockModifiedAtRegionEvent event = new BlockModifiedAtRegionEvent(block, player, BlockAction.BUILD, event_region);
+                    Bukkit.getServer().getPluginManager().callEvent(event);
 
-                e.setCancelled(event.isCancelled());
-            }
-        });
-    }
+                    if (!event.isCancelled()) {
+                        e.setCancelled(false);
 
-    /**
-     * Generic event listener
-     *
-     * @param e the event
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void entityBlock(EntityChangeBlockEvent e) {
-        Block block = e.getBlock();
-        String name = e.getTo().name();
-        Entity entity = e.getEntity();
-
-        Cuboid.getRegions().forEach((region) -> {
-            if (region.isInside(block)) {
-                BlockAction action = BlockAction.BUILD;
-
-                if (name.equalsIgnoreCase("air") || name.equalsIgnoreCase("cave_air")) {
-                    action = BlockAction.DESTROY;
+                        RegionFlag<FlagState> state = event_region.getUnsafeFlag("build");
+                        switch (state.getValue()) {
+                            case ALLOW:
+                                e.setBuild(true);
+                                break;
+                            case DENY:
+                                e.setBuild(false);
+                                break;
+                            case DEFAULT:
+                            default:
+                                e.setBuild(e.canBuild());
+                                break;
+                        }
+                    } else {
+                        event.setCancelled(true);
+                    }
                 }
+            });
 
-                BlockModifiedAtRegionEvent event = new BlockModifiedAtRegionEvent(block, entity, action, region);
-                Bukkit.getServer().getPluginManager().callEvent(event);
+            Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(KarmaPlugin.getABC(), () -> parsed.remove(e.hashCode()), 20 * 5);
+        }
+    }
 
-                e.setCancelled(event.isCancelled());
-            }
-        });
+    /**
+     * Generic event listener
+     *
+     * @param e the event
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockBreak(BlockBreakEvent e) {
+        if (parsed.contains(e.hashCode())) {
+            Block block = e.getBlock();
+            Player player = e.getPlayer();
+
+            Cuboid.getRegions().forEach((region) -> {
+                if (region.isInside(block)) {
+                    Cuboid event_region = region;
+
+                    Cuboid global = region.getGlobal();
+                    Cuboid high_child = region;
+                    Set<Cuboid> children = region.getInside();
+                    for (Cuboid inside : children) {
+                        if (inside.getPriority() > high_child.getPriority()) {
+                            high_child = inside;
+                        }
+                    }
+
+                    if (global.getPriority() > high_child.getPriority()) {
+                        if (global.isInside(block)) {
+                            event_region = global;
+                        } else {
+                            if (high_child.isInside(block)) {
+                                event_region = high_child;
+                            }
+                        }
+                    } else {
+                        if (high_child.isInside(block)) {
+                            event_region = high_child;
+                        } else {
+                            if (global.isInside(block)) {
+                                event_region = global;
+                            }
+                        }
+                    }
+
+                    BlockModifiedAtRegionEvent event = new BlockModifiedAtRegionEvent(block, player, BlockAction.DESTROY, event_region);
+                    Bukkit.getServer().getPluginManager().callEvent(event);
+
+                    if (!event.isCancelled()) {
+                        RegionFlag<FlagState> state = event_region.getUnsafeFlag("break");
+                        switch (state.getValue()) {
+                            case ALLOW:
+                                e.setCancelled(false);
+                                break;
+                            case DENY:
+                                e.setCancelled(true);
+                                break;
+                            case DEFAULT:
+                            default:
+                                break;
+                        }
+                    } else {
+                        event.setCancelled(true);
+                    }
+                }
+            });
+
+            Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(KarmaPlugin.getABC(), () -> parsed.remove(e.hashCode()), 20 * 5);
+        }
+    }
+
+    /**
+     * Generic event listener
+     *
+     * @param e the event
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void entityBlock(EntityChangeBlockEvent e) {
+        if (parsed.contains(e.hashCode())) {
+            Block block = e.getBlock();
+            String name = e.getTo().name();
+            Entity entity = e.getEntity();
+
+            Cuboid.getRegions().forEach((region) -> {
+                if (region.isInside(block)) {
+                    Cuboid event_region = region;
+
+                    Cuboid global = region.getGlobal();
+                    Cuboid high_child = region;
+                    Set<Cuboid> children = region.getInside();
+                    for (Cuboid inside : children) {
+                        if (inside.getPriority() > high_child.getPriority()) {
+                            high_child = inside;
+                        }
+                    }
+
+                    if (global.getPriority() > high_child.getPriority()) {
+                        if (global.isInside(block)) {
+                            event_region = global;
+                        } else {
+                            if (high_child.isInside(block)) {
+                                event_region = high_child;
+                            }
+                        }
+                    } else {
+                        if (high_child.isInside(block)) {
+                            event_region = high_child;
+                        } else {
+                            if (global.isInside(block)) {
+                                event_region = global;
+                            }
+                        }
+                    }
+
+                    BlockAction action = BlockAction.BUILD;
+
+                    if (name.equalsIgnoreCase("air") || name.equalsIgnoreCase("cave_air")) {
+                        action = BlockAction.DESTROY;
+                    }
+
+                    BlockModifiedAtRegionEvent event = new BlockModifiedAtRegionEvent(block, entity, action, region);
+                    Bukkit.getServer().getPluginManager().callEvent(event);
+
+                    if (!event.isCancelled()) {
+                        RegionFlag<FlagState> state = event_region.getUnsafeFlag("entity-block-" + (action.equals(BlockAction.DESTROY) ? "break" : "build"));
+                        switch (state.getValue()) {
+                            case ALLOW:
+                                e.setCancelled(true);
+                                break;
+                            case DENY:
+                                e.setCancelled(false);
+                                break;
+                            case DEFAULT:
+                            default:
+                                break;
+                        }
+                    } else {
+                        event.setCancelled(true);
+                    }
+                }
+            });
+
+            Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(KarmaPlugin.getABC(), () -> parsed.remove(e.hashCode()), 20 * 5);
+        }
     }
 
     /**

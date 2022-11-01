@@ -65,7 +65,7 @@ public final class KYMSource {
      * Initialize the yaml source
      *
      * @param configuration the yaml configuration/path
-     * @param isPath if the yaml configuration string is a path
+     * @param isPath        if the yaml configuration string is a path
      */
     public KYMSource(final String configuration, final boolean isPath) {
         if (isPath) {

@@ -41,7 +41,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,7 +84,7 @@ public final class Logger extends KarmaLogger implements Serializable {
         source = s;
 
         List<String> stored = header.getOrDefault(source, new ArrayList<>());
-        
+
         if (stored.isEmpty()) {
             List<String> header_text = new ArrayList<>();
             header_text.add("# System information<br>\n<br>\n");
@@ -219,8 +218,8 @@ public final class Logger extends KarmaLogger implements Serializable {
      * Run the log function on a new
      * thread
      *
-     * @param level the log level
-     * @param info the info to log
+     * @param level    the log level
+     * @param info     the info to log
      * @param replaces the info replaces
      */
     @Override
@@ -244,9 +243,9 @@ public final class Logger extends KarmaLogger implements Serializable {
      * Run the log function on a new
      * thread
      *
-     * @param level the log level
-     * @param print print info to console
-     * @param info the info to log
+     * @param level    the log level
+     * @param print    print info to console
+     * @param info     the info to log
      * @param replaces the info replaces
      */
     @Override
@@ -271,8 +270,8 @@ public final class Logger extends KarmaLogger implements Serializable {
      * Run the log function on the main
      * known thread
      *
-     * @param level the log level
-     * @param info the info to log
+     * @param level    the log level
+     * @param info     the info to log
      * @param replaces the info replaces
      */
     @Override
@@ -296,9 +295,9 @@ public final class Logger extends KarmaLogger implements Serializable {
      * Run the log function on the main
      * known thread
      *
-     * @param level the log level
-     * @param print print info to console
-     * @param info the info to log
+     * @param level    the log level
+     * @param print    print info to console
+     * @param info     the info to log
      * @param replaces the info replaces
      */
     @Override
@@ -322,9 +321,9 @@ public final class Logger extends KarmaLogger implements Serializable {
     /**
      * Log info
      *
-     * @param level the info level
-     * @param print print info to console
-     * @param info the info
+     * @param level    the info level
+     * @param print    print info to console
+     * @param info     the info
      * @param replaces the info replaces
      */
     private void logInfo(final Level level, final boolean print, final CharSequence info, final Object... replaces) {
@@ -353,7 +352,7 @@ public final class Logger extends KarmaLogger implements Serializable {
                 writer.write(StringUtils.listToString(header.get(source), ListTransformation.NONE));
                 for (String line : lines)
                     writer.write(line + "\n");
-                
+
                 writer.write(StringUtils.formatString("[ {0} - {1} ] <span style=\"color: cyan\">{2}</span><br>", (extension.equals(LogExtension.MARKDOWN) ? level.getMarkdown() : level.name()), time, StringUtils.formatString(info, replaces)));
                 writer.flush();
                 writer.close();
@@ -400,7 +399,7 @@ public final class Logger extends KarmaLogger implements Serializable {
                 writer.write(StringUtils.listToString(header.get(source), ListTransformation.NONE));
                 for (String line : lines)
                     writer.write(line + "\n");
-                
+
                 Throwable prefix = new Throwable(error);
                 writer.write(StringUtils.formatString("[ {0} - {1} ] <span style=\"color: cyan\">{2}</span>\n", (extension.equals(LogExtension.MARKDOWN) ? level.getMarkdown() : level.name()), time, prefix.fillInStackTrace()));
                 writer.write("```java\n");
@@ -427,7 +426,7 @@ public final class Logger extends KarmaLogger implements Serializable {
      * Clear the log file
      *
      * @throws IllegalStateException if the log file could not be
-     * cleared
+     *                               cleared
      */
     @Override
     public synchronized void clearLog() throws IllegalStateException {
@@ -453,13 +452,13 @@ public final class Logger extends KarmaLogger implements Serializable {
     /**
      * Flush the log data if the
      * log auto flush is turned off
-     *
+     * <p>
      * WARNING: This will replace all the log file
      * content, this should be used only for applications
      * that runs once -> generate a log file and then
      * switch log file. You can change the log file
      * by overriding {@link KarmaLogger#getLoggerFile(LogExtension)}
-     *
+     * <p>
      * DOES NOTHING ON {@link Logger}
      *
      * @return if the log could be flushed
@@ -489,7 +488,7 @@ public final class Logger extends KarmaLogger implements Serializable {
         if (copy.size() > 1 &&
                 StringUtils.isNullOrEmpty(copy.get(0)) && StringUtils.isNullOrEmpty(copy.get(1)))
             copy.remove(0);
-        
+
         return copy;
     }
 }

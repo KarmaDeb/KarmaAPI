@@ -16,9 +16,9 @@ public class KarmaFormatException extends RuntimeException {
     /**
      * Initialize the error
      *
-     * @param file the file that is being read
-     * @param info extra information such as line and where
-     *             the file failed to read
+     * @param file  the file that is being read
+     * @param info  extra information such as line and where
+     *              the file failed to read
      * @param index the line index
      */
     public KarmaFormatException(final Path file, final String info, final int index) {

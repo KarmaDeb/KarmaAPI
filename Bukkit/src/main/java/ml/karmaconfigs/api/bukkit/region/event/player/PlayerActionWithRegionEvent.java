@@ -52,11 +52,11 @@ public class PlayerActionWithRegionEvent extends PlayerEvent implements Cancella
     /**
      * Initialize the entity interact at region event
      *
-     * @param ent the entity
-     * @param target the target block ( if exists )
+     * @param ent     the entity
+     * @param target  the target block ( if exists )
      * @param trigger the action that triggered the event
-     * @param rg the region the entity
-     *           has interacted in
+     * @param rg      the region the entity
+     *                has interacted in
      */
     public PlayerActionWithRegionEvent(final Player ent, final Block target, final InteractAction trigger, final Cuboid rg) {
         super(ent);

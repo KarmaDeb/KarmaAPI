@@ -79,10 +79,10 @@ public abstract class KarmaLogger implements AutoCloseable {
     /**
      * Initialize the karma logger
      *
-     * @param owner the logger owner
+     * @param owner     the logger owner
      * @param autoFlush auto flush log files
-     * @param errors display errors as messages too
-     * @param messages display messages as console messages too
+     * @param errors    display errors as messages too
+     * @param messages  display messages as console messages too
      */
     public KarmaLogger(final KarmaSource owner, final boolean autoFlush, final boolean errors, final boolean messages) {
         KarmaLogger stored = loggers.getOrDefault(owner.name().toLowerCase(), null);
@@ -130,8 +130,8 @@ public abstract class KarmaLogger implements AutoCloseable {
      * Run the log function on a new
      * thread
      *
-     * @param level the log level
-     * @param info the info to log
+     * @param level    the log level
+     * @param info     the info to log
      * @param replaces the info replaces
      */
     public abstract void scheduleLog(final Level level, final CharSequence info, final Object... replaces);
@@ -149,9 +149,9 @@ public abstract class KarmaLogger implements AutoCloseable {
      * Run the log function on a new
      * thread
      *
-     * @param level the log level
-     * @param print print info to console
-     * @param info the info to log
+     * @param level    the log level
+     * @param print    print info to console
+     * @param info     the info to log
      * @param replaces the info replaces
      */
     public abstract void scheduleLogOption(final Level level, final boolean print, final CharSequence info, final Object... replaces);
@@ -170,8 +170,8 @@ public abstract class KarmaLogger implements AutoCloseable {
      * Run the log function on the main
      * known thread
      *
-     * @param level the log level
-     * @param info the info to log
+     * @param level    the log level
+     * @param info     the info to log
      * @param replaces the info replaces
      */
     public abstract void syncedLog(final Level level, final CharSequence info, final Object... replaces);
@@ -189,9 +189,9 @@ public abstract class KarmaLogger implements AutoCloseable {
      * Run the log function on the main
      * known thread
      *
-     * @param level the log level
-     * @param print print info to console
-     * @param info the info to log
+     * @param level    the log level
+     * @param print    print info to console
+     * @param info     the info to log
      * @param replaces the info replaces
      */
     public abstract void syncedLogOption(final Level level, final boolean print, final CharSequence info, final Object... replaces);
@@ -214,13 +214,13 @@ public abstract class KarmaLogger implements AutoCloseable {
     /**
      * Flush the log data if the
      * log auto flush is turned off
-     *
+     * <p>
      * WARNING: This will replace all the log file
      * content, this should be used only for applications
      * that runs once -> generate a log file and then
      * switch log file. You can change the log file
      * by overriding {@link KarmaLogger#getLoggerFile(LogExtension)}
-     *
+     * <p>
      * DOES NOTHING ON {@link Logger}
      *
      * @return if the log could be flushed

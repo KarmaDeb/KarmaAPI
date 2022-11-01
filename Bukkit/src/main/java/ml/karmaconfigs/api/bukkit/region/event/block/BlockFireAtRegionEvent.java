@@ -47,9 +47,9 @@ public class BlockFireAtRegionEvent extends BlockEvent implements Cancellable {
     /**
      * Initialize the generic block event
      *
-     * @param bl the block
+     * @param bl  the block
      * @param act the block action
-     * @param rg the region
+     * @param rg  the region
      */
     public BlockFireAtRegionEvent(final Block bl, final BlockAction act, final Cuboid rg) {
         super(bl);

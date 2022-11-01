@@ -143,7 +143,7 @@ public final class KarmaInputFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     @NotNull
@@ -166,7 +166,7 @@ public final class KarmaInputFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     @NotNull
@@ -188,7 +188,7 @@ public final class KarmaInputFile implements Serializable {
     /**
      * Get a value
      *
-     * @param path the value path
+     * @param path             the value path
      * @param default_contents the default values
      * @return the value
      */
@@ -221,7 +221,7 @@ public final class KarmaInputFile implements Serializable {
     /**
      * Get a value
      *
-     * @param path the value path
+     * @param path             the value path
      * @param default_contents the default values
      * @return the value
      */
@@ -255,7 +255,7 @@ public final class KarmaInputFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public boolean getBoolean(String path, final boolean def) {
@@ -319,7 +319,7 @@ public final class KarmaInputFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public int getInt(String path, final int def) {
@@ -341,7 +341,7 @@ public final class KarmaInputFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public double getDouble(String path, final double def) {
@@ -363,7 +363,7 @@ public final class KarmaInputFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public long getLong(String path, final long def) {

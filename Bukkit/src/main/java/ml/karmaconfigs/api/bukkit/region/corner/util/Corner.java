@@ -59,7 +59,7 @@ public abstract class Corner {
      * Modify the X value of the location
      *
      * @param original the location
-     * @param x the new X value
+     * @param x        the new X value
      * @return the new location with the new X value
      */
     public static Location modifyX(final Location original, final double x) {
@@ -74,7 +74,7 @@ public abstract class Corner {
      * Modify the Z value of the location
      *
      * @param original the location
-     * @param z the new Z value
+     * @param z        the new Z value
      * @return the new location with the new Z value
      */
     public static Location modifyZ(final Location original, final double z) {

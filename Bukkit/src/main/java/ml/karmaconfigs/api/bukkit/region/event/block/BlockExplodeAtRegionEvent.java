@@ -23,7 +23,7 @@ public class BlockExplodeAtRegionEvent extends BlockEvent implements Cancellable
      * Initialize the generic block event
      *
      * @param bl the block
-     * @param y the explosion yield
+     * @param y  the explosion yield
      * @param rg the region
      */
     public BlockExplodeAtRegionEvent(final Block bl, final float y, final Cuboid rg) {

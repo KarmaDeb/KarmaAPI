@@ -69,7 +69,7 @@ public abstract class Wall {
     /**
      * Get nearby entities in the wall
      *
-     * @param range the search radius
+     * @param range  the search radius
      * @param filter the entities to ignore
      * @return the near wall entities
      */

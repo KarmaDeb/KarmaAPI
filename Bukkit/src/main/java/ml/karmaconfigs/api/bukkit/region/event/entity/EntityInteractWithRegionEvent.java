@@ -50,10 +50,10 @@ public class EntityInteractWithRegionEvent extends EntityEvent implements Cancel
     /**
      * Initialize the entity interact at region event
      *
-     * @param ent the entity
+     * @param ent    the entity
      * @param target the target block ( if exists )
-     * @param rg the region the entity
-     *           has interacted in
+     * @param rg     the region the entity
+     *               has interacted in
      */
     public EntityInteractWithRegionEvent(final Entity ent, final Block target, final Cuboid rg) {
         super(ent);

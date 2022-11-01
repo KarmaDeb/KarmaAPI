@@ -192,7 +192,7 @@ public final class AsyncLateScheduler<A> implements LateScheduler<A> {
      * Complete the scheduler
      *
      * @param target the type A object
-     * @param error any error that has been thrown
+     * @param error  any error that has been thrown
      */
     @Override
     public void complete(final A target, final Throwable error) {

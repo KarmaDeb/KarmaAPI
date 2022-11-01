@@ -47,8 +47,8 @@ public final class EntityPreLeaveRegionEvent extends EntityEvent implements Canc
      * Initialize the entity pre leave region event
      *
      * @param ent the entity
-     * @param rg the region the entity
-     *           will leave
+     * @param rg  the region the entity
+     *            will leave
      */
     public EntityPreLeaveRegionEvent(final Entity ent, final Cuboid rg) {
         super(ent);

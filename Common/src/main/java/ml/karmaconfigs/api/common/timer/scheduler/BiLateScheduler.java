@@ -41,7 +41,7 @@ public interface BiLateScheduler<A, B> extends CancellableScheduler {
      * Set the complete action
      *
      * @param paramRunnable the action to perform
-     *               when the scheduler is completed
+     *                      when the scheduler is completed
      * @return this instance
      */
     BiLateScheduler<A, B> whenComplete(final Runnable paramRunnable);
@@ -50,7 +50,7 @@ public interface BiLateScheduler<A, B> extends CancellableScheduler {
      * Set the complete action
      *
      * @param paramBiConsumer the action to perform
-     *               when the scheduler is completed
+     *                        when the scheduler is completed
      * @return this instance
      */
     BiLateScheduler<A, B> whenComplete(final BiConsumer<A, B> paramBiConsumer);
@@ -59,7 +59,7 @@ public interface BiLateScheduler<A, B> extends CancellableScheduler {
      * Set the complete action
      *
      * @param paramTriConsumer the action to perform
-     *               when the scheduler is completed
+     *                         when the scheduler is completed
      * @return this instance
      */
     BiLateScheduler<A, B> whenComplete(final TriConsumer<A, B, Throwable> paramTriConsumer);
@@ -96,8 +96,8 @@ public interface BiLateScheduler<A, B> extends CancellableScheduler {
     /**
      * Complete the scheduler
      *
-     * @param paramA the type A object
-     * @param paramB the type B object
+     * @param paramA         the type A object
+     * @param paramB         the type B object
      * @param paramThrowable any error that has been thrown
      */
     void complete(final A paramA, final B paramB, final Throwable paramThrowable);

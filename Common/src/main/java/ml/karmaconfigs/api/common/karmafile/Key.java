@@ -50,7 +50,7 @@ public final class Key implements Serializable {
     /**
      * Initialize the karma key
      *
-     * @param keyPath the path
+     * @param keyPath  the path
      * @param keyValue the value
      */
     public Key(String keyPath, Object keyValue) {

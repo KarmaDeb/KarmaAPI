@@ -29,7 +29,8 @@ import ml.karmaconfigs.api.common.karma.KarmaSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -211,7 +212,7 @@ public final class PathUtilities {
     /**
      * Get the parent file replacing %20 ( space char )
      *
-     * @param file the file
+     * @param file       the file
      * @param barReplace the %20 replace
      * @return the parent file
      */
@@ -222,7 +223,7 @@ public final class PathUtilities {
     /**
      * Get the file replacing the %20 ( space char )
      *
-     * @param file the file
+     * @param file       the file
      * @param barReplace the %20 replace
      * @return the file
      */
@@ -243,7 +244,7 @@ public final class PathUtilities {
     /**
      * Get the file name
      *
-     * @param file the file name
+     * @param file      the file name
      * @param extension include extension
      * @return the file name
      */

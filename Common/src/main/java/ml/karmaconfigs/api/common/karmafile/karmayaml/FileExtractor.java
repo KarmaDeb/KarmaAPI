@@ -25,8 +25,8 @@ package ml.karmaconfigs.api.common.karmafile.karmayaml;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.utils.file.FileUtilities;
 import ml.karmaconfigs.api.common.utils.reader.BoundedBufferedReader;
@@ -44,7 +44,6 @@ import static ml.karmaconfigs.api.common.karma.KarmaAPI.source;
 
 /**
  * Initialize the file copier
- *
  */
 public final class FileExtractor {
 
@@ -92,7 +91,7 @@ public final class FileExtractor {
      * Copy the file
      *
      * @param destFile the file destination
-     * @param inFile the input file to read from
+     * @param inFile   the input file to read from
      * @throws IOException if something goes wrong
      */
     public void copy(File destFile, final @NotNull InputStream inFile) throws IOException {
@@ -101,7 +100,7 @@ public final class FileExtractor {
 
         byte[] buffer = new byte[1024];
         int len;
-        while ((len = inFile.read(buffer)) > -1 ) {
+        while ((len = inFile.read(buffer)) > -1) {
             baos.write(buffer, 0, len);
         }
         baos.flush();
@@ -263,7 +262,7 @@ public final class FileExtractor {
      * Copy the file
      *
      * @param destFile the file destination
-     * @param inFile the input file to read from
+     * @param inFile   the input file to read from
      * @throws IOException if something goes wrong
      */
     public void copy(final Path destFile, final InputStream inFile) throws IOException {
@@ -363,8 +362,8 @@ public final class FileExtractor {
     /**
      * Fill key set for yaml file
      *
-     * @param tree the current tree
-     * @param inSection the internal file section
+     * @param tree       the current tree
+     * @param inSection  the internal file section
      * @param outSection the external file section
      */
     private void fillKeySet(int tree, final KarmaYamlManager inSection, final KarmaYamlManager outSection) {
@@ -402,7 +401,7 @@ public final class FileExtractor {
     /**
      * Put a key into the key set
      *
-     * @param key the key
+     * @param key   the key
      * @param value the key value
      */
     private void putKey(final String key, final Object value) {
@@ -416,7 +415,7 @@ public final class FileExtractor {
     /**
      * Put a section into the key sections
      *
-     * @param key the key
+     * @param key  the key
      * @param tree the key tree
      */
     private void putSection(final String key, final int tree) {

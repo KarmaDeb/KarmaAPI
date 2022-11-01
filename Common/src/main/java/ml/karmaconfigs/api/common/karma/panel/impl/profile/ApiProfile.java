@@ -155,7 +155,7 @@ public final class ApiProfile extends ProfileWrapper {
     /**
      * Register the user
      *
-     * @param password the account password
+     * @param password      the account password
      * @param auto_validate if the account should try to validate himself right after
      *                      it gets created
      * @return the register result
@@ -621,7 +621,8 @@ public final class ApiProfile extends ProfileWrapper {
                     object.add("commented_posts", created_posts_element);
                 }
             }
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
 
         return new PublicApiProfile(gson.toJson(object));
     }

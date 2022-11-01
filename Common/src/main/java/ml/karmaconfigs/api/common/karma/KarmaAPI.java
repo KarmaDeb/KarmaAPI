@@ -27,9 +27,9 @@ package ml.karmaconfigs.api.common.karma;
 
 import ml.karmaconfigs.api.common.karma.loader.BruteLoader;
 import ml.karmaconfigs.api.common.karma.loader.component.NameComponent;
+import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.utils.string.StringUtils;
 import ml.karmaconfigs.api.common.utils.url.URLUtils;
-import ml.karmaconfigs.api.common.utils.enums.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -124,7 +124,8 @@ public interface KarmaAPI extends Serializable {
                     return true;
                 }
             }
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
 
         try {
             File sourceJar = source.getSourceFile();
@@ -144,14 +145,17 @@ public interface KarmaAPI extends Serializable {
                             map.set(className);
                             return true;
                         }
-                    } catch (Throwable ignored) {}
+                    } catch (Throwable ignored) {
+                    }
                 }
             }
-        } catch (Throwable ignored) {} finally {
+        } catch (Throwable ignored) {
+        } finally {
             try {
                 if (jar != null)
                     jar.close();
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
 
         return false;

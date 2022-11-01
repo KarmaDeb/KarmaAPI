@@ -67,11 +67,11 @@ public class VersionFetchResult {
     /**
      * Initialize a new version fetch result
      *
-     * @param source the source
+     * @param source         the source
      * @param latest_version the latest version
-     * @param downloadURL the download url
-     * @param changes the changelog
-     * @param solver the version resolver
+     * @param downloadURL    the download url
+     * @param changes        the changelog
+     * @param solver         the version resolver
      */
     public VersionFetchResult(final KarmaSource source, final String latest_version, final String downloadURL, final String[] changes, final VersionResolver solver) {
         this.updated = true;
@@ -85,12 +85,12 @@ public class VersionFetchResult {
     /**
      * Initialize a new version fetch result
      *
-     * @param status the update status
+     * @param status  the update status
      * @param fetched the latest version
-     * @param active the current version
-     * @param url the update url
+     * @param active  the current version
+     * @param url     the update url
      * @param changes the changelog
-     * @param solver the version resolver
+     * @param solver  the version resolver
      */
     VersionFetchResult(final boolean status, final String fetched, final String active, final String url, final String[] changes, final VersionResolver solver) {
         this.updated = status;

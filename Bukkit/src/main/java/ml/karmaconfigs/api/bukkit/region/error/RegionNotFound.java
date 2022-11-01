@@ -36,7 +36,7 @@ public class RegionNotFound extends RuntimeException {
     /**
      * Region not found error
      *
-     * @param owner the region owner
+     * @param owner  the region owner
      * @param region the region token
      * @param reason the reason of the exception
      */

@@ -25,8 +25,8 @@ package ml.karmaconfigs.api.common;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.timer.SchedulerUnit;
 import ml.karmaconfigs.api.common.timer.SourceScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
@@ -82,7 +82,7 @@ public final class Console {
     /**
      * Initialize a new console
      *
-     * @param src the console source
+     * @param src       the console source
      * @param onMessage the console message action
      */
     public Console(final KarmaSource src, final Consumer<String> onMessage) {
@@ -113,7 +113,7 @@ public final class Console {
     /**
      * Update the console sequential status for
      * this source
-     *
+     * <p>
      * SEQUENTIAL CONSOLE ALLOWS SOURCES TO FORCE THE
      * MESSAGE ORDER, USEFUL WHEN YOU RUN A LOT OF ASYNC
      * TASKS BUT WANT TO KEEP AN ORDER
@@ -230,7 +230,7 @@ public final class Console {
     /**
      * Send a message to the console
      *
-     * @param message the message to send
+     * @param message  the message to send
      * @param replaces the message replaces
      */
     public void send(final CharSequence message, final Object... replaces) {
@@ -267,7 +267,7 @@ public final class Console {
      * Send a message to the console
      *
      * @param message the message to send
-     * @param level the message level
+     * @param level   the message level
      */
     public void send(final @NotNull CharSequence message, final @NotNull Level level) {
         SimpleScheduler scheduler = sequential_consoles.getOrDefault(source, null);
@@ -309,8 +309,8 @@ public final class Console {
     /**
      * Send a message to the console
      *
-     * @param message the message to send
-     * @param level the message level
+     * @param message  the message to send
+     * @param level    the message level
      * @param replaces the message replaces
      */
     public void send(final @NotNull CharSequence message, final @NotNull Level level, final @NotNull Object... replaces) {
@@ -364,7 +364,7 @@ public final class Console {
      * Send a message to the console
      *
      * @param message the message to send
-     * @param level the message level
+     * @param level   the message level
      */
     public void debug(final @NotNull CharSequence message, final @NotNull Level level) {
         KarmaConfig config = new KarmaConfig();
@@ -402,7 +402,7 @@ public final class Console {
      * Send a message to the console
      *
      * @param message the message to send
-     * @param level the message level
+     * @param level   the message level
      */
     public void debugFile(final @NotNull CharSequence message, final @NotNull Level level) {
         KarmaConfig config = new KarmaConfig();
@@ -440,7 +440,7 @@ public final class Console {
      * Send a message to the console
      *
      * @param message the message to send
-     * @param level the message level
+     * @param level   the message level
      */
     public void debugUtil(final @NotNull CharSequence message, final @NotNull Level level) {
         KarmaConfig config = new KarmaConfig();
@@ -477,8 +477,8 @@ public final class Console {
     /**
      * Send a message to the console
      *
-     * @param message the message to send
-     * @param level the message level
+     * @param message  the message to send
+     * @param level    the message level
      * @param replaces the message replaces
      */
     public void debug(final @NotNull CharSequence message, final @NotNull Level level, final @NotNull Object... replaces) {
@@ -521,8 +521,8 @@ public final class Console {
     /**
      * Send a message to the console
      *
-     * @param message the message to send
-     * @param level the message level
+     * @param message  the message to send
+     * @param level    the message level
      * @param replaces the message replaces
      */
     public void debugFile(final @NotNull CharSequence message, final @NotNull Level level, final @NotNull Object... replaces) {
@@ -565,8 +565,8 @@ public final class Console {
     /**
      * Send a message to the console
      *
-     * @param message the message to send
-     * @param level the message level
+     * @param message  the message to send
+     * @param level    the message level
      * @param replaces the message replaces
      */
     public void debugUtil(final @NotNull CharSequence message, final @NotNull Level level, final @NotNull Object... replaces) {
@@ -630,7 +630,7 @@ public final class Console {
                 message = engine.parse(message);
 
             if (messageAction == null) {
-                System.out.println("\033[0m" +  StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode() + message + ConsoleColor.RESET.getCode()));
+                System.out.println("\033[0m" + StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode() + message + ConsoleColor.RESET.getCode()));
             } else {
                 messageAction.accept(message);
             }
@@ -653,12 +653,12 @@ public final class Console {
                     boolean first_message = true;
 
                     for (String msg : message.split("\n")) {
-                        System.out.println("\033[0m" +  StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode() + (first_message ? prefix : "") + msg + ConsoleColor.RESET.getCode()));
+                        System.out.println("\033[0m" + StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode() + (first_message ? prefix : "") + msg + ConsoleColor.RESET.getCode()));
 
                         first_message = false;
                     }
                 } else {
-                    System.out.println("\033[0m" +  StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode() + prefix + message + ConsoleColor.RESET.getCode()));
+                    System.out.println("\033[0m" + StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode() + prefix + message + ConsoleColor.RESET.getCode()));
                 }
             } else {
                 if (message.contains("\n"))

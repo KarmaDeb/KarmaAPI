@@ -29,12 +29,13 @@ import ml.karmaconfigs.api.bukkit.KarmaPlugin;
 import ml.karmaconfigs.api.bukkit.region.corner.util.Corner;
 import ml.karmaconfigs.api.bukkit.region.dummy.BlockListener;
 import ml.karmaconfigs.api.bukkit.region.dummy.DummyListener;
+import ml.karmaconfigs.api.bukkit.region.flag.RegionFlag;
 import ml.karmaconfigs.api.bukkit.region.wall.util.Wall;
 import ml.karmaconfigs.api.bukkit.region.wall.util.WallType;
 import ml.karmaconfigs.api.common.ResourceDownloader;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
-import ml.karmaconfigs.api.common.utils.url.URLUtils;
 import ml.karmaconfigs.api.common.utils.enums.Level;
+import ml.karmaconfigs.api.common.utils.url.URLUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -57,9 +58,9 @@ import java.util.UUID;
 
 /**
  * Karma cuboid region
- *
+ * <p></p>
  * Code from:
- * https://www.spigotmc.org/threads/region-cuboid.329859/
+ * <a href="https://www.spigotmc.org/threads/region-cuboid.329859/">spigotmc</a>
  */
 @SuppressWarnings("unused")
 public abstract class Cuboid implements Serializable {
@@ -183,6 +184,54 @@ public abstract class Cuboid implements Serializable {
     public abstract String getInternalName();
 
     /**
+     * Get the region priority
+     *
+     * @return the region priority
+     */
+    public abstract int getPriority();
+
+    /**
+     * Get the global region of this region. For example,
+     * if this region is inside another, this method will
+     * return the region this one is inside of
+     *
+     * @return the main region
+     */
+    public abstract Cuboid getGlobal();
+
+    /**
+     * Get the regions inside this region
+     *
+     * @return the regions inside this region
+     */
+    public abstract Set<Cuboid> getInside();
+
+    /**
+     * Get a region flag
+     *
+     * @param key the flag key
+     * @return the flag
+     */
+    public abstract RegionFlag<?> getFlag(final String key);
+
+    /**
+     * Get a region flag unsafely
+     *
+     * @param key the flag key
+     * @param <T> the region flag type
+     * @return the region flag
+     */
+    public abstract <T> RegionFlag<T> getUnsafeFlag(final String key);
+
+    /**
+     * Set a region flag
+     *
+     * @param flag the flag to add/modify
+     * @return if the flag could be changed
+     */
+    public abstract boolean addFlag(final RegionFlag<?> flag);
+
+    /**
      * Get if the region already exists
      *
      * @param plugin the region owner
@@ -268,6 +317,14 @@ public abstract class Cuboid implements Serializable {
     public abstract int getLength();
 
     /**
+     * Get if a region is inside this region
+     *
+     * @param region the other region
+     * @return if the region is inside this one
+     */
+    public abstract boolean isInside(final Cuboid region);
+
+    /**
      * Get if the entity is inside the
      * region
      *
@@ -302,8 +359,8 @@ public abstract class Cuboid implements Serializable {
      * region
      *
      * @param entity the entity
-     * @param marge the marge out of
-     *              region frontier
+     * @param marge  the marge out of
+     *               region frontier
      * @return if the entity is inside
      * the region
      */
@@ -313,7 +370,7 @@ public abstract class Cuboid implements Serializable {
      * Get the region token, this is another
      * unique identifier for the region ( UUID
      * is also used as identifier ).
-     *
+     * <p></p>
      * The difference between this one and UUID one
      * is that this token is randomly generated, and
      * UUID name-base generated
@@ -346,7 +403,7 @@ public abstract class Cuboid implements Serializable {
 
     /**
      * Save the region to memory
-     *
+     * <p></p>
      * WARNING: THIS METHOD SHOULD CONTAIN
      * A {@link Cuboid#exists(KarmaPlugin)} CHECK
      * BEFORE BEING PROCESSED, OTHERWISE EXISTING
@@ -355,6 +412,13 @@ public abstract class Cuboid implements Serializable {
      * @param owner the region owner
      */
     public abstract void saveToMemory(final KarmaPlugin owner);
+
+    /**
+     * Set the region priority
+     *
+     * @param priority the new region priority
+     */
+    public abstract void setPriority(final int priority);
 
     /**
      * Get all the regions

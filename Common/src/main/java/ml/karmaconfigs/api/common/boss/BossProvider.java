@@ -101,7 +101,7 @@ public abstract class BossProvider<T> {
     /**
      * Update the boss bar
      *
-     * @param paramString the new boss bar text
+     * @param paramString  the new boss bar text
      * @param paramBoolean restart the bar progress
      * @return if the boss bar could be updated
      */

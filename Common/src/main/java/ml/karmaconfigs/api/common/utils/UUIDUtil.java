@@ -26,6 +26,7 @@ package ml.karmaconfigs.api.common.utils;
  */
 
 import com.google.gson.*;
+import ml.karmaconfigs.api.common.karma.Identifiable;
 import ml.karmaconfigs.api.common.karma.KarmaAPI;
 import ml.karmaconfigs.api.common.utils.string.StringUtils;
 import ml.karmaconfigs.api.common.utils.url.HttpUtil;
@@ -58,7 +59,7 @@ public final class UUIDUtil {
      * engine database API
      *
      * @param name the client name
-     * @deprecated Use {@link ml.karmaconfigs.api.common.utils.uuid.UUIDUtil#registerMinecraftClient(String)} instead
+     * @deprecated Use {@link ml.karmaconfigs.api.common.utils.uuid.UUIDUtil#registerMinecraftClient(Identifiable, String)} instead
      */
     @Deprecated
     public static void registerMinecraftClient(final String name) {
@@ -175,7 +176,6 @@ public final class UUIDUtil {
      * @param uuid the UUID to search for
      * @return the nick or null if not available
      * in karma UUID engine database API
-     *
      * @deprecated Use {@link ml.karmaconfigs.api.common.utils.uuid.UUIDUtil#fetchNick(UUID)} instead
      */
     @Deprecated
@@ -223,11 +223,11 @@ public final class UUIDUtil {
      *
      * @param id the trimmed UUID
      * @return the full UUID
-     *
      * @deprecated Use {@link ml.karmaconfigs.api.common.utils.uuid.UUIDUtil#fromTrimmed(String)} instead
      */
     @Nullable
-    public @Deprecated static UUID fromTrimmed(final String id) {
+    public @Deprecated
+    static UUID fromTrimmed(final String id) {
         UUID result;
         if (!StringUtils.isNullOrEmpty(id)) {
             if (!id.contains("-")) {

@@ -1,7 +1,5 @@
 package ml.karmaconfigs.api.common.utils.file.validation;
 
-import ml.karmaconfigs.api.common.utils.file.FileChecker;
-
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Path;

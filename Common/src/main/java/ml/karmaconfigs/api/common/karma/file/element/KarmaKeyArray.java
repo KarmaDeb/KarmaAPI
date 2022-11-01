@@ -545,9 +545,9 @@ public class KarmaKeyArray extends KarmaElement implements Iterable<KarmaElement
     /**
      * Fill the array info
      *
-     * @param array the array
-     * @param strings the array strings
-     * @param numbers the array numbers
+     * @param array    the array
+     * @param strings  the array strings
+     * @param numbers  the array numbers
      * @param booleans the array booleans
      */
     private void fill(final KarmaElement array, final Set<String> strings, final Set<Number> numbers, final Set<Boolean> booleans) {

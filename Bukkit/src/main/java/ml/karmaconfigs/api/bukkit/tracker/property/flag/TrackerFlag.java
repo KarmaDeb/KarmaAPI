@@ -79,8 +79,8 @@ public enum TrackerFlag {
     /**
      * Create a property for this tracker flag
      *
-     * @return a new property for this flag
      * @param <T> the property type
+     * @return a new property for this flag
      */
     public <T> PropertyValue<T> makeProperty(final String name) {
         PropertyValue<?> value;

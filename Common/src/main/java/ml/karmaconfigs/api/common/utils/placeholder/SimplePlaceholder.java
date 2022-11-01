@@ -41,7 +41,7 @@ public class SimplePlaceholder<T> extends Placeholder<T> {
     /**
      * Simple karma placeholder
      *
-     * @param k the placeholder key
+     * @param k   the placeholder key
      * @param val the placeholder value
      */
     public SimplePlaceholder(final String k, final T val) {

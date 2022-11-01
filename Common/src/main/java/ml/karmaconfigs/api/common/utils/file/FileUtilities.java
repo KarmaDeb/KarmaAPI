@@ -25,8 +25,8 @@ package ml.karmaconfigs.api.common.utils.file;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.utils.string.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -84,7 +84,8 @@ public class FileUtilities {
                     if (config.utilDebug(Level.INFO) && !INTERNAL_CALL)
                         source(true).console().send("Created directory {0}", Level.INFO, getPrettyFile(file));
                 }
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
     }
 
@@ -140,7 +141,8 @@ public class FileUtilities {
                         source(true).console().send("Created file {0}", Level.INFO, getPrettyFile(file));
                     return true;
                 }
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         } else {
             try {
                 if (!file.exists()) {
@@ -149,7 +151,8 @@ public class FileUtilities {
                         source(true).console().send("Created directory {0}", Level.INFO, getPrettyFile(file));
                     return true;
                 }
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
 
         return false;
@@ -169,7 +172,8 @@ public class FileUtilities {
                 if (config.utilDebug(Level.INFO) && !INTERNAL_CALL)
                     source(true).console().send("Created directory {0}", Level.INFO, getPrettyFile(file));
             }
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
     }
 
     /**
@@ -205,7 +209,8 @@ public class FileUtilities {
                     source(true).console().send("Created directory {0}", Level.INFO, getPrettyFile(file));
                 return true;
             }
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
 
         return false;
     }
@@ -322,7 +327,7 @@ public class FileUtilities {
                 destroy(file);
 
                 INTERNAL_CALL = false;
-                
+
                 return result;
             }
         } catch (Throwable ex) {
@@ -381,7 +386,8 @@ public class FileUtilities {
                     if (name.endsWith(format.toLowerCase()))
                         return true;
             }
-        } catch (Throwable ignored) {} finally {
+        } catch (Throwable ignored) {
+        } finally {
             try {
                 if (reader != null)
                     reader.close();
@@ -391,7 +397,8 @@ public class FileUtilities {
 
                 if (stream != null)
                     stream.close();
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
 
         return false;
@@ -408,7 +415,8 @@ public class FileUtilities {
 
         try (InputStream stream = new FileInputStream(file); DataInputStream dataInputStream = new DataInputStream(stream)) {
             dataInputStream.readFully(bytes);
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
 
         return bytes;
     }
@@ -456,7 +464,7 @@ public class FileUtilities {
     /**
      * Get the parent file replacing %20 ( space char )
      *
-     * @param file the file
+     * @param file       the file
      * @param barReplace the %20 replace
      * @return the parent file
      */
@@ -470,7 +478,7 @@ public class FileUtilities {
     /**
      * Get the file replacing the %20 ( space char )
      *
-     * @param file the file
+     * @param file       the file
      * @param barReplace the %20 replace
      * @return the file
      */
@@ -546,7 +554,7 @@ public class FileUtilities {
     /**
      * Get the file name
      *
-     * @param file the file name
+     * @param file      the file name
      * @param extension include extension
      * @return the file name
      */
@@ -623,7 +631,8 @@ public class FileUtilities {
                     if (name.endsWith(format.toLowerCase()))
                         return format.replaceFirst("\\.", "");
             }
-        } catch (Throwable ignored) {} finally {
+        } catch (Throwable ignored) {
+        } finally {
             try {
                 if (reader != null)
                     reader.close();
@@ -633,7 +642,8 @@ public class FileUtilities {
 
                 if (stream != null)
                     stream.close();
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
 
         return null;

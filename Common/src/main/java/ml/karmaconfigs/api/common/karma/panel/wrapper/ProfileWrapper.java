@@ -1,7 +1,6 @@
 package ml.karmaconfigs.api.common.karma.panel.wrapper;
 
 import com.google.gson.JsonElement;
-import ml.karmaconfigs.api.common.karma.panel.wrapper.post.PostPageWrapper;
 import ml.karmaconfigs.api.common.karma.panel.wrapper.post.PostWrapper;
 import ml.karmaconfigs.api.common.timer.scheduler.BiLateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
@@ -54,7 +53,7 @@ public abstract class ProfileWrapper {
     /**
      * Register the user
      *
-     * @param password the account password
+     * @param password      the account password
      * @param auto_validate if the account should try to validate himself right after
      *                      it gets created
      * @return the register result
@@ -103,7 +102,7 @@ public abstract class ProfileWrapper {
     /**
      * Update a post
      *
-     * @param post the post id
+     * @param post     the post id
      * @param new_post the new post data
      * @return if the post could be updated and the new post
      */

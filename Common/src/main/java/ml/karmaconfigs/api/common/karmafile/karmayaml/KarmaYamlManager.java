@@ -85,8 +85,8 @@ public final class KarmaYamlManager {
      * Initialize the karma yaml manager
      *
      * @param source the yaml source
-     * @param name the yaml file name
-     * @param sub the yaml file folder
+     * @param name   the yaml file name
+     * @param sub    the yaml file folder
      */
     public KarmaYamlManager(final KarmaSource source, String name, final String... sub) {
         if (!name.endsWith(".no_extension")) {
@@ -158,7 +158,7 @@ public final class KarmaYamlManager {
      * Initialize the karma yaml manager
      *
      * @param configuration the yaml configuration/path
-     * @param isPath if the yaml configuration string is a path
+     * @param isPath        if the yaml configuration string is a path
      */
     public KarmaYamlManager(final String configuration, final boolean isPath) {
         if (isPath) {
@@ -243,9 +243,9 @@ public final class KarmaYamlManager {
      * Initialize the karma yaml manager
      *
      * @param defaults the yaml defaults
-     * @param source the yaml source
-     * @param name the yaml file name
-     * @param sub the yaml file folder
+     * @param source   the yaml source
+     * @param name     the yaml file name
+     * @param sub      the yaml file folder
      */
     public KarmaYamlManager(final @NotNull KarmaYamlManager defaults, final KarmaSource source, String name, final String... sub) {
         if (!name.endsWith(".no_extension")) {
@@ -288,7 +288,7 @@ public final class KarmaYamlManager {
     /**
      * Initialize the karma yaml manager
      *
-     * @param defaults the yaml defaults
+     * @param defaults      the yaml defaults
      * @param configuration the yaml
      */
     public KarmaYamlManager(final @NotNull KarmaYamlManager defaults, final Reader configuration) {
@@ -303,7 +303,7 @@ public final class KarmaYamlManager {
     /**
      * Initialize the karma yaml manager
      *
-     * @param defaults the yaml defaults
+     * @param defaults      the yaml defaults
      * @param configuration the yaml
      */
     public KarmaYamlManager(final @NotNull KarmaYamlManager defaults, final InputStream configuration) {
@@ -318,9 +318,9 @@ public final class KarmaYamlManager {
     /**
      * Initialize the karma yaml manager
      *
-     * @param defaults the yaml defaults
+     * @param defaults      the yaml defaults
      * @param configuration the yaml configuration/path
-     * @param isPath if the yaml configuration string is a path
+     * @param isPath        if the yaml configuration string is a path
      */
     public KarmaYamlManager(final @NotNull KarmaYamlManager defaults, final String configuration, final boolean isPath) {
         if (isPath) {
@@ -348,7 +348,7 @@ public final class KarmaYamlManager {
     /**
      * Initialize the karma yaml manager
      *
-     * @param defaults the yaml defaults
+     * @param defaults      the yaml defaults
      * @param configuration the yaml
      */
     public KarmaYamlManager(final @NotNull KarmaYamlManager defaults, final File configuration) {
@@ -368,7 +368,7 @@ public final class KarmaYamlManager {
     /**
      * Initialize the karma yaml manager
      *
-     * @param defaults the yaml defaults
+     * @param defaults      the yaml defaults
      * @param configuration the yaml
      */
     public KarmaYamlManager(final @NotNull KarmaYamlManager defaults, final Path configuration) {
@@ -389,7 +389,7 @@ public final class KarmaYamlManager {
      * Initialize the karma yaml manager
      *
      * @param defaults the yaml defaults
-     * @param values the yaml key/value
+     * @param values   the yaml key/value
      */
     public KarmaYamlManager(final @NotNull KarmaYamlManager defaults, final Map<?, ?> values) {
         for (Object key : values.keySet())
@@ -413,8 +413,8 @@ public final class KarmaYamlManager {
      * Update the current manager
      *
      * @param configuration the configuration to update from
-     * @param addNew add non-existent keys
-     * @param ignore ignored keys
+     * @param addNew        add non-existent keys
+     * @param ignore        ignored keys
      */
     public void update(final KarmaYamlManager configuration, final boolean addNew, final String... ignore) {
         List<String> ignored = Arrays.asList(ignore);
@@ -434,7 +434,7 @@ public final class KarmaYamlManager {
     /**
      * Set the yaml value
      *
-     * @param path the key path
+     * @param path  the key path
      * @param value the key value
      * @return this instance
      */
@@ -457,8 +457,8 @@ public final class KarmaYamlManager {
     /**
      * Store an object instance
      *
-     * @param <T> the type to store
-     * @param path the instance object path
+     * @param <T>    the type to store
+     * @param path   the instance object path
      * @param object the object to store
      * @return this instance
      */
@@ -596,8 +596,8 @@ public final class KarmaYamlManager {
     /**
      * Save the current yaml
      *
-     * @param target the file to save in
-     * @param source the source to read defaults from
+     * @param target   the file to save in
+     * @param source   the source to read defaults from
      * @param resource the internal resource to read defaults from
      * @return this instance
      */
@@ -628,7 +628,7 @@ public final class KarmaYamlManager {
      * Get a value
      *
      * @param path the key path
-     * @param def the key default value
+     * @param def  the key default value
      * @return the yaml value
      */
     public Object get(final String path, final Object def) {
@@ -688,7 +688,7 @@ public final class KarmaYamlManager {
     /**
      * Get a value
      *
-     * @param path the key path
+     * @param path     the key path
      * @param defaults the key default values
      * @return the yaml value
      */
@@ -721,7 +721,7 @@ public final class KarmaYamlManager {
      * Get a value
      *
      * @param path the key path
-     * @param def the key default value
+     * @param def  the key default value
      * @return the yaml value
      */
     public String getString(final String path, final String def) {
@@ -748,7 +748,7 @@ public final class KarmaYamlManager {
      * Get a value
      *
      * @param path the key path
-     * @param def the key default value
+     * @param def  the key default value
      * @return the yaml value
      */
     public int getInt(final String path, final int def) {
@@ -775,7 +775,7 @@ public final class KarmaYamlManager {
      * Get a value
      *
      * @param path the key path
-     * @param def the key default value
+     * @param def  the key default value
      * @return the yaml value
      */
     public double getDouble(final String path, final double def) {
@@ -802,7 +802,7 @@ public final class KarmaYamlManager {
      * Get a value
      *
      * @param path the key path
-     * @param def the key default value
+     * @param def  the key default value
      * @return the yaml value
      */
     public long getLong(final String path, final long def) {
@@ -829,7 +829,7 @@ public final class KarmaYamlManager {
      * Get a value
      *
      * @param path the key path
-     * @param def the key default value
+     * @param def  the key default value
      * @return the yaml value
      */
     public boolean getBoolean(final String path, final boolean def) {
@@ -857,7 +857,7 @@ public final class KarmaYamlManager {
     /**
      * Get a value
      *
-     * @param path the key path
+     * @param path     the key path
      * @param defaults the key default values
      * @return the yaml value
      */
@@ -877,7 +877,7 @@ public final class KarmaYamlManager {
      * Get an object instance
      *
      * @param path the instance string key
-     * @param <T> the instance type
+     * @param <T>  the instance type
      * @return the instance object
      */
     @Nullable
@@ -915,7 +915,7 @@ public final class KarmaYamlManager {
     /**
      * Get a section of the yaml
      *
-     * @param path the section path
+     * @param path     the section path
      * @param defaults the section defaults
      * @return the section
      */
@@ -966,7 +966,7 @@ public final class KarmaYamlManager {
      * Get if the specified value matches with
      * the expected value
      *
-     * @param path the key
+     * @param path     the key
      * @param expected the expected value type
      * @return if the value matches with the expected
      * value type

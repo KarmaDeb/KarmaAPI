@@ -133,7 +133,7 @@ public final class SocketBuilder {
          *
          * @param listener the socket listener
          * @throws IllegalStateException if something goes wrong while socket channeling or socket
-         * creation
+         *                               creation
          */
         @Override
         public void connect(final SocketListener listener) throws IllegalStateException {

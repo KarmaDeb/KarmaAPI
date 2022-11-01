@@ -26,10 +26,10 @@ public final class EntityMoveAtRegionEvent extends EntityEvent implements Cancel
      * Initialize the entity move in region event
      *
      * @param ent the entity
-     * @param rg the region the entity
-     *           has moved in
-     * @param f the from location
-     * @param t the to location
+     * @param rg  the region the entity
+     *            has moved in
+     * @param f   the from location
+     * @param t   the to location
      */
     public EntityMoveAtRegionEvent(final Entity ent, final Cuboid rg, final Location f, final Location t) {
         super(ent);

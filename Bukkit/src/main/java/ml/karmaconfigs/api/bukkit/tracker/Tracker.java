@@ -2,6 +2,7 @@ package ml.karmaconfigs.api.bukkit.tracker;
 
 import ml.karmaconfigs.api.bukkit.tracker.property.PropertyValue;
 import ml.karmaconfigs.api.bukkit.tracker.property.flag.TrackerFlag;
+import ml.karmaconfigs.api.bukkit.util.LineOfSight;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
@@ -47,7 +48,7 @@ public abstract class Tracker {
      * Set the tracker property
      *
      * @param property the property name
-     * @param value the property value
+     * @param value    the property value
      * @return this instance
      * @deprecated Trackers won't have properties anymore, they will use
      * {@link TrackerFlag} instead. Which are better to "fetch". Use the method
@@ -58,7 +59,7 @@ public abstract class Tracker {
 
     /**
      * Set the tracker property
-     *
+     * <p>
      * PLEASE NOTE: A correctly setup {@link Tracker} should have
      * all the expected properties with a default value. Otherwise, people
      * could be able to mess up. So this method should be only an alternative
@@ -66,8 +67,8 @@ public abstract class Tracker {
      * {@link PropertyValue#updateUnsafe(Object)} methods respectively
      *
      * @param property the property
+     * @param <T>      the property type
      * @return this instance
-     * @param <T> the property type
      */
     public abstract <T> Tracker setProperty(final PropertyValue<T> property);
 
@@ -76,8 +77,8 @@ public abstract class Tracker {
      *
      * @param flag the flag to get for
      * @param name the property name
+     * @param <T>  the property type
      * @return the tracker property
-     * @param <T> the property type
      */
     public abstract <T> PropertyValue<T> getProperty(final TrackerFlag flag, final String name);
 
@@ -86,8 +87,19 @@ public abstract class Tracker {
      * entity
      *
      * @return if the tracker has line of sigh for the entity
+     * @deprecated This method has been deprecated with the implementation of
+     * the API line of sight class. The method {@link Tracker#getLineOfSight()}
+     * should be used instead
      */
+    @Deprecated
     public abstract boolean hasLineOfSight();
+
+    /**
+     * Get the tracker line of sight
+     *
+     * @return the tracker line of sight
+     */
+    public abstract LineOfSight getLineOfSight();
 
     /**
      * Get the tracker location
@@ -156,13 +168,15 @@ public abstract class Tracker {
 
     /**
      * Kill the tracker entity
+     *
      * @deprecated As of build of 16/10/2022 this does the same as
      * {@link Tracker#destroy()}. Previously, destroy would kill the
      * tracker entity, and also remove from memory. Now it will be only
      * killed to keep a solid respawn value at {@link ml.karmaconfigs.api.bukkit.tracker.event.TrackerSpawnEvent}
      */
     @Deprecated
-    public @ApiStatus.ScheduledForRemoval(inVersion = "1.3.4-SNAPSHOT") abstract void kill();
+    public @ApiStatus.ScheduledForRemoval(inVersion = "1.3.4-SNAPSHOT")
+    abstract void kill();
 
     /**
      * If the tracker gets killed, this method

@@ -1,6 +1,5 @@
 package ml.karmaconfigs.api.common.karma.panel.wrapper;
 
-import javax.swing.*;
 import java.awt.*;
 
 /**

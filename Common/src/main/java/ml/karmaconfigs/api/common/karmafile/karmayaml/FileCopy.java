@@ -25,8 +25,8 @@ package ml.karmaconfigs.api.common.karmafile.karmayaml;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.karma.KarmaSource;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.utils.file.FileUtilities;
 import ml.karmaconfigs.api.common.utils.reader.BoundedBufferedReader;
@@ -45,7 +45,6 @@ import static ml.karmaconfigs.api.common.karma.KarmaAPI.source;
 
 /**
  * Initialize the file copier
- *
  */
 public final class FileCopy {
 
@@ -80,7 +79,7 @@ public final class FileCopy {
      * Initialize the file copy
      *
      * @param source the source containing the file to export
-     * @param name the source file name
+     * @param name   the source file name
      */
     public FileCopy(final KarmaSource source, final String name) {
         fileName = name;
@@ -394,8 +393,8 @@ public final class FileCopy {
     /**
      * Fill key set for yaml file
      *
-     * @param tree the current tree
-     * @param inSection the internal file section
+     * @param tree       the current tree
+     * @param inSection  the internal file section
      * @param outSection the external file section
      */
     private void fillKeySet(int tree, final KarmaYamlManager inSection, final KarmaYamlManager outSection) {
@@ -433,7 +432,7 @@ public final class FileCopy {
     /**
      * Put a key into the key set
      *
-     * @param key the key
+     * @param key   the key
      * @param value the key value
      */
     private void putKey(final String key, final Object value) {
@@ -447,7 +446,7 @@ public final class FileCopy {
     /**
      * Put a section into the key sections
      *
-     * @param key the key
+     * @param key  the key
      * @param tree the key tree
      */
     private void putSection(final String key, final int tree) {

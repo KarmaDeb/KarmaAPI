@@ -26,7 +26,6 @@ package ml.karmaconfigs.api.common.karmafile;
  */
 
 import ml.karmaconfigs.api.common.karma.KarmaSource;
-import ml.karmaconfigs.api.common.karma.file.KarmaMain;
 import ml.karmaconfigs.api.common.utils.file.FileUtilities;
 import ml.karmaconfigs.api.common.utils.file.PathUtilities;
 import ml.karmaconfigs.api.common.utils.string.StringUtils;
@@ -57,9 +56,8 @@ public final class KarmaFile implements Serializable {
      * Initialize the karma file
      *
      * @param source the file source
-     * @param name the file name
-     * @param dir the file path
-     *
+     * @param name   the file name
+     * @param dir    the file path
      * @throws IllegalStateException if the target path is not a valid path
      */
     public KarmaFile(final KarmaSource source, final String name, final String... dir) throws IllegalStateException {
@@ -249,7 +247,7 @@ public final class KarmaFile implements Serializable {
     /**
      * Set a new value
      *
-     * @param path the key path
+     * @param path  the key path
      * @param value the value
      */
     public void set(String path, final Object value) {
@@ -414,7 +412,7 @@ public final class KarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     @NotNull
@@ -451,7 +449,7 @@ public final class KarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     @NotNull
@@ -487,7 +485,7 @@ public final class KarmaFile implements Serializable {
     /**
      * Get a value
      *
-     * @param path the value path
+     * @param path             the value path
      * @param default_contents the default values
      * @return the value
      */
@@ -528,7 +526,7 @@ public final class KarmaFile implements Serializable {
     /**
      * Get a value
      *
-     * @param path the value path
+     * @param path             the value path
      * @param default_contents the default values
      * @return the value
      */
@@ -565,7 +563,7 @@ public final class KarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public boolean getBoolean(String path, final boolean def) {
@@ -662,7 +660,7 @@ public final class KarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public int getInt(String path, final int def) {
@@ -698,7 +696,7 @@ public final class KarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public double getDouble(String path, final double def) {
@@ -734,7 +732,7 @@ public final class KarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public long getLong(String path, final long def) {
@@ -770,7 +768,7 @@ public final class KarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public float getFloat(String path, final float def) {
@@ -806,7 +804,7 @@ public final class KarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public short getShort(String path, final short def) {
@@ -842,7 +840,7 @@ public final class KarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public byte getByte(String path, final byte def) {
@@ -878,7 +876,7 @@ public final class KarmaFile implements Serializable {
      * Get a value
      *
      * @param path the value path
-     * @param def the default value
+     * @param def  the default value
      * @return the value
      */
     public byte[] getBytes(String path, final byte[] def) {

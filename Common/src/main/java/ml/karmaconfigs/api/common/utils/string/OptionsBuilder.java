@@ -53,7 +53,8 @@ public class OptionsBuilder {
     /**
      * Initialize the options builder
      */
-    OptionsBuilder() {}
+    OptionsBuilder() {
+    }
 
     /**
      * Set the text size

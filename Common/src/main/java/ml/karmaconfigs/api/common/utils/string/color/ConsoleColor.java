@@ -143,7 +143,7 @@ public enum ConsoleColor {
 
     /**
      * Initialize the console color
-     * 
+     *
      * @param code the color code
      */
     ConsoleColor(final String code) {
@@ -174,7 +174,7 @@ public enum ConsoleColor {
                     return false;
             }
         }
-        
+
         return true;
     }
 

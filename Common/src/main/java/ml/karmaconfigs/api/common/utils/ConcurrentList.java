@@ -63,7 +63,6 @@ public final class ConcurrentList<T> implements List<T> {
     }
 
 
-
     /**
      * Removes the first occurrence of the specified element from this list,
      * if it is present (optional operation).  If this list does not contain
@@ -232,9 +231,9 @@ public final class ConcurrentList<T> implements List<T> {
      *                                       from this collection.  Implementations may throw this exception if a
      *                                       matching element cannot be removed or if, in general, removal is not
      *                                       supported.
-     * {@link Iterator#remove()}.  If the collection's iterator does not
-     * support removal then an {@code UnsupportedOperationException} will be
-     * thrown on the first matching element.
+     *                                       {@link Iterator#remove()}.  If the collection's iterator does not
+     *                                       support removal then an {@code UnsupportedOperationException} will be
+     *                                       thrown on the first matching element.
      * @since 1.8
      */
     @Override
@@ -291,9 +290,9 @@ public final class ConcurrentList<T> implements List<T> {
      *                                       if the operator result is a null value and this list does
      *                                       not permit null elements
      *                                       (<a href="Collection.html#optional-restrictions">optional</a>)
-     * If the list's list-iterator does not support the {@code set} operation
-     * then an {@code UnsupportedOperationException} will be thrown when
-     * replacing the first element.
+     *                                       If the list's list-iterator does not support the {@code set} operation
+     *                                       then an {@code UnsupportedOperationException} will be thrown when
+     *                                       replacing the first element.
      * @since 1.8
      */
     @Override
@@ -332,19 +331,19 @@ public final class ConcurrentList<T> implements List<T> {
      * @throws IllegalArgumentException      (<a href="Collection.html#optional-restrictions">optional</a>)
      *                                       if the comparator is found to violate the {@link Comparator}
      *                                       contract
-     *
-     * The implementation takes equal advantage of ascending and
-     * descending order in its input array, and can take advantage of
-     * ascending and descending order in different parts of the same
-     * input array.  It is well-suited to merging two or more sorted arrays:
-     * simply concatenate the arrays and sort the resulting array.
-     *
-     * The implementation was adapted from Tim Peters's list sort for Python
-     * (<a href="http://svn.python.org/projects/python/trunk/Objects/listsort.txt">
-     * TimSort</a>).  It uses techniques from Peter McIlroy's "Optimistic
-     * Sorting and Information Theoretic Complexity", in Proceedings of the
-     * Fourth Annual ACM-SIAM Symposium on Discrete Algorithms, pp 467-474,
-     * January 1993.
+     *                                       <p>
+     *                                       The implementation takes equal advantage of ascending and
+     *                                       descending order in its input array, and can take advantage of
+     *                                       ascending and descending order in different parts of the same
+     *                                       input array.  It is well-suited to merging two or more sorted arrays:
+     *                                       simply concatenate the arrays and sort the resulting array.
+     *                                       <p>
+     *                                       The implementation was adapted from Tim Peters's list sort for Python
+     *                                       (<a href="http://svn.python.org/projects/python/trunk/Objects/listsort.txt">
+     *                                       TimSort</a>).  It uses techniques from Peter McIlroy's "Optimistic
+     *                                       Sorting and Information Theoretic Complexity", in Proceedings of the
+     *                                       Fourth Annual ACM-SIAM Symposium on Discrete Algorithms, pp 467-474,
+     *                                       January 1993.
      * @since 1.8
      */
     @Override
@@ -380,7 +379,7 @@ public final class ConcurrentList<T> implements List<T> {
      * @param index index of the element to return
      * @return the element at the specified position in this list
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         ({@code index < 0 || index >= size()})
+     *                                   ({@code index < 0 || index >= size()})
      */
     @Override
     public T get(final int index) {
@@ -578,7 +577,7 @@ public final class ConcurrentList<T> implements List<T> {
      * changes in the returned list are reflected in this list, and vice-versa.
      * The returned list supports all of the optional list operations supported
      * by this list.
-     *
+     * <p>
      * This method eliminates the need for explicit range operations (of
      * the sort that commonly exist for arrays).  Any operation that expects
      * a list can be used as a range operation by passing a subList view
@@ -590,7 +589,7 @@ public final class ConcurrentList<T> implements List<T> {
      * Similar idioms may be constructed for {@code indexOf} and
      * {@code lastIndexOf}, and all of the algorithms in the
      * {@code Collections} class can be applied to a subList.
-     *
+     * <p>
      * The semantics of the list returned by this method become undefined if
      * the backing list (i.e., this list) is <i>structurally modified</i> in
      * any way other than via the returned list.  (Structural modifications are
@@ -766,10 +765,10 @@ public final class ConcurrentList<T> implements List<T> {
      *
      * @param action The action to be performed for each element
      * @throws NullPointerException if the specified action is null
-     * <pre>{@code
-     *     for (T t : this)
-     *         action.accept(t);
-     * }</pre>
+     *                              <pre>{@code
+     *                                  for (T t : this)
+     *                                      action.accept(t);
+     *                              }</pre>
      * @since 1.8
      */
     @Override
@@ -874,13 +873,13 @@ public final class ConcurrentList<T> implements List<T> {
      * @param e element to be appended to this list
      * @return {@code true} (as specified by {@link Collection#add})
      * @throws UnsupportedOperationException if the {@code add} operation
-     *         is not supported by this list
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this list
-     * @throws NullPointerException if the specified element is null and this
-     *         list does not permit null elements
-     * @throws IllegalArgumentException if some property of this element
-     *         prevents it from being added to this list
+     *                                       is not supported by this list
+     * @throws ClassCastException            if the class of the specified element
+     *                                       prevents it from being added to this list
+     * @throws NullPointerException          if the specified element is null and this
+     *                                       list does not permit null elements
+     * @throws IllegalArgumentException      if some property of this element
+     *                                       prevents it from being added to this list
      */
     @Override
     public boolean add(final T e) {
