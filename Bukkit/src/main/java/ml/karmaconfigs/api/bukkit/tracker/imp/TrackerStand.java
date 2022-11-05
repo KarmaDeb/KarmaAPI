@@ -8,14 +8,12 @@ import ml.karmaconfigs.api.bukkit.tracker.property.PropertyValue;
 import ml.karmaconfigs.api.bukkit.tracker.property.flag.TrackerFlag;
 import ml.karmaconfigs.api.bukkit.util.LineOfSight;
 import ml.karmaconfigs.api.bukkit.util.sight.PointToEntity;
-import ml.karmaconfigs.api.bukkit.util.sight.PointToPoint;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.utils.string.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
@@ -49,9 +47,11 @@ public class TrackerStand extends Tracker {
     private final Set<PropertyValue<?>> updated_properties = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final KarmaPlugin plugin;
     private final Location location;
+    private final Location variable_location;
 
     private ArmorStand stand;
     private BukkitTask task;
+    private BukkitTask track_task;
     private LivingEntity tracking;
     private boolean reset_time = false;
     private boolean reset_task = false;
@@ -73,6 +73,7 @@ public class TrackerStand extends Tracker {
     public TrackerStand(final KarmaPlugin p, final Location l) {
         plugin = p;
         location = l.clone();
+        variable_location = l.clone();
         location.setYaw(180);
 
         init();
@@ -171,11 +172,10 @@ public class TrackerStand extends Tracker {
             }
 
             if (prop == null) {
-                prop = TrackerFlag.PROPERTY_OTHER.makeProperty(newProperty.getName());
-                prop.update(newProperty.getValue());
+                updated_properties.add(newProperty);
+            } else {
+                updated_properties.add(prop);
             }
-
-            updated_properties.add(prop);
         }
 
         return this;
@@ -213,36 +213,19 @@ public class TrackerStand extends Tracker {
      *
      * @return if the tracker has line of sigh for the entity
      * @deprecated This method has been deprecated with the implementation of
-     * the API line of sight class. The method {@link Tracker#getLineOfSight()}
+     * the API line of sight class. The method {@link Tracker#getLineOfSight(ml.karmaconfigs.api.bukkit.tracker.Tracker.SightPart)}
      * should be used instead
      */
     @Deprecated
     public boolean hasLineOfSight() {
         if (tracking != null) {
-            Location stand = getLocation().clone().add(getLocation().getDirection());
+            LineOfSight hSight = getLineOfSight(SightPart.HEAD);
+            LineOfSight bSight = getLineOfSight(SightPart.BODY);
+            LineOfSight fSight = getLineOfSight(SightPart.FEET);
 
-            Vector facing = tracking.getLocation().toVector().subtract(getLocation().toVector()).normalize();
-            Location backwards = tracking.getLocation().clone().subtract(facing);
+            double max_dist = Math.abs(((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "scanDistance").getUnsafe()).doubleValue());
 
-            Block feet = backwards.getBlock();
-
-            double speed = 0.1d;
-            double speed_offset = 0.120;
-            if (!feet.getType().equals(Material.AIR)) {
-                speed_offset = 0.157;
-            }
-
-            double distance = tracking.getEyeLocation().subtract(0, 1.5, 0).distance(stand);
-            PropertyValue<Number> max_distance_property = getProperty(TrackerFlag.TRACKER_NUMBER, "scanDistance");
-            double max_distance = max_distance_property.getValue().doubleValue();
-
-            int blocks_away = (int) max_distance - (int) distance;
-            for (double i = blocks_away; i < max_distance; i++) {
-                speed = speed + speed_offset;
-            }
-
-            LineOfSight p2p = new PointToPoint(stand, tracking.getLocation());
-            return p2p.inLineOfSight(max_distance);
+            return hSight.inLineOfSight(max_dist) || bSight.inLineOfSight(max_dist) || fSight.inLineOfSight(max_dist);
         }
 
         return false;
@@ -251,11 +234,74 @@ public class TrackerStand extends Tracker {
     /**
      * Get the tracker line of sight
      *
+     * @param part the line of sight part to use
      * @return the tracker line of sight
      */
     @Override
-    public LineOfSight getLineOfSight() {
-        return new PointToEntity(getLocation().clone().add(0, 1.5, 0), (tracking != null ? tracking : stand));
+    public LineOfSight getLineOfSight(final SightPart part) {
+        PointToEntity sight;
+
+        boolean small = getProperty(TrackerFlag.PROPERTY_BOOLEAN, "small").getUnsafe();
+        switch (part) {
+            case HEAD:
+                sight = new PointToEntity(stand.getLocation(), (tracking != null ? tracking : stand))
+                        .a(0, (small ? 0.5 : 1.5), 0)
+                        .b(0, (tracking != null ? tracking.getEyeHeight() : (small ? 0.5 : 1.5)), 0);
+                break;
+            case BODY:
+                sight = new PointToEntity(stand.getLocation(), (tracking != null ? tracking : stand))
+                        .a(0, (small ? 0.5 : 1.5), 0)
+                        .b(0, (tracking != null ? tracking.getEyeHeight() / 2 : (small ? 0.25 : 0.75)), 0);
+                break;
+            case FEET:
+            default:
+                sight = new PointToEntity(stand.getLocation(), (tracking != null ? tracking : stand))
+                        .a(0, (small ? 0.5 : 1.5), 0)
+                        .b(0, 0, 0);
+                break;
+        }
+
+        sight.ignore(stand)
+                .ignoreMiddle(true);
+
+        return sight;
+    }
+
+    /**
+     * Get the tracker line of sight with another entity
+     *
+     * @param target the entity to check with
+     * @param part the line of sight part to use
+     * @return the tracker line of sight with entity
+     */
+    @Override
+    public LineOfSight getLineOfSight(final LivingEntity target, final SightPart part) {
+        PointToEntity sight;
+
+        boolean small = getProperty(TrackerFlag.PROPERTY_BOOLEAN, "small").getUnsafe();
+        switch (part) {
+            case HEAD:
+                sight = new PointToEntity(stand.getLocation(), target)
+                        .a(0, (small ? 0.5 : 1.5), 0)
+                        .b(0, (target != null ? target.getEyeHeight() : (small ? 0.5 : 1.5)), 0);
+                break;
+            case BODY:
+                sight = new PointToEntity(stand.getLocation(), (target != null ? target : stand))
+                        .a(0, (small ? 0.5 : 1.5), 0)
+                        .b(0, (target != null ? target.getEyeHeight() / 2 : (small ? 0.25 : 0.75)), 0);
+                break;
+            case FEET:
+            default:
+                sight = new PointToEntity(stand.getLocation(), target)
+                        .a(0, (small ? 0.5 : 1.5), 0)
+                        .b(0, 0, 0);
+                break;
+        }
+
+        sight.ignore(stand)
+                .ignoreMiddle(true);
+
+        return sight;
     }
 
     /**
@@ -270,10 +316,36 @@ public class TrackerStand extends Tracker {
             clone.setYaw(yaw);
             clone.setPitch(pitch);
 
+            variable_location.setX(clone.getX());
+            variable_location.setY(clone.getY());
+            variable_location.setZ(clone.getZ());
+            variable_location.setYaw(clone.getYaw());
+            variable_location.setPitch(clone.getPitch());
+
             return clone;
         }
 
         return location;
+    }
+
+    /**
+     * Get the tracker variable location
+     *
+     * @return the tracker variable location
+     */
+    @Override
+    public Location getVariableLocation() {
+        Location clone = stand.getLocation().clone();
+        clone.setYaw(yaw);
+        clone.setPitch(pitch);
+
+        variable_location.setX(clone.getX());
+        variable_location.setY(clone.getY());
+        variable_location.setZ(clone.getZ());
+        variable_location.setYaw(clone.getYaw());
+        variable_location.setPitch(clone.getPitch());
+
+        return variable_location;
     }
 
     /**
@@ -303,19 +375,28 @@ public class TrackerStand extends Tracker {
     /**
      * Get the direction in where the player is
      *
+     * @param trackEye use tracker eye location
+     * @param tarEye use target eye location
      * @return the direction in where the player is
      */
     @Override
-    public Vector getDirection() {
+    public Vector getDirection(final boolean trackEye, final boolean tarEye) {
         if (stand != null && tracking != null) {
             Location standLocation = stand.getLocation().clone();
-            Location trackLocation = tracking.getLocation().clone();
+            if (trackEye) {
+                boolean small = getProperty(TrackerFlag.PROPERTY_BOOLEAN, "small").getUnsafe();
+                standLocation.add(0, (small ? 0.5 : 1.5), 0);
+            }
+
+            Location trackLocation = (tarEye ? tracking.getEyeLocation() : tracking.getLocation()).clone();
 
             return trackLocation.toVector().subtract(standLocation.toVector()).normalize();
         }
 
-        return location.toVector();
+        return location.getDirection().normalize();
     }
+
+
 
     /**
      * Set up the tracker auto tracker. Once the auto
@@ -348,6 +429,85 @@ public class TrackerStand extends Tracker {
     @Override
     public void start() {
         if (task == null) {
+            track_task = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+                boolean always_track = getProperty(TrackerFlag.TRACKER_BOOLEAN, "ignoreLineOfSight").getUnsafe();
+                double offset = ((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "angleOffset").getUnsafe()).doubleValue();
+                double max_dist = Math.abs(((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "scanDistance").getUnsafe()).doubleValue());
+                boolean track_lock = getProperty(TrackerFlag.TRACKER_BOOLEAN, "leapAtTarget").getUnsafe();
+
+                if (tracking != null) {
+                    if (track_lock && last_track != null && last_track.isValid() && !last_track.isDead()) {
+                        tracking = last_track;
+                    }
+
+                    last_track = tracking;
+
+                    if (tracking.isDead() || !tracking.isValid()) {
+                        tracking = null;
+                    }
+
+                    if (stand != null) {
+                        if (stand.isDead() || !stand.isValid()) {
+                            tracking = null;
+                        }
+                    }
+
+                    if (tracking != null && stand != null) {
+                        Location trackLocation = tracking.getEyeLocation().clone();
+                        Location standLocation = stand.getLocation().clone();
+                        standLocation.setY(standLocation.getY() + Math.max(1.5, tracking.getEyeHeight()));
+
+                        LineOfSight hSight = getLineOfSight(SightPart.HEAD);
+                        LineOfSight bSight = getLineOfSight(SightPart.BODY);
+                        LineOfSight fSight = getLineOfSight(SightPart.FEET);
+
+                        if (hSight.inLineOfSight(max_dist) || bSight.inLineOfSight(max_dist) || fSight.inLineOfSight(max_dist) || always_track) {
+                            if (!hSight.inLineOfSight(max_dist)) {
+                                if (bSight.inLineOfSight(max_dist)) {
+                                    trackLocation.subtract(0d, tracking.getEyeHeight() / 2, 0d);
+                                } else {
+                                    trackLocation.subtract(0d, tracking.getEyeHeight() / 4, 0d);
+                                }
+                            }
+
+                            Vector vector = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
+
+                            if (offset != 0) {
+                                if (offset >= 0) {
+                                    vector = trackLocation.add(0, offset, 0).toVector().subtract(standLocation.toVector()).normalize();
+                                } else {
+                                    vector = trackLocation.subtract(0, Math.abs(offset), 0).toVector().subtract(standLocation.toVector()).normalize();
+                                }
+                            }
+
+                            double angle_x = vector.getY() * (-1);
+                            double x = vector.getX();
+                            double z = vector.getZ();
+                            double angle_y = 180F - Math.toDegrees(Math.atan2(x, z));
+
+                            yaw = (float) angle_y - 180F;
+                            pitch = (180.0F - (float) Math.toDegrees(Math.acos(vector.getY()))) * (-1);
+
+                            Location clone = stand.getLocation().clone();
+                            clone.setYaw(yaw);
+                            clone.setPitch(pitch);
+
+                            variable_location.setX(clone.getX());
+                            variable_location.setY(clone.getY());
+                            variable_location.setZ(clone.getZ());
+                            variable_location.setYaw(clone.getYaw());
+                            variable_location.setPitch(clone.getPitch());
+
+                            plugin.console().debug("Stand yaw: {0} (From: {1})", Level.INFO, yaw, (180 + yaw));
+                            plugin.console().debug("Stand pitch: {0} (From: {1})", Level.INFO, pitch, (180 + pitch));
+
+                            EulerAngle angle = new EulerAngle(angle_x, Math.toRadians(angle_y), 0);
+                            stand.setHeadPose(angle);
+                        }
+                    }
+                }
+            }, 0, 1);
+
             if (stand == null || stand.isDead() || !stand.isValid()) {
                 if (stand != null) stand.remove();
 
@@ -373,118 +533,106 @@ public class TrackerStand extends Tracker {
                     reset_task = false;
 
                     task.cancel();
+                    track_task.cancel();
                     task = null;
+                    track_task = null;
                     reset_time = true;
 
                     start();
-                    return;
-                }
-
-                if (reset_time) {
-                    reset_time = false;
-                    start.set(System.currentTimeMillis());
-                }
-
-                boolean always_track = getProperty(TrackerFlag.TRACKER_BOOLEAN, "ignoreLineOfSight").getUnsafe();
-                double offset = ((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "angleOffset").getUnsafe()).doubleValue();
-                double max_dist = Math.abs(((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "scanDistance").getUnsafe()).doubleValue());
-                boolean track_lock = getProperty(TrackerFlag.TRACKER_BOOLEAN, "leapAtTarget").getUnsafe();
-                if (tracker != null && stand != null && !stand.isDead() && stand.isValid()) {
-                    tracking = tracker.track(this, max_dist);
-                }
-
-                if (tracking != null) {
-                    if (track_lock && last_track != null && last_track.isValid() && !last_track.isDead()) {
-                        tracking = last_track;
+                } else {
+                    if (reset_time) {
+                        reset_time = false;
+                        start.set(System.currentTimeMillis());
                     }
 
-                    last_track = tracking;
+                    boolean always_track = getProperty(TrackerFlag.TRACKER_BOOLEAN, "ignoreLineOfSight").getUnsafe();
+                    double max_dist = Math.abs(((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "scanDistance").getUnsafe()).doubleValue());
+                    boolean track_lock = getProperty(TrackerFlag.TRACKER_BOOLEAN, "leapAtTarget").getUnsafe();
 
-                    if (tracking.isDead() || !tracking.isValid()) {
-                        if (!kill_queue.contains(tracking.getUniqueId())) {
-                            last_killed = tracking.getUniqueId();
-                            last_track = null;
-                            kill_queue.add(last_killed);
+                    LivingEntity[] multi;
+                    if (tracker != null && (stand != null && !stand.isDead() && stand.isValid())) {
+                        multi = tracker.track(this, max_dist);
+                    } else {
+                        multi = new LivingEntity[]{tracking, last_track};
+                    }
 
-                            Event event = new TrackerTargetDiedEvent(this, tracking);
-                            Bukkit.getServer().getPluginManager().callEvent(event);
+                    tracking = null;
+                    for (LivingEntity entity : multi) {
+                        if (entity != null) {
+                            LineOfSight hSight = getLineOfSight(entity, SightPart.HEAD);
+                            LineOfSight bSight = getLineOfSight(entity, SightPart.BODY);
+                            LineOfSight fSight = getLineOfSight(entity, SightPart.FEET);
+
+                            if (hSight.inLineOfSight(max_dist) || bSight.inLineOfSight(max_dist) || fSight.inLineOfSight(max_dist) || always_track) {
+                                tracking = entity;
+                                break;
+                            }
+                        }
+                    }
+                    if (track_lock && last_track != null && last_track.isValid() && !last_track.isDead()) {
+                        LineOfSight hSight = getLineOfSight(last_track, SightPart.HEAD);
+                        LineOfSight bSight = getLineOfSight(last_track, SightPart.BODY);
+                        LineOfSight fSight = getLineOfSight(last_track, SightPart.FEET);
+
+                        if (hSight.inLineOfSight(max_dist) || bSight.inLineOfSight(max_dist) || fSight.inLineOfSight(max_dist) || always_track) {
+                            tracking = last_track;
+                        }
+                    }
+
+                    if (tracking != null) {
+                        if (last_track != null) {
+                            if (!tracking.getUniqueId().equals(last_track.getUniqueId())) {
+                                Event event = new TrackerLostEvent(this, last_track);
+                                Bukkit.getServer().getPluginManager().callEvent(event);
+
+                                last_track = tracking;
+                            }
+                        } else {
+                            last_track = tracking;
                         }
 
-                        tracking = null;
-                        return;
-                    }
+                        if (tracking.isDead() || !tracking.isValid()) {
+                            if (!kill_queue.contains(tracking.getUniqueId())) {
+                                last_killed = tracking.getUniqueId();
+                                last_track = null;
+                                kill_queue.add(last_killed);
 
-                    if (stand != null) {
-                        if (stand.isDead() || !stand.isValid()) {
-                            Event event = new TrackerDiedEvent(this);
-                            Bukkit.getServer().getPluginManager().callEvent(event);
+                                Event event = new TrackerTargetDiedEvent(this, tracking);
+                                Bukkit.getServer().getPluginManager().callEvent(event);
+                            }
 
                             tracking = null;
-
-                            return;
-                        }
-                    } else {
-                        return;
-                    }
-
-                    Location trackLocation = tracking.getEyeLocation().clone();
-                    Location standLocation = stand.getLocation().clone();
-                    LineOfSight lineOfSight = getLineOfSight();
-
-                    if ((lineOfSight.inLineOfSight(max_dist) && standLocation.distance(trackLocation) <= max_dist) || always_track) {
-                        Vector vector = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
-                        if (standLocation.distance(trackLocation) >= (max_dist / 3)) {
-                            double tmp_offset = Math.abs((standLocation.distance(trackLocation) - max_dist)) / 100;
-                            vector = trackLocation.add(0, tmp_offset, 0).toVector().subtract(standLocation.toVector()).normalize();
                         }
 
-                        if (offset != 0) {
-                            if (offset >= 0) {
-                                vector = trackLocation.add(0, offset, 0).toVector().subtract(standLocation.toVector()).normalize();
-                            } else {
-                                vector = trackLocation.subtract(0, Math.abs(offset), 0).toVector().subtract(standLocation.toVector()).normalize();
+                        if (stand != null) {
+                            if (stand.isDead() || !stand.isValid()) {
+                                Event event = new TrackerDiedEvent(this);
+                                Bukkit.getServer().getPluginManager().callEvent(event);
+
+                                tracking = null;
                             }
                         }
 
-                        double angle_x = vector.getY() * (-1);
-                        double x = vector.getX();
-                        double z = vector.getZ();
-                        double angle_y = 180F - Math.toDegrees(Math.atan2(x, z));
+                        if (tracking != null && stand != null) {
+                            long end = System.currentTimeMillis();
+                            int seconds = (int) (end - start.get()) / 1000;
 
-                        yaw = (float) angle_y - 180F;
-                        pitch = (180.0F - (float) Math.toDegrees(Math.acos(vector.getY()))) * (-1);
+                            Event event = new TrackerTickEvent(this, tracking, 1);
+                            Bukkit.getServer().getPluginManager().callEvent(event);
+                            if (last_second.get() != seconds) {
+                                last_second.set(seconds);
 
-                        plugin.console().debug("Stand yaw: {0} (From: {1})", Level.INFO, yaw, (180 + yaw));
-                        plugin.console().debug("Stand pitch: {0} (From: {1})", Level.INFO, pitch, (180 + pitch));
-
-                        EulerAngle angle = new EulerAngle(angle_x, Math.toRadians(angle_y), 0);
-                        stand.setHeadPose(angle);
-
-                        long end = System.currentTimeMillis();
-                        int seconds = (int) (end - start.get()) / 1000;
-
-                        Event event = new TrackerTickEvent(this, tracking, 1);
-                        Bukkit.getServer().getPluginManager().callEvent(event);
-                        if (last_second.get() != seconds) {
-                            last_second.set(seconds);
-
-                            Event second = new TrackerSecondEvent(this, tracking, seconds);
-                            Bukkit.getServer().getPluginManager().callEvent(second);
+                                Event second = new TrackerSecondEvent(this, tracking, seconds);
+                                Bukkit.getServer().getPluginManager().callEvent(second);
+                            }
                         }
-                    }
-                } else {
-                    if (last_track != null && !last_track.isDead() && last_track.isValid()) {
-                        Event event = new TrackerLostEvent(this, last_track);
-                        Bukkit.getServer().getPluginManager().callEvent(event);
-
-                        last_track = null;
-                    }
-
-                    if (last_killed != null) {
-                        kill_queue.remove(last_killed);
-                        last_killed = null;
-                        kill_queue.trimToSize();
-                        last_track = null;
+                    } else {
+                        if (last_killed != null) {
+                            kill_queue.remove(last_killed);
+                            last_killed = null;
+                            kill_queue.trimToSize();
+                            last_track = null;
+                        }
                     }
                 }
             }, 0, period);
@@ -820,7 +968,7 @@ public class TrackerStand extends Tracker {
      * @deprecated As of build of 16/10/2022 this does the same as
      * {@link Tracker#destroy()}. Previously, destroy would kill the
      * tracker entity, and also remove from memory. Now it will be only
-     * killed to keep a solid respawn value at {@link ml.karmaconfigs.api.bukkit.tracker.event.TrackerSpawnEvent}
+     * killed to keep a solid respawn value at {@link TrackerSpawnEvent}
      */
     @Deprecated
     public @ApiStatus.ScheduledForRemoval(inVersion = "1.3.4-SNAPSHOT") void kill() {

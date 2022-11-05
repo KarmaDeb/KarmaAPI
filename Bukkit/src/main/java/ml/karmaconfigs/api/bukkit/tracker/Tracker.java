@@ -1,5 +1,6 @@
 package ml.karmaconfigs.api.bukkit.tracker;
 
+import ml.karmaconfigs.api.bukkit.tracker.event.TrackerSpawnEvent;
 import ml.karmaconfigs.api.bukkit.tracker.property.PropertyValue;
 import ml.karmaconfigs.api.bukkit.tracker.property.flag.TrackerFlag;
 import ml.karmaconfigs.api.bukkit.util.LineOfSight;
@@ -88,7 +89,7 @@ public abstract class Tracker {
      *
      * @return if the tracker has line of sigh for the entity
      * @deprecated This method has been deprecated with the implementation of
-     * the API line of sight class. The method {@link Tracker#getLineOfSight()}
+     * the API line of sight class. The method {@link Tracker#getLineOfSight(SightPart)}
      * should be used instead
      */
     @Deprecated
@@ -97,16 +98,33 @@ public abstract class Tracker {
     /**
      * Get the tracker line of sight
      *
+     * @param part the line of sight part to use
      * @return the tracker line of sight
      */
-    public abstract LineOfSight getLineOfSight();
+    public abstract LineOfSight getLineOfSight(final SightPart part);
+
+    /**
+     * Get the tracker line of sight with another entity
+     *
+     * @param target the entity to check with
+     * @param part the line of sight part to use
+     * @return the tracker line of sight with entity
+     */
+    public abstract LineOfSight getLineOfSight(final LivingEntity target, final SightPart part);
 
     /**
      * Get the tracker location
      *
      * @return the tracker location
      */
-    public abstract Location getLocation();
+    public abstract Location getLocation();/**
+     * Get the tracker variable location
+     *
+     * @return the tracker variable location
+     */
+
+
+    public abstract Location getVariableLocation();
 
     /**
      * Get the tracker world
@@ -125,9 +143,11 @@ public abstract class Tracker {
     /**
      * Get the direction in where the player is
      *
+     * @param trackEye use tracker eye location
+     * @param tarEye use target eye location
      * @return the direction in where the player is
      */
-    public abstract Vector getDirection();
+    public abstract Vector getDirection(final boolean trackEye, final boolean tarEye);
 
     /**
      * Set up the tracker auto tracker. Once the auto
@@ -172,7 +192,7 @@ public abstract class Tracker {
      * @deprecated As of build of 16/10/2022 this does the same as
      * {@link Tracker#destroy()}. Previously, destroy would kill the
      * tracker entity, and also remove from memory. Now it will be only
-     * killed to keep a solid respawn value at {@link ml.karmaconfigs.api.bukkit.tracker.event.TrackerSpawnEvent}
+     * killed to keep a solid respawn value at {@link TrackerSpawnEvent}
      */
     @Deprecated
     public @ApiStatus.ScheduledForRemoval(inVersion = "1.3.4-SNAPSHOT")
@@ -189,5 +209,23 @@ public abstract class Tracker {
      */
     public final long randomPeriod(final int max) {
         return (long) ((Math.random() * (Math.max(10, Math.abs(max)) - 1)) + 1);
+    }
+
+    /**
+     * Tracker line of sight part
+     */
+    public enum SightPart {
+        /**
+         * Head part
+         */
+        HEAD,
+        /**
+         * Body part
+         */
+        BODY,
+        /**
+         * Feet part
+         */
+        FEET
     }
 }

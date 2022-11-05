@@ -1,9 +1,11 @@
 package ml.karmaconfigs.api.bukkit.tracker;
 
+import ml.karmaconfigs.api.common.utils.Decliner;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
+import javax.xml.ws.Provider;
 import java.util.Collection;
 
 /**
@@ -16,9 +18,9 @@ public interface AutoTracker {
      *
      * @param tracker    the tracker
      * @param max_radius the max search radius
-     * @return the living entity, or null if none
+     * @return the entities to track, ordered by priority
      */
-    default LivingEntity track(final Tracker tracker, final double max_radius) {
+    default LivingEntity[] track(final Tracker tracker, final double max_radius) {
         LivingEntity entity = null;
 
         Collection<Entity> entities = tracker.getWorld().getNearbyEntities(tracker.getLocation(), max_radius, max_radius, max_radius);
@@ -32,6 +34,6 @@ public interface AutoTracker {
             }
         }
 
-        return entity;
+        return new LivingEntity[]{entity};
     }
 }
