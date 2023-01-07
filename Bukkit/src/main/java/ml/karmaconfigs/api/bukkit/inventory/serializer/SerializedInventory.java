@@ -29,7 +29,7 @@ public final class SerializedInventory {
     public SerializedInventory(final UUID i, final KarmaPlugin owner) {
         identifier = i;
         String fl_name = i.toString().replace("-", "") + ".kf";
-        container = owner.getFile(fl_name, "cache", "inventory");
+        container = owner.loadFile(fl_name, "cache", "inventory");
     }
 
     /**

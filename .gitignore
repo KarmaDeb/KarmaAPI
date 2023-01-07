@@ -1,11 +1,15 @@
 # Project exclude paths
 /Bukkit/target/
 /BukkitPlugin/target/
+/BukkitPlugin/KarmaAPI-BukkitPlugin.iml
 /Bundle/target/
 /Bungee/target/
 /BungeePlugin/target/
+/BungeePlugin/BungeePlugin.iml
 /Common/target/
-/Servlet/target/
 /target/
 /Velocity/target/
 /VelocityPlugin/target/
+/VelocityPlugin/VelocityPlugin.iml
+/PluginBundle/target
+/PluginBundle/PluginBundle.iml

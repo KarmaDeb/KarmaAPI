@@ -1,0 +1,5 @@
+name: ${plugin.name}
+version: ${plugin.version}
+main: ml.karmaconfigs.api.bungee.Main
+author: KarmaDev
+description: A plugin that creates a bridge between the KarmaAPI and Bukkit

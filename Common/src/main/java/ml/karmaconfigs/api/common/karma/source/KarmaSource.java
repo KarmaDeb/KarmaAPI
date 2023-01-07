@@ -144,7 +144,7 @@ public interface KarmaSource extends Serializable {
      * @param path the file path
      * @return the source file
      */
-    default KarmaMain getFile(final String name, final String... path) {
+    default KarmaMain loadFile(final String name, final String... path) {
         return new KarmaMain(this, name, path);
     }
 
