@@ -25,12 +25,12 @@ package ml.karmaconfigs.api.common.karma.loader;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.JavaVM;
+import ml.karmaconfigs.api.common.utils.JavaVM;
 import ml.karmaconfigs.api.common.ResourceDownloader;
 import ml.karmaconfigs.api.common.karma.loader.component.NameComponent;
 import ml.karmaconfigs.api.common.utils.enums.Level;
-import ml.karmaconfigs.api.common.utils.file.FileUtilities;
-import ml.karmaconfigs.api.common.utils.file.PathUtilities;
+import ml.karmaconfigs.api.common.data.file.FileUtilities;
+import ml.karmaconfigs.api.common.data.path.PathUtilities;
 import org.burningwave.core.assembler.StaticComponentContainer;
 
 import java.io.File;

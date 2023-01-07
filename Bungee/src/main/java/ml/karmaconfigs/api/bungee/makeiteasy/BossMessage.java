@@ -25,12 +25,12 @@ package ml.karmaconfigs.api.bungee.makeiteasy;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.boss.*;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
+import ml.karmaconfigs.api.common.minecraft.boss.*;
 import ml.karmaconfigs.api.common.timer.SchedulerUnit;
 import ml.karmaconfigs.api.common.timer.SourceScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 

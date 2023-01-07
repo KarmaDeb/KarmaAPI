@@ -25,7 +25,7 @@ package ml.karmaconfigs.api.common.timer.scheduler.worker;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.karma.APISource;
+import ml.karmaconfigs.api.common.karma.source.APISource;
 import ml.karmaconfigs.api.common.timer.scheduler.CancellableScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 

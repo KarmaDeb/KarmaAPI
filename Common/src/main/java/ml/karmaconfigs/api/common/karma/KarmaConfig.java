@@ -25,13 +25,17 @@ package ml.karmaconfigs.api.common.karma;
  *  SOFTWARE.
  */
 
+import ml.karmaconfigs.api.common.data.file.FileUtilities;
+import ml.karmaconfigs.api.common.data.path.PathUtilities;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
 import ml.karmaconfigs.api.common.karma.file.element.KarmaArray;
 import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
 import ml.karmaconfigs.api.common.karma.file.element.KarmaObject;
+import ml.karmaconfigs.api.common.karma.file.yaml.FileCopy;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.utils.enums.Level;
-import ml.karmaconfigs.api.common.utils.logging.WebTarget;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.logger.web.WebTarget;
+import ml.karmaconfigs.api.common.string.StringUtils;
 
 /**
  * Karma configuration
@@ -124,7 +128,7 @@ public final class KarmaConfig {
 
     /**
      * Get if the specified level should be debugged in
-     * {@link ml.karmaconfigs.api.common.karmafile.karmayaml.FileCopy}
+     * {@link FileCopy}
      *
      * @param lvl the level
      * @return if the level is allowed to debug
@@ -155,7 +159,7 @@ public final class KarmaConfig {
 
     /**
      * Get if the specified level should be debugged in
-     * {@link ml.karmaconfigs.api.common.utils.file.FileUtilities} or {@link ml.karmaconfigs.api.common.utils.file.PathUtilities}
+     * {@link FileUtilities} or {@link PathUtilities}
      *
      * @param lvl the level
      * @return if the level is allowed to debug

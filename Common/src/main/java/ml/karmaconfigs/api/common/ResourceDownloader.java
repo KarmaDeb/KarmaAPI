@@ -26,11 +26,11 @@ package ml.karmaconfigs.api.common;
  */
 
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
 import ml.karmaconfigs.api.common.utils.enums.Level;
-import ml.karmaconfigs.api.common.utils.file.FileUtilities;
+import ml.karmaconfigs.api.common.data.file.FileUtilities;
 
 import javax.net.ssl.*;
 import java.io.File;

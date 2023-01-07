@@ -1,22 +1,19 @@
 package ml.karmaconfigs.api.common.karma.file;
 
-import ml.karmaconfigs.api.common.karma.APISource;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
+import ml.karmaconfigs.api.common.karma.source.APISource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.karma.file.element.*;
 import ml.karmaconfigs.api.common.karma.file.error.KarmaFormatException;
-import ml.karmaconfigs.api.common.karmafile.AsyncKarmaFile;
-import ml.karmaconfigs.api.common.karmafile.KarmaFile;
-import ml.karmaconfigs.api.common.karmafile.Key;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
 import ml.karmaconfigs.api.common.utils.enums.Level;
-import ml.karmaconfigs.api.common.utils.file.PathUtilities;
-import ml.karmaconfigs.api.common.utils.string.ListTransformation;
-import ml.karmaconfigs.api.common.utils.string.OptionsBuilder;
-import ml.karmaconfigs.api.common.utils.string.RandomString;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
-import ml.karmaconfigs.api.common.utils.string.util.TextContent;
-import ml.karmaconfigs.api.common.utils.string.util.TextType;
+import ml.karmaconfigs.api.common.data.path.PathUtilities;
+import ml.karmaconfigs.api.common.string.ListTransformation;
+import ml.karmaconfigs.api.common.string.random.OptionsBuilder;
+import ml.karmaconfigs.api.common.string.random.RandomString;
+import ml.karmaconfigs.api.common.string.StringUtils;
+import ml.karmaconfigs.api.common.string.text.TextContent;
+import ml.karmaconfigs.api.common.string.text.TextType;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -71,49 +68,6 @@ public class KarmaMain {
      * @throws IllegalStateException if something goes wrong
      */
     public KarmaMain(final KarmaSource source, final Path doc) throws RuntimeException {
-        if (source.migrateLegacyKarmaFile()) {
-            List<String> lines = PathUtilities.readAllLines(doc);
-
-            if (!lines.isEmpty()) {
-                String first = lines.get(0);
-
-                if (!first.startsWith("(") && !first.startsWith("(\"main\"")) {
-                    //KarmaConfig config = new KarmaConfig(); Cannot use KarmaConfig as it depends on KarmaMain. Recursion causes crash
-
-                    //Must be migrated
-                    //if (config.debug(Level.WARNING)) {
-                    source.console().debug("Preparing to migrate from legacy karma file {0} to modern format", Level.WARNING, PathUtilities.getPrettyPath(doc));
-                    //}
-
-                    try {
-                        @SuppressWarnings("deprecation")
-                        KarmaMain migrated = KarmaMain.fromLegacy(source, new KarmaFile(doc));
-                        if (migrated.save(doc)) {
-                            //if (config.debug(Level.OK)) {
-                            source.console().debug("Migrated successfully from legacy karma file {0}", Level.OK, PathUtilities.getPrettyPath(doc));
-                            //}
-                        } else {
-                            //if (config.log(Level.WARNING)) {
-                            source.logger().scheduleLog(Level.WARNING, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(doc));
-                            //}
-                            //if (config.debug(Level.GRAVE)) {
-                            source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(doc));
-                            //}
-                        }
-                    } catch (Throwable ex) {
-                        //if (config.log(Level.GRAVE)) {
-                        source.logger().scheduleLog(Level.GRAVE, ex);
-                        source.logger().scheduleLog(Level.INFO, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(doc));
-                        //}
-
-                        //if (config.debug(Level.GRAVE)) {
-                        source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(doc));
-                        //}
-                    }
-                }
-            }
-        }
-
         document = doc;
         preCache();
     }
@@ -131,50 +85,6 @@ public class KarmaMain {
             main = main.resolve(str);
 
         document = main.resolve(name);
-
-        if (source.migrateLegacyKarmaFile()) {
-            List<String> lines = PathUtilities.readAllLines(document);
-
-            if (!lines.isEmpty()) {
-                String first = lines.get(0);
-
-                if (!first.startsWith("(") && !first.startsWith("(\"main\"")) {
-                    //KarmaConfig config = new KarmaConfig();
-
-                    //Must be migrated
-                    //if (config.debug(Level.WARNING)) {
-                    source.console().debug("Preparing to migrate from legacy karma file {0} to modern format", Level.WARNING, PathUtilities.getPrettyPath(document));
-                    //}
-
-                    try {
-                        @SuppressWarnings("deprecation")
-                        KarmaMain migrated = KarmaMain.fromLegacy(source, new KarmaFile(document));
-                        if (migrated.save(document)) {
-                            //if (config.debug(Level.OK)) {
-                            source.console().debug("Migrated successfully from legacy karma file {0}", Level.OK, PathUtilities.getPrettyPath(document));
-                            //}
-                        } else {
-                            //if (config.log(Level.WARNING)) {
-                            source.logger().scheduleLog(Level.WARNING, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(document));
-                            //}
-                            //if (config.debug(Level.GRAVE)) {
-                            source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(document));
-                            //}
-                        }
-                    } catch (Throwable ex) {
-                        //if (config.log(Level.GRAVE)) {
-                        source.logger().scheduleLog(Level.GRAVE, ex);
-                        source.logger().scheduleLog(Level.INFO, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(document));
-                        //}
-
-                        //if (config.debug(Level.GRAVE)) {
-                        source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(document));
-                        //}
-                    }
-                }
-            }
-        }
-
         preCache();
     }
 
@@ -951,7 +861,7 @@ public class KarmaMain {
         if (element != null) {
             //Return true if the key element can be retrieved with the key and vice versa
             String tmp = reverse.getOrDefault(element, null);
-            return tmp.equals(tmpKey);
+            return tmpKey.equals(tmp);
         }
 
         return false;
@@ -1012,7 +922,28 @@ public class KarmaMain {
         if (element != null) {
             content.put(tmpKey, element);
         } else {
-            content.remove(tmpKey);
+            KarmaElement e = content.remove(tmpKey);
+            reverse.remove(e); //Just in case
+        }
+    }
+
+    /**
+     * Set recursively a value
+     *
+     * @param key the value key
+     * @param element the value
+     */
+    public void setRecursive(final String key, final KarmaElement element) {
+        String tmpKey = key;
+        if (!tmpKey.startsWith("main."))
+            tmpKey = "main." + tmpKey;
+
+        if (element != null) {
+            content.put(tmpKey, element);
+            reverse.put(element, key);
+        } else {
+            KarmaElement e = content.remove(tmpKey);
+            reverse.remove(e);
         }
     }
 
@@ -1115,6 +1046,10 @@ public class KarmaMain {
                         String value = line.replaceFirst(line.substring(0, start) + result + " ", "");
 
                         KarmaElement element = content.getOrDefault(key, null);
+                        if (element != null) {
+                            recursive = isRecursive(key);
+                        }
+
                         if (element == null && internal != null) {
                             KarmaMain tmp = new KarmaMain(internal);
                             element = tmp.content.getOrDefault(key, null);
@@ -1275,7 +1210,6 @@ public class KarmaMain {
 
                                 i2 = 1;
                                 StringBuilder realKeyBuilder = new StringBuilder("main");
-                                int dataIndex = 0;
                                 for (String sub : data) {
                                     if (!sub.equals("main")) {
                                         realKeyBuilder.append(".").append(sub);
@@ -1289,7 +1223,6 @@ public class KarmaMain {
 
                                         source.console().debug("Section: {0} ({1})", Level.INFO, sub, realKeyBuilder);
 
-                                        Set<String> sec_to_add = new HashSet<>();
                                         if (!values.isEmpty()) {
                                             for (String key : values.keySet()) {
                                                 KarmaElement value = values.get(key);
@@ -1715,6 +1648,8 @@ public class KarmaMain {
                         if (element == null) {
                             element = tmp.get(key, null);
                         } else {
+                            recursive = isRecursive(key);
+
                             KarmaElement original = tmp.get(key, null);
                             if (original.isString() && !element.isString() ||
                                     original.isNumber() && !element.isNumber() ||
@@ -1890,192 +1825,6 @@ public class KarmaMain {
     @Override
     public String toString() {
         return raw;
-    }
-
-    /**
-     * Load data from legacy karma file
-     *
-     * @param source the source that is converting from legacy
-     * @param kf     the legacy karma file
-     * @return the karma file
-     * @throws IOException if something goes wrong
-     */
-    @SuppressWarnings("deprecation")
-    public static KarmaMain fromLegacy(final KarmaSource source, final KarmaFile kf) throws IOException {
-        Set<Key> keys = kf.getKeys(false);
-
-        OptionsBuilder builder = RandomString.createBuilder()
-                .withContent(TextContent.NUMBERS_AND_LETTERS)
-                .withSize(16)
-                .withType(TextType.RANDOM_SIZE);
-        String random = StringUtils.generateString(builder).create();
-        Path document = Files.createTempFile(random, "-kf");
-
-        List<String> write = new ArrayList<>();
-        List<String> wrote_keys = new ArrayList<>();
-
-        write.add("(\"main\"");
-
-        for (Key k : keys) {
-            String path = k.getPath().replace(".", "_").toLowerCase();
-            if (!wrote_keys.contains(path)) {
-                Object value = k.getValue();
-
-                wrote_keys.add(path);
-
-                if (value instanceof Object[]) {
-                    Object[] objects = (Object[]) value;
-                    write.add("\t'" + path + "' -> {");
-                    for (Object obj : objects) {
-                        write.add("\t\t'" + obj + "'");
-                    }
-                    write.add("\t}");
-                } else {
-                    if (value instanceof Iterable<?>) {
-                        Iterable<?> collection = (Iterable<?>) value;
-
-                        write.add("\t'" + path + "' -> {");
-                        collection.forEach((v) -> {
-                            write.add("\t\t'" + v + "'");
-                        });
-                        write.add("\t}");
-                    } else {
-                        if (value instanceof String) {
-                            write.add("\t'" + path + "' -> \"" + value + "\"");
-                        } else {
-                            write.add("\t'" + path + "' -> " + value);
-                        }
-                    }
-                }
-            }
-        }
-
-        write.add(")");
-        Files.write(document, StringUtils.listToString(write, ListTransformation.NEW_LINES).getBytes(StandardCharsets.UTF_8));
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> PathUtilities.destroy(document)));
-
-        return new KarmaMain(source, document);
-    }
-
-    /**
-     * Load data from legacy async karma file
-     *
-     * @param source the source that is converting from legacy
-     * @param kf     the legacy karma file
-     * @return the karma file
-     */
-    @SuppressWarnings("deprecation")
-    public static LateScheduler<KarmaMain> fromLegacy(final KarmaSource source, final AsyncKarmaFile kf) {
-        LateScheduler<KarmaMain> result = new AsyncLateScheduler<>();
-
-        kf.getKeys(false).whenComplete((keys) -> {
-            try {
-                OptionsBuilder builder = RandomString.createBuilder()
-                        .withContent(TextContent.NUMBERS_AND_LETTERS)
-                        .withSize(16)
-                        .withType(TextType.RANDOM_SIZE);
-                String random = StringUtils.generateString(builder).create();
-                Path document = Files.createTempFile(random, "-kf");
-
-                List<String> write = new ArrayList<>();
-                List<String> wrote_keys = new ArrayList<>();
-
-                write.add("(\"main\"");
-
-                for (Key k : keys) {
-                    String path = k.getPath().replace(".", "_").toLowerCase();
-                    if (!wrote_keys.contains(path)) {
-                        Object value = k.getValue();
-
-                        wrote_keys.add(path);
-
-                        if (value instanceof Object[]) {
-                            Object[] objects = (Object[]) value;
-                            write.add("\t'" + path + "' -> {");
-                            for (Object obj : objects) {
-                                write.add("\t\t'" + obj + "'");
-                            }
-                            write.add("\t}");
-                        } else {
-                            if (value instanceof Iterable<?>) {
-                                Iterable<?> collection = (Iterable<?>) value;
-
-                                write.add("\t'" + path + "' -> {");
-                                collection.forEach((v) -> {
-                                    write.add("\t\t'" + v + "'");
-                                });
-                                write.add("\t}");
-                            } else {
-                                if (value instanceof String) {
-                                    write.add("\t'" + path + "' -> \"" + value + "\"");
-                                } else {
-                                    write.add("\t'" + path + "' -> " + value);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                write.add(")");
-                Files.write(document, StringUtils.listToString(write, ListTransformation.NEW_LINES).getBytes(StandardCharsets.UTF_8));
-
-                Runtime.getRuntime().addShutdownHook(new Thread(() -> PathUtilities.destroy(document)));
-
-                result.complete(new KarmaMain(source, document));
-            } catch (Throwable ex) {
-                result.complete(null, ex);
-            }
-        });
-
-        return result;
-    }
-
-    /**
-     * Migrate a legacy KarmaFile
-     *
-     * @param source the source that is performing the migration
-     * @param legacy the legacy KarmaFile
-     * @return the migrated file
-     * @throws IOException if something goes wrong
-     */
-    @SuppressWarnings("deprecation")
-    public static KarmaMain migrate(final KarmaSource source, final KarmaFile legacy) throws IOException {
-        Path document = legacy.getFile().toPath();
-        KarmaMain migrated = KarmaMain.fromLegacy(source, legacy);
-
-        if (migrated.save(document)) {
-            source.console().debug("Migrated successfully from legacy karma file {0}", Level.OK, PathUtilities.getPrettyPath(document));
-        } else {
-            source.logger().scheduleLog(Level.WARNING, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(document));
-            source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(document));
-        }
-
-        return migrated;
-    }
-
-    /**
-     * Migrate a legacy KarmaFile asynchronous
-     *
-     * @param source the source that is performing the migration
-     * @param legacy the legacy KarmaFile
-     * @return the migrated file
-     * @throws IOException if something goes wrong
-     */
-    @SuppressWarnings("deprecation")
-    public static KarmaMain migrate(final KarmaSource source, final AsyncKarmaFile legacy) throws IOException {
-        //We don't want async
-        Path document = legacy.getFile().toPath();
-        KarmaMain migrated = KarmaMain.fromLegacy(source, legacy.synchronize());
-
-        if (migrated.save(document)) {
-            source.console().debug("Migrated successfully from legacy karma file {0}", Level.OK, PathUtilities.getPrettyPath(document));
-        } else {
-            source.logger().scheduleLog(Level.WARNING, "Failed when migrating from legacy karma file {0} to modern karma main file", PathUtilities.getPrettyPath(document));
-            source.console().debug("Failed to migrate from legacy karma file {0}", Level.GRAVE, PathUtilities.getPrettyPath(document));
-        }
-
-        return migrated;
     }
 
     /**

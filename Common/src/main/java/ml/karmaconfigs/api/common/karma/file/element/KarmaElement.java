@@ -1,6 +1,7 @@
 package ml.karmaconfigs.api.common.karma.file.element;
 
 import ml.karmaconfigs.api.common.karma.file.error.NotTypeError;
+import ml.karmaconfigs.api.common.triple.TriEntry;
 
 /**
  * Karma element for the new KarmaFile API which
@@ -10,6 +11,62 @@ import ml.karmaconfigs.api.common.karma.file.error.NotTypeError;
  * @since 1.3.2-SNAPSHOT
  */
 public abstract class KarmaElement {
+
+    /**
+     * Create a KarmaElement from a character sequence
+     *
+     * @param raw the raw data
+     * @return the element
+     */
+    public static KarmaElement from(final CharSequence raw) {
+        return new KarmaObject(raw.toString());
+    }
+
+    /**
+     * Create a KarmaElement from a number
+     *
+     * @param raw the raw data
+     * @return the element
+     */
+    public static KarmaElement from(final Number raw) {
+        return new KarmaObject(raw);
+    }
+
+    /**
+     * Create a KarmaElement from a boolean
+     *
+     * @param raw the raw data
+     * @return the element
+     */
+    public static KarmaElement from(final boolean raw) {
+        return new KarmaObject(raw);
+    }
+
+    /**
+     * Create a KarmaElement from an array of elements
+     *
+     * @param raw the raw data
+     * @return the element
+     */
+    public static KarmaElement from(KarmaElement... raw) {
+        return new KarmaArray(raw);
+    }
+
+    /**
+     * Create a KarmaElement from map
+     *
+     * @param raw the raw data
+     * @return the element
+     */
+    @SafeVarargs
+    public static KarmaElement from(TriEntry<String, KarmaElement, Boolean>... raw) {
+        KarmaKeyArray array = new KarmaKeyArray();
+        for (TriEntry<String, KarmaElement, Boolean> entries : raw) {
+            array.add(entries.getKey(), entries.getValue(), entries.getSub());
+        }
+
+        return array;
+    }
 
     /**
      * Copy the element
@@ -82,6 +139,13 @@ public abstract class KarmaElement {
      * @return the UPPER CASE value(s)
      */
     public abstract KarmaElement toUpperCase();
+
+    /**
+     * Get the element type
+     *
+     * @return the element type
+     */
+    public abstract String getType();
 
     /**
      * Get the element object

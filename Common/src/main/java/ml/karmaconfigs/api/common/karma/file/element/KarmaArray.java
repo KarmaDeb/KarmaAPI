@@ -1,6 +1,6 @@
 package ml.karmaconfigs.api.common.karma.file.element;
 
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -40,7 +40,24 @@ public class KarmaArray extends KarmaElement implements Iterable<KarmaElement> {
      * @param element the element to remove
      */
     public void remove(final KarmaElement... element) {
-        Arrays.asList(element).forEach(elements::remove);
+        Set<KarmaElement> remove = new HashSet<>();
+
+        for (KarmaElement query : element) {
+            for (KarmaElement container : elements) {
+                if (container.isObject()) {
+                    KarmaObject containerObject = container.getObjet();
+
+                    if (query.isObject()) {
+                        KarmaObject queryObject = query.getObjet();
+                        if (queryObject.textValue().equals(containerObject.textValue())) {
+                            remove.add(container);
+                        }
+                    }
+                }
+            }
+        }
+
+        elements.removeAll(remove);
     }
 
     /**
@@ -288,6 +305,16 @@ public class KarmaArray extends KarmaElement implements Iterable<KarmaElement> {
         }
 
         return new KarmaArray(result.toArray(new KarmaElement[0]));
+    }
+
+    /**
+     * Get the element type
+     *
+     * @return the element type
+     */
+    @Override
+    public String getType() {
+        return "array";
     }
 
     /**

@@ -1,6 +1,6 @@
 package ml.karmaconfigs.api.common.karma.file.element;
 
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -436,6 +436,16 @@ public class KarmaKeyArray extends KarmaElement implements Iterable<KarmaElement
         }
 
         return new KarmaArray(result.toArray(new KarmaElement[0]));
+    }
+
+    /**
+     * Get the element type
+     *
+     * @return the element type
+     */
+    @Override
+    public String getType() {
+        return "map";
     }
 
     /**

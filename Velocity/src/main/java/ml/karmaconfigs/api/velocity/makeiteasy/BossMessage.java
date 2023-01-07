@@ -26,12 +26,12 @@ package ml.karmaconfigs.api.velocity.makeiteasy;
  */
 
 import com.velocitypowered.api.proxy.Player;
-import ml.karmaconfigs.api.common.boss.*;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
+import ml.karmaconfigs.api.common.minecraft.boss.*;
 import ml.karmaconfigs.api.common.timer.SchedulerUnit;
 import ml.karmaconfigs.api.common.timer.SourceScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 

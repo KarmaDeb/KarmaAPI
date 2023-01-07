@@ -47,19 +47,6 @@ public abstract class Tracker {
 
     /**
      * Set the tracker property
-     *
-     * @param property the property name
-     * @param value    the property value
-     * @return this instance
-     * @deprecated Trackers won't have properties anymore, they will use
-     * {@link TrackerFlag} instead. Which are better to "fetch". Use the method
-     * {@link Tracker#setProperty(PropertyValue)} instead of this
-     */
-    @Deprecated
-    public abstract Tracker setProperty(final String property, final Object value);
-
-    /**
-     * Set the tracker property
      * <p>
      * PLEASE NOTE: A correctly setup {@link Tracker} should have
      * all the expected properties with a default value. Otherwise, people
@@ -82,18 +69,6 @@ public abstract class Tracker {
      * @return the tracker property
      */
     public abstract <T> PropertyValue<T> getProperty(final TrackerFlag flag, final String name);
-
-    /**
-     * Get if the tracker has line of sigh for the
-     * entity
-     *
-     * @return if the tracker has line of sigh for the entity
-     * @deprecated This method has been deprecated with the implementation of
-     * the API line of sight class. The method {@link Tracker#getLineOfSight(SightPart)}
-     * should be used instead
-     */
-    @Deprecated
-    public abstract boolean hasLineOfSight();
 
     /**
      * Get the tracker line of sight

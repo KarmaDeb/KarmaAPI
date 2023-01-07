@@ -32,6 +32,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -108,6 +109,78 @@ public final class BlockUtil {
             }
 
             return blocks;
+        } else {
+            throw new IllegalArgumentException("Cannot get blocks between two locations because one or both of them world is null or does not match ( not in the same world )");
+        }
+    }
+
+    /**
+     * Get the locations between two locations
+     *
+     * @param loc1 the first position to start from
+     * @param loc2 the second position to start from
+     * @param space_between the space between positions
+     * @return the locations between
+     * throws IllegalArgumentException
+     */
+    public static Location[] getLocationsBetween(final Location loc1, final Location loc2, final double space_between) throws IllegalArgumentException {
+        World world1 = loc1.getWorld();
+        World world2 = loc2.getWorld();
+
+        if (world1 != null && world2 != null && world1.getUID().equals(world2.getUID())) {
+            Set<Location> locations = new HashSet<>();
+
+            //Next we will name each coordinate
+            double x1 = loc1.getX();
+            double y1 = loc1.getY();
+            double z1 = loc1.getZ();
+
+            double x2 = loc2.getX();
+            double y2 = loc2.getY();
+            double z2 = loc2.getZ();
+
+            //Then we create the following integers
+            double xMin, yMin, zMin;
+            double xMax, yMax, zMax;
+            double x, y, z;
+
+            //Now we need to make sure xMin is always lower then xMax
+            if (x1 > x2) { //If x1 is a higher number then x2
+                xMin = x2;
+                xMax = x1;
+            } else {
+                xMin = x1;
+                xMax = x2;
+            }
+
+            //Same with Y
+            if (y1 > y2) {
+                yMin = y2;
+                yMax = y1;
+            } else {
+                yMin = y1;
+                yMax = y2;
+            }
+
+            //And Z
+            if (z1 > z2) {
+                zMin = z2;
+                zMax = z1;
+            } else {
+                zMin = z1;
+                zMax = z2;
+            }
+
+            //Now it's time for the loop
+            for (x = xMin; x <= xMax; x += space_between) {
+                for (y = yMin; y <= yMax; y += space_between) {
+                    for (z = zMin; z <= zMax; z += space_between) {
+                        locations.add(new Location(loc1.getWorld(), x, y, z));
+                    }
+                }
+            }
+
+            return locations.toArray(new Location[0]);
         } else {
             throw new IllegalArgumentException("Cannot get blocks between two locations because one or both of them world is null or does not match ( not in the same world )");
         }

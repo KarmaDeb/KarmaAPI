@@ -25,7 +25,7 @@ package ml.karmaconfigs.api.bungee.makeiteasy;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
 import net.md_5.bungee.api.chat.TextComponent;

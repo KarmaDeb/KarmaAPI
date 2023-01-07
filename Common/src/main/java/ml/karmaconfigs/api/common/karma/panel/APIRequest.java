@@ -1,7 +1,7 @@
 package ml.karmaconfigs.api.common.karma.panel;
 
 import com.google.gson.*;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.karma.panel.impl.panel.ApiPost;
 import ml.karmaconfigs.api.common.karma.panel.impl.profile.ApiProfile;
 import ml.karmaconfigs.api.common.karma.panel.wrapper.ProfileWrapper;

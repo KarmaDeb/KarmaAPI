@@ -3,7 +3,7 @@ package ml.karmaconfigs.api.common.karma.panel.impl.profile;
 import com.google.gson.*;
 import ml.karmaconfigs.api.common.karma.panel.wrapper.PublicProfileWrapper;
 import ml.karmaconfigs.api.common.karma.panel.wrapper.post.PostPageWrapper;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.string.StringUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

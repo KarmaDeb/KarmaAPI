@@ -27,8 +27,10 @@ package ml.karmaconfigs.api.common.karma;
 
 import ml.karmaconfigs.api.common.karma.loader.BruteLoader;
 import ml.karmaconfigs.api.common.karma.loader.component.NameComponent;
+import ml.karmaconfigs.api.common.karma.source.APISource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.utils.enums.Level;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import ml.karmaconfigs.api.common.utils.url.URLUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -196,7 +198,8 @@ public interface KarmaAPI extends Serializable {
 
         if (loader != null) {
             try {
-                Class.forName("com.google.gson.Gson");
+                Class<?> clazz = Class.forName("com.google.gson.GsonBuilder");
+                clazz.getMethod("setLenient");
             } catch (Throwable ex) {
                 if (config.debug(Level.WARNING)) {
                     source(false).console().send("Google GSON dependency not found ( or very old version of it is running ) for UUID utilities, downloading it...", Level.WARNING);

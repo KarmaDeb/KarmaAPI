@@ -27,7 +27,7 @@ package ml.karmaconfigs.api.common.timer.scheduler.worker;
 
 import ml.karmaconfigs.api.common.timer.scheduler.BiLateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.CancellableScheduler;
-import ml.karmaconfigs.api.common.utils.TriConsumer;
+import ml.karmaconfigs.api.common.triple.consumer.TriConsumer;
 
 import java.util.function.BiConsumer;
 

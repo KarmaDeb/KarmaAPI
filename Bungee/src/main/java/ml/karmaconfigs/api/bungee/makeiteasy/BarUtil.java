@@ -20,9 +20,9 @@ package ml.karmaconfigs.api.bungee.makeiteasy;
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
-import ml.karmaconfigs.api.common.boss.BossColor;
-import ml.karmaconfigs.api.common.boss.BossFlag;
-import ml.karmaconfigs.api.common.boss.BossType;
+import ml.karmaconfigs.api.common.minecraft.boss.BossColor;
+import ml.karmaconfigs.api.common.minecraft.boss.BossFlag;
+import ml.karmaconfigs.api.common.minecraft.boss.BossType;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;

@@ -25,7 +25,7 @@ package ml.karmaconfigs.api.common.timer.scheduler;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.utils.TriConsumer;
+import ml.karmaconfigs.api.common.triple.consumer.TriConsumer;
 
 import java.util.function.BiConsumer;
 

@@ -44,7 +44,11 @@ public enum Level {
     /**
      * Something just went wrong
      */
-    GRAVE;
+    GRAVE,
+    /**
+     * Debug level
+     */
+    DEBUG;
 
     /**
      * Get level byte value
@@ -54,15 +58,17 @@ public enum Level {
     public byte getByte() {
         switch (this) {
             case OK:
-                return (byte) 1;
+                return 0x01;
             case INFO:
-                return (byte) 2;
+                return 0x02;
             case WARNING:
-                return (byte) 3;
+                return 0x03;
             case GRAVE:
-                return (byte) 4;
+                return 0x04;
+            case DEBUG:
+                return 0x05;
             default:
-                return (byte) 0;
+                return 0x00;
         }
     }
 
@@ -80,8 +86,10 @@ public enum Level {
             case WARNING:
                 return "<span style=\"color: gold\">WARNING</span>";
             case GRAVE:
-            default:
                 return "<span style=\"color: indianred\">GRAVE</span>";
+            case DEBUG:
+            default:
+                return "<span style=\"color: cyan\">DEBUG</span>";
         }
     }
 }

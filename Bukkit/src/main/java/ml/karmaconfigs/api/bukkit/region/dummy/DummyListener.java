@@ -32,7 +32,7 @@ import ml.karmaconfigs.api.bukkit.region.event.death.Forensics;
 import ml.karmaconfigs.api.bukkit.region.event.entity.*;
 import ml.karmaconfigs.api.bukkit.region.event.player.PlayerActionWithRegionEvent;
 import ml.karmaconfigs.api.bukkit.region.event.player.PlayerInteractAtRegionEvent;
-import ml.karmaconfigs.api.common.utils.ConcurrentList;
+import ml.karmaconfigs.api.common.collection.list.ConcurrentList;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

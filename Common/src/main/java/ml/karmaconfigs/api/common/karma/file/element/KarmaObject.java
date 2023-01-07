@@ -1,6 +1,6 @@
 package ml.karmaconfigs.api.common.karma.file.element;
 
-import ml.karmaconfigs.api.common.karma.NumType;
+import ml.karmaconfigs.api.common.karma.file.NumType;
 
 /**
  * Karma element for the new KarmaFile API which
@@ -213,6 +213,25 @@ public class KarmaObject extends KarmaElement {
                 return new KarmaObject(boo);
             }
         }
+    }
+
+    /**
+     * Get the element type
+     *
+     * @return the element type
+     */
+    @Override
+    public String getType() {
+        if (str != null)
+            return "string";
+
+        if (num != null)
+            return "number";
+
+        if (boo != null)
+            return "boolean";
+
+        return "object";
     }
 
     /**

@@ -25,19 +25,21 @@ package ml.karmaconfigs.api.common.version;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.Logger;
+import ml.karmaconfigs.api.common.logger.Logger;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
 import ml.karmaconfigs.api.common.utils.enums.Level;
-import ml.karmaconfigs.api.common.utils.file.FileUtilities;
-import ml.karmaconfigs.api.common.utils.string.ComparatorBuilder;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
-import ml.karmaconfigs.api.common.utils.string.VersionComparator;
+import ml.karmaconfigs.api.common.data.file.FileUtilities;
+import ml.karmaconfigs.api.common.version.checker.VersionUpdater;
+import ml.karmaconfigs.api.common.version.checker.fetch.VersionFetchResult;
+import ml.karmaconfigs.api.common.version.comparator.ComparatorBuilder;
+import ml.karmaconfigs.api.common.string.StringUtils;
+import ml.karmaconfigs.api.common.version.comparator.VersionComparator;
 import ml.karmaconfigs.api.common.utils.url.URLUtils;
-import ml.karmaconfigs.api.common.version.util.VersionCheckType;
-import ml.karmaconfigs.api.common.version.util.VersionResolver;
+import ml.karmaconfigs.api.common.version.updater.VersionCheckType;
+import ml.karmaconfigs.api.common.version.updater.VersionResolver;
 
 import java.io.File;
 import java.io.InputStream;
@@ -54,7 +56,9 @@ import java.util.function.Consumer;
 
 /**
  * Karma legacy version updater
+ * @deprecated The new {@link VersionUpdater should be used}
  */
+@Deprecated
 public final class LegacyVersionUpdater extends VersionUpdater {
 
     /**
@@ -153,7 +157,7 @@ public final class LegacyVersionUpdater extends VersionUpdater {
                             updated = comparator.isUpToDate();
                             break;
                     }
-                    VersionFetchResult result = new VersionFetchResult(updated, version, this.source.version(), update, changelog.<String>toArray(new String[0]), this.versionResolver);
+                    VersionFetchResult result = new VersionFetchResult(updated, version, this.source.version(), new String[]{update}, URLUtils.getDomainName(checkURL), changelog.<String>toArray(new String[0]), this.versionResolver);
                     results.put(this.source, result);
                     asyncLateScheduler.complete(result);
                 } catch (Throwable ex) {

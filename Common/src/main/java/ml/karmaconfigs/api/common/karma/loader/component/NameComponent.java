@@ -25,9 +25,9 @@ package ml.karmaconfigs.api.common.karma.loader.component;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.utils.file.FileUtilities;
-import ml.karmaconfigs.api.common.utils.file.PathUtilities;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.data.file.FileUtilities;
+import ml.karmaconfigs.api.common.data.path.PathUtilities;
+import ml.karmaconfigs.api.common.string.StringUtils;
 
 import java.io.File;
 import java.nio.file.Files;

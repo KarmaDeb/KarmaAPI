@@ -1,6 +1,6 @@
 package ml.karmaconfigs.api.common.karma.file.error;
 
-import ml.karmaconfigs.api.common.utils.file.PathUtilities;
+import ml.karmaconfigs.api.common.data.path.PathUtilities;
 
 import java.nio.file.Path;
 

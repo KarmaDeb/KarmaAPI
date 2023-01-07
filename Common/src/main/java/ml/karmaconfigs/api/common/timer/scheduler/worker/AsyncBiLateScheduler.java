@@ -25,10 +25,10 @@ package ml.karmaconfigs.api.common.timer.scheduler.worker;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.karma.APISource;
+import ml.karmaconfigs.api.common.karma.source.APISource;
 import ml.karmaconfigs.api.common.timer.scheduler.BiLateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.CancellableScheduler;
-import ml.karmaconfigs.api.common.utils.TriConsumer;
+import ml.karmaconfigs.api.common.triple.consumer.TriConsumer;
 
 import java.util.function.BiConsumer;
 

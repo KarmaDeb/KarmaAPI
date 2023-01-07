@@ -25,10 +25,10 @@ package ml.karmaconfigs.api.bukkit.server;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.utils.string.ComparatorBuilder;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
-import ml.karmaconfigs.api.common.utils.string.VersionComparator;
-import ml.karmaconfigs.api.common.utils.string.util.VersionDiff;
+import ml.karmaconfigs.api.common.version.comparator.ComparatorBuilder;
+import ml.karmaconfigs.api.common.string.StringUtils;
+import ml.karmaconfigs.api.common.version.comparator.VersionComparator;
+import ml.karmaconfigs.api.common.version.comparator.Difference;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.jetbrains.annotations.NotNull;
@@ -143,7 +143,7 @@ public final class BukkitServer {
                 .checkVersion(check_version);
         VersionComparator comparator = StringUtils.compareTo(builder);
 
-        return comparator.getDifference().equals(VersionDiff.OVERDATED);
+        return comparator.getDifference().equals(Difference.UPDATED);
     }
 
     /**
@@ -167,7 +167,7 @@ public final class BukkitServer {
                 .checkVersion(check_version);
         VersionComparator comparator = StringUtils.compareTo(builder);
 
-        return comparator.getDifference().equals(VersionDiff.UPDATED);
+        return comparator.getDifference().equals(Difference.UPDATED);
     }
 
     /**
@@ -187,7 +187,7 @@ public final class BukkitServer {
                 .checkVersion(check_version);
         VersionComparator comparator = StringUtils.compareTo(builder);
 
-        return comparator.getDifference().equals(VersionDiff.OUTDATED);
+        return comparator.getDifference().equals(Difference.OUTDATED);
     }
 
     /**

@@ -25,17 +25,25 @@ package ml.karmaconfigs.api.bukkit.reflection;
  *  SOFTWARE.
  */
 
+import ml.karmaconfigs.api.bukkit.KarmaPlugin;
+import ml.karmaconfigs.api.bukkit.reflection.legacy.LegacyProvider;
+import ml.karmaconfigs.api.bukkit.reflection.legacy.LegacyUtil;
 import ml.karmaconfigs.api.bukkit.server.BukkitServer;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.bukkit.server.Version;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Action bar message
@@ -43,6 +51,7 @@ import java.util.concurrent.TimeUnit;
 public final class BarMessage {
 
     private final static Map<UUID, BarMessage> data = new ConcurrentHashMap<>();
+    private final static Map<UUID, UUID> last_send_id = new ConcurrentHashMap<>();
 
     private final Player player;
 
@@ -52,6 +61,8 @@ public final class BarMessage {
     private boolean send = false;
 
     private int remaining = 0;
+
+    private final UUID bar_id = UUID.randomUUID();
 
     /**
      * Initialize the ActionBar class
@@ -69,24 +80,41 @@ public final class BarMessage {
      */
     private void send() {
         String msg = StringUtils.toColor(message);
-        try {
-            Constructor<?> constructor = Objects.requireNonNull(BukkitServer.getMinecraftClass("PacketPlayOutChat")).getConstructor(BukkitServer.getMinecraftClass("IChatBaseComponent"), byte.class);
-
-            Object icbc = Objects.requireNonNull(BukkitServer.getMinecraftClass("IChatBaseComponent")).getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + msg + "\"}");
-            Object packet = constructor.newInstance(icbc, (byte) 2);
-            Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
-            Object playerConnection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
-
-            playerConnection.getClass().getMethod("sendPacket", BukkitServer.getMinecraftClass("Packet")).invoke(playerConnection, packet);
-            sent = true;
-        } catch (Throwable ex) {
+        if (BukkitServer.isOver(Version.v1_7_10)) {
             try {
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, UUID.randomUUID(), TextComponent.fromLegacyText(msg));
+                Constructor<?> constructor = Objects.requireNonNull(BukkitServer.getMinecraftClass("PacketPlayOutChat")).getConstructor(BukkitServer.getMinecraftClass("IChatBaseComponent"), byte.class);
+
+                Object icbc = Objects.requireNonNull(BukkitServer.getMinecraftClass("IChatBaseComponent")).getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + msg + "\"}");
+                Object packet = constructor.newInstance(icbc, (byte) 2);
+                Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
+                Object playerConnection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
+
+                playerConnection.getClass().getMethod("sendPacket", BukkitServer.getMinecraftClass("Packet")).invoke(playerConnection, packet);
                 sent = true;
-            } catch (Throwable exc) {
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(msg));
-                sent = true;
+            } catch (Throwable ex) {
+                try {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, UUID.randomUUID(), TextComponent.fromLegacyText(msg));
+                    sent = true;
+                } catch (Throwable exc) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(msg));
+                    sent = true;
+                }
             }
+        } else {
+            Bukkit.getServer().getScheduler().runTask(KarmaPlugin.getABC(), () -> {
+                last_send_id.put(player.getUniqueId(), bar_id);
+
+                LegacyProvider provider = LegacyUtil.getProvider();
+                if (provider != null) {
+                    provider.displayActionbarFor(player, msg);
+
+                    Bukkit.getServer().getScheduler().runTaskLater(KarmaPlugin.getABC(), () -> {
+                        if (last_send_id.getOrDefault(player.getUniqueId(), player.getUniqueId()).equals(bar_id)) {
+                            provider.displayActionbarFor(player, null);
+                        }
+                    }, 20 * 2);
+                }
+            });
         }
     }
 
@@ -104,16 +132,15 @@ public final class BarMessage {
             }
 
             send = persistent;
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if (!send)
-                        cancel();
-
-                    send();
+            ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
+            timer.scheduleAtFixedRate(() -> {
+                if (!send) {
+                    stop();
+                    timer.shutdown();
                 }
-            }, 0, TimeUnit.SECONDS.toMillis(1));
+
+                send();
+            }, 0, 1, TimeUnit.SECONDS);
 
             data.put(player.getUniqueId(), this);
         }
@@ -134,22 +161,19 @@ public final class BarMessage {
 
             remaining = repeats;
             send = true;
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                int repeated = 0;
+            ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
+            AtomicInteger repeated = new AtomicInteger(0);
 
-                @Override
-                public void run() {
-                    if (!send)
-                        stop();
+            timer.scheduleAtFixedRate(() -> {
+                if (!send)
+                    stop();
 
-                    repeated++;
-                    send();
-                    if (repeated >= remaining) {
-                        cancel();
-                    }
+                send();
+                if (repeated.incrementAndGet() >= remaining) {
+                    timer.shutdown();
+                    stop();
                 }
-            }, 0, TimeUnit.SECONDS.toMillis(2));
+            }, 0, 1, TimeUnit.SECONDS);
 
             if (stored != null) {
                 data.put(player.getUniqueId(), this);
@@ -171,6 +195,7 @@ public final class BarMessage {
      */
     public void stop() {
         send = false;
+        last_send_id.remove(player.getUniqueId());
     }
 
     /**

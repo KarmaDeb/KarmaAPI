@@ -29,9 +29,9 @@ import ml.karmaconfigs.api.bukkit.KarmaPlugin;
 import ml.karmaconfigs.api.bukkit.reflection.BarMessage;
 import ml.karmaconfigs.api.bukkit.reflection.TitleMessage;
 import ml.karmaconfigs.api.common.karma.KarmaAPI;
-import ml.karmaconfigs.api.common.utils.placeholder.GlobalPlaceholderEngine;
-import ml.karmaconfigs.api.common.utils.string.ListTransformation;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.placeholder.GlobalPlaceholderEngine;
+import ml.karmaconfigs.api.common.string.ListTransformation;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 

@@ -9,7 +9,7 @@ import ml.karmaconfigs.api.bukkit.tracker.property.flag.TrackerFlag;
 import ml.karmaconfigs.api.bukkit.util.LineOfSight;
 import ml.karmaconfigs.api.bukkit.util.sight.PointToEntity;
 import ml.karmaconfigs.api.common.utils.enums.Level;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -100,46 +100,6 @@ public class TrackerStand extends Tracker {
     }
 
     /**
-     * Set the tracking stand property
-     *
-     * @param p the property name
-     * @param v the property value
-     * @return this instance
-     * @deprecated Trackers won't have properties anymore, they will use
-     * {@link TrackerFlag} instead. Which are better to "fetch". Use the method
-     * {@link Tracker#setProperty(PropertyValue)} instead of this
-     */
-    @Override
-    @Deprecated
-    public Tracker setProperty(final String p, final Object v) {
-        if (v != null) {
-            PropertyValue<?> prop = null;
-
-            for (PropertyValue<?> property : properties) {
-                if (property.getIdentifier().endsWith(p)) {
-                    if (property.matches(v)) {
-                        PropertyValue<?> new_value = property.getFlag().makeProperty(p);
-                        new_value.updateUnsafe(v);
-                        prop = new_value;
-                        break;
-                    } else {
-                        throw new IllegalStateException("Cannot modify tracker property because values type doesn't match");
-                    }
-                }
-            }
-
-            if (prop == null) {
-                prop = TrackerFlag.PROPERTY_OTHER.makeProperty(p);
-                prop.updateUnsafe(v);
-            }
-
-            updated_properties.add(prop);
-        }
-
-        return this;
-    }
-
-    /**
      * Set the tracker property
      * <p>
      * PLEASE NOTE: A correctly setup {@link Tracker} should have
@@ -208,30 +168,6 @@ public class TrackerStand extends Tracker {
     }
 
     /**
-     * Get if the tracker has line of sigh for the
-     * entity
-     *
-     * @return if the tracker has line of sigh for the entity
-     * @deprecated This method has been deprecated with the implementation of
-     * the API line of sight class. The method {@link Tracker#getLineOfSight(ml.karmaconfigs.api.bukkit.tracker.Tracker.SightPart)}
-     * should be used instead
-     */
-    @Deprecated
-    public boolean hasLineOfSight() {
-        if (tracking != null) {
-            LineOfSight hSight = getLineOfSight(SightPart.HEAD);
-            LineOfSight bSight = getLineOfSight(SightPart.BODY);
-            LineOfSight fSight = getLineOfSight(SightPart.FEET);
-
-            double max_dist = Math.abs(((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "scanDistance").getUnsafe()).doubleValue());
-
-            return hSight.inLineOfSight(max_dist) || bSight.inLineOfSight(max_dist) || fSight.inLineOfSight(max_dist);
-        }
-
-        return false;
-    }
-
-    /**
      * Get the tracker line of sight
      *
      * @param part the line of sight part to use
@@ -245,26 +181,23 @@ public class TrackerStand extends Tracker {
         switch (part) {
             case HEAD:
                 sight = new PointToEntity(stand.getLocation(), (tracking != null ? tracking : stand))
-                        .a(0, (small ? 0.5 : 1.5), 0)
-                        .b(0, (tracking != null ? tracking.getEyeHeight() : (small ? 0.5 : 1.5)), 0);
+                        .sourceOffset(0, (small ? 0.5 : 1.5), 0)
+                        .targetOffset(0, (tracking != null ? tracking.getEyeHeight() : (small ? 0.5 : 1.5)), 0);
                 break;
             case BODY:
                 sight = new PointToEntity(stand.getLocation(), (tracking != null ? tracking : stand))
-                        .a(0, (small ? 0.5 : 1.5), 0)
-                        .b(0, (tracking != null ? tracking.getEyeHeight() / 2 : (small ? 0.25 : 0.75)), 0);
+                        .sourceOffset(0, (small ? 0.5 : 1.5), 0)
+                        .targetOffset(0, (tracking != null ? tracking.getEyeHeight() / 2 : (small ? 0.25 : 0.75)), 0);
                 break;
             case FEET:
             default:
                 sight = new PointToEntity(stand.getLocation(), (tracking != null ? tracking : stand))
-                        .a(0, (small ? 0.5 : 1.5), 0)
-                        .b(0, 0, 0);
+                        .sourceOffset(0, (small ? 0.5 : 1.5), 0)
+                        .targetOffset(0, 0, 0);
                 break;
         }
 
-        sight.ignore(stand)
-                .ignoreMiddle(true);
-
-        return sight;
+        return sight.ignore(stand).ignoreMiddle(true).precission(Math.PI / 8);
     }
 
     /**
@@ -282,26 +215,23 @@ public class TrackerStand extends Tracker {
         switch (part) {
             case HEAD:
                 sight = new PointToEntity(stand.getLocation(), target)
-                        .a(0, (small ? 0.5 : 1.5), 0)
-                        .b(0, (target != null ? target.getEyeHeight() : (small ? 0.5 : 1.5)), 0);
+                        .sourceOffset(0, (small ? 0.5 : 1.5), 0)
+                        .targetOffset(0, (target != null ? target.getEyeHeight() : (small ? 0.5 : 1.5)), 0);
                 break;
             case BODY:
                 sight = new PointToEntity(stand.getLocation(), (target != null ? target : stand))
-                        .a(0, (small ? 0.5 : 1.5), 0)
-                        .b(0, (target != null ? target.getEyeHeight() / 2 : (small ? 0.25 : 0.75)), 0);
+                        .sourceOffset(0, (small ? 0.5 : 1.5), 0)
+                        .targetOffset(0, (target != null ? target.getEyeHeight() / 2 : (small ? 0.25 : 0.75)), 0);
                 break;
             case FEET:
             default:
                 sight = new PointToEntity(stand.getLocation(), target)
-                        .a(0, (small ? 0.5 : 1.5), 0)
-                        .b(0, 0, 0);
+                        .sourceOffset(0, (small ? 0.5 : 1.5), 0)
+                        .targetOffset(0, 0, 0);
                 break;
         }
 
-        sight.ignore(stand)
-                .ignoreMiddle(true);
-
-        return sight;
+        return sight.ignore(stand).ignoreMiddle(true).precission(Math.PI / 8);
     }
 
     /**
@@ -397,7 +327,6 @@ public class TrackerStand extends Tracker {
     }
 
 
-
     /**
      * Set up the tracker auto tracker. Once the auto
      * tracker is set. The method {@link Tracker#setTracking(LivingEntity)}
@@ -429,6 +358,8 @@ public class TrackerStand extends Tracker {
     @Override
     public void start() {
         if (task == null) {
+            long track_period = Math.max(1, ((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "trackPeriod").getUnsafe()).longValue());
+
             track_task = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
                 boolean always_track = getProperty(TrackerFlag.TRACKER_BOOLEAN, "ignoreLineOfSight").getUnsafe();
                 double offset = ((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "angleOffset").getUnsafe()).doubleValue();
@@ -506,7 +437,7 @@ public class TrackerStand extends Tracker {
                         }
                     }
                 }
-            }, 0, 1);
+            }, 0, track_period);
 
             if (stand == null || stand.isDead() || !stand.isValid()) {
                 if (stand != null) stand.remove();
@@ -1039,6 +970,7 @@ public class TrackerStand extends Tracker {
         PropertyValue<Number> TRACKER_MAX_DISTANCE = TrackerFlag.TRACKER_NUMBER.makeProperty("scanDistance");
         PropertyValue<Boolean> TRACKER_LOCK = TrackerFlag.TRACKER_BOOLEAN.makeProperty("leapAtTarget");
         PropertyValue<Number> TRACKER_PERIOD = TrackerFlag.TRACKER_NUMBER.makeProperty("scanPeriod");
+        PropertyValue<Number> TRACK_PERIOD = TrackerFlag.TRACKER_NUMBER.makeProperty("trackPeriod");
 
         assert location.getWorld() != null;
 
@@ -1078,6 +1010,7 @@ public class TrackerStand extends Tracker {
         TRACKER_MAX_DISTANCE.update(32);
         TRACKER_LOCK.update(true);
         TRACKER_PERIOD.update(randomPeriod(20));
+        TRACK_PERIOD.update(5);
 
         properties.add(LOCATION_X);
         properties.add(LOCATION_Y);
@@ -1103,17 +1036,194 @@ public class TrackerStand extends Tracker {
         properties.add(STAND_ANGLE_RL);
         properties.add(STAND_ANGLE_BO);
 
-        properties.add(TRACKER_ALWAYS);
-        properties.add(TRACKER_OFFSET);
-        properties.add(TRACKER_MAX_DISTANCE);
-        properties.add(TRACKER_LOCK);
-        properties.add(TRACKER_PERIOD);
-
         properties.add(STAND_EQUIP_LA);
         properties.add(STAND_EQUIP_RA);
         properties.add(STAND_EQUIP_HE);
         properties.add(STAND_EQUIP_CH);
         properties.add(STAND_EQUIP_LE);
         properties.add(STAND_EQUIP_BO);
+
+        properties.add(TRACKER_ALWAYS);
+        properties.add(TRACKER_OFFSET);
+        properties.add(TRACKER_MAX_DISTANCE);
+        properties.add(TRACKER_LOCK);
+        properties.add(TRACKER_PERIOD);
+        properties.add(TRACK_PERIOD);
+    }
+
+    /**
+     * Tracker property
+     */
+    @SuppressWarnings("unused")
+    public enum Property {
+        /**
+         * Tracker property
+         */
+        POSITION_X("x", TrackerFlag.PROPERTY_NUMBER),
+        /**
+         * Tracker property
+         */
+        POSITION_Y("y", TrackerFlag.PROPERTY_NUMBER),
+        /**
+         * Tracker property
+         */
+        POSITION_Z("z", TrackerFlag.PROPERTY_NUMBER),
+        /**
+         * Tracker property
+         */
+        POSITION_YAW("yaw", TrackerFlag.PROPERTY_NUMBER),
+        /**
+         * Tracker property
+         */
+        POSITION_PITCH("pitch", TrackerFlag.PROPERTY_NUMBER),
+        /**
+         * Tracker property
+         */
+        POSITION_WORLD("world", TrackerFlag.PROPERTY_UUID),
+        /**
+         * Tracker property
+         */
+        TRACKER_SMALL("small", TrackerFlag.PROPERTY_BOOLEAN),
+        /**
+         * Tracker property
+         */
+        TRACKER_BASE("basePlate", TrackerFlag.PROPERTY_BOOLEAN),
+        /**
+         * Tracker property
+         */
+        TRACKER_NO_HITBOX("marker", TrackerFlag.PROPERTY_BOOLEAN),
+        /**
+         * Tracker property
+         */
+        TRACKER_INVINCIBLE("invincible", TrackerFlag.PROPERTY_BOOLEAN),
+        /**
+         * Tracker property
+         */
+        TRACKER_INVISIBLE("invisible", TrackerFlag.PROPERTY_BOOLEAN),
+        /**
+         * Tracker property
+         */
+        TRACKER_SHOW_NAME("showName", TrackerFlag.PROPERTY_BOOLEAN),
+        /**
+         * Tracker property
+         */
+        TRACKER_ARMS("arms", TrackerFlag.PROPERTY_BOOLEAN),
+        /**
+         * Tracker property
+         */
+        TRACKER_CAN_TAKE_ITEMS("takeoffItems", TrackerFlag.PROPERTY_BOOLEAN),
+        /**
+         * Tracker property
+         */
+        TRACKER_NAME("customName", TrackerFlag.PROPERTY_STRING),
+        /**
+         * Tracker property
+         */
+        ANGLE_LEFT_ARM("leftArmAngle", TrackerFlag.PROPERTY_OTHER),
+        /**
+         * Tracker property
+         */
+        ANGLE_RIGHT_ARM("rightArmAngle", TrackerFlag.PROPERTY_OTHER),
+        /**
+         * Tracker property
+         */
+        ANGLE_LEFT_LEG("leftLegAngle", TrackerFlag.PROPERTY_OTHER),
+        /**
+         * Tracker property
+         */
+        ANGLE_RIGHT_LEG("rightLegAngle", TrackerFlag.PROPERTY_OTHER),
+        /**
+         * Tracker property
+         */
+        ANGLE_BODY("bodyAngle", TrackerFlag.PROPERTY_OTHER),
+        /**
+         * Tracker property
+         */
+        EQUIP_LEFT_ARM("equipmentLeftArm", TrackerFlag.PROPERTY_OTHER),
+        /**
+         * Tracker property
+         */
+        EQUIP_RIGHT_ARM("equipmentRightArm", TrackerFlag.PROPERTY_OTHER),
+        /**
+         * Tracker property
+         */
+        EQUIP_HELMET("equipmentHelmet", TrackerFlag.PROPERTY_OTHER),
+        /**
+         * Tracker property
+         */
+        EQUIP_CHESTPLATE("equipmentChestplate", TrackerFlag.PROPERTY_OTHER),
+        /**
+         * Tracker property
+         */
+        EQUIP_LEGGINGS("equipmentLeggings", TrackerFlag.PROPERTY_OTHER),
+        /**
+         * Tracker property
+         */
+        EQUIP_BOOTS("equipmentBoots", TrackerFlag.PROPERTY_OTHER),
+        /**
+         * Tracker property
+         */
+        ALWAYS_TRACK("ignoreLineOfSight", TrackerFlag.TRACKER_BOOLEAN),
+        /**
+         * Tracker property
+         */
+        OFFSET("angleOffset", TrackerFlag.TRACKER_NUMBER),
+        /**
+         * Tracker property
+         */
+        DISTANCE("scanDistance", TrackerFlag.TRACKER_NUMBER),
+        /**
+         * Tracker property
+         */
+        LOCK_TARGET("leapAtTarget", TrackerFlag.TRACKER_BOOLEAN),
+        /**
+         * Tracker property
+         */
+        PERIOD("scanPeriod", TrackerFlag.TRACKER_NUMBER),
+        /**
+         * Tracker property
+         */
+        LOOK_PERIOD("trackPeriod", TrackerFlag.TRACKER_NUMBER);
+
+        private final String name;
+        private final TrackerFlag type;
+
+        /**
+         * Initialize the property
+         *
+         * @param n the property name
+         * @param t the property type
+         */
+        Property(final String n, final TrackerFlag t) {
+            name = n;
+            type = t;
+        }
+
+        /**
+         * Get the property name
+         *
+         * @return the property name
+         */
+        public final String getName() {
+            return name;
+        }
+
+        /**
+         * Get the property type
+         *
+         * @return the property flag
+         */
+        public final TrackerFlag getFlag() {
+            return type;
+        }
+
+        /**
+         * Create a new value
+         *
+         * @return a new property value
+         */
+        public final <T> PropertyValue<T> createValue() {
+            return type.makeProperty(name);
+        }
     }
 }

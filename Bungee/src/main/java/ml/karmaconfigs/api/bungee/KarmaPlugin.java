@@ -25,21 +25,21 @@ package ml.karmaconfigs.api.bungee;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.Console;
-import ml.karmaconfigs.api.common.Logger;
-import ml.karmaconfigs.api.common.karma.APISource;
-import ml.karmaconfigs.api.common.karma.Identifiable;
+import ml.karmaconfigs.api.common.console.Colors;
+import ml.karmaconfigs.api.common.logger.Logger;
+import ml.karmaconfigs.api.common.karma.source.APISource;
+import ml.karmaconfigs.api.common.karma.source.Identifiable;
 import ml.karmaconfigs.api.common.karma.KarmaAPI;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
 import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
 import ml.karmaconfigs.api.common.karma.file.element.KarmaObject;
-import ml.karmaconfigs.api.common.utils.KarmaLogger;
-import ml.karmaconfigs.api.common.utils.placeholder.GlobalPlaceholderEngine;
-import ml.karmaconfigs.api.common.utils.placeholder.util.Placeholder;
-import ml.karmaconfigs.api.common.utils.placeholder.util.PlaceholderEngine;
-import ml.karmaconfigs.api.common.utils.security.token.TokenGenerator;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.logger.KarmaLogger;
+import ml.karmaconfigs.api.common.placeholder.GlobalPlaceholderEngine;
+import ml.karmaconfigs.api.common.placeholder.util.Placeholder;
+import ml.karmaconfigs.api.common.placeholder.util.PlaceholderEngine;
+import ml.karmaconfigs.api.common.security.token.TokenGenerator;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -57,7 +57,7 @@ public abstract class KarmaPlugin extends Plugin implements KarmaSource, Identif
     /**
      * Plugin console
      */
-    private final Console console;
+    private final Colors console;
 
     private String plugin_identifier = TokenGenerator.generateToken();
 
@@ -74,7 +74,7 @@ public abstract class KarmaPlugin extends Plugin implements KarmaSource, Identif
             APISource.addProvider(this);
         }
 
-        console = new Console(this, (msg) -> ProxyServer.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(StringUtils.toColor(StringUtils.fromAnyOsColor(msg)))));
+        console = new Colors(this, (msg) -> ProxyServer.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(StringUtils.toColor(StringUtils.fromAnyOsColor(msg)))));
         logger = new Logger(this);
         loadIdentifier("DEFAULT");
     }
@@ -95,7 +95,7 @@ public abstract class KarmaPlugin extends Plugin implements KarmaSource, Identif
             }
         }
 
-        console = new Console(this, (msg) -> ProxyServer.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(StringUtils.toColor(StringUtils.fromAnyOsColor(msg)))));
+        console = new Colors(this, (msg) -> ProxyServer.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(StringUtils.toColor(StringUtils.fromAnyOsColor(msg)))));
         logger = new Logger(this);
         loadIdentifier("DEFAULT");
     }
@@ -162,7 +162,7 @@ public abstract class KarmaPlugin extends Plugin implements KarmaSource, Identif
      * @return the source out
      */
     @Override
-    public Console console() {
+    public Colors console() {
         return console;
     }
 

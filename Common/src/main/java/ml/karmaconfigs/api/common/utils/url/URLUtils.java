@@ -165,6 +165,17 @@ public final class URLUtils {
     }
 
     /**
+     * Get the URL host
+     *
+     * @param url the url to get host from
+     * @return the URL host
+     */
+    @Nullable
+    public static String getDomainName(final URL url) {
+        return getDomainName(url.toString());
+    }
+
+    /**
      * Generate a new HTTP utilities for the specified URL
      *
      * @param url the URL

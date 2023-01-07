@@ -2,7 +2,7 @@ package ml.karmaconfigs.api.common.utils.url;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.string.StringUtils;
 
 import java.time.Instant;
 import java.util.Map;

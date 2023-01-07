@@ -1,7 +1,7 @@
 package ml.karmaconfigs.api.common.karma.panel.impl.profile;
 
 import com.google.gson.*;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.karma.panel.HeaderURL;
 import ml.karmaconfigs.api.common.karma.panel.wrapper.ProfileWrapper;
 import ml.karmaconfigs.api.common.karma.panel.wrapper.PublicProfileWrapper;
@@ -11,7 +11,7 @@ import ml.karmaconfigs.api.common.timer.scheduler.BiLateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncBiLateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import ml.karmaconfigs.api.common.utils.url.HttpUtil;
 import ml.karmaconfigs.api.common.utils.url.Post;
 import ml.karmaconfigs.api.common.utils.url.URLUtils;

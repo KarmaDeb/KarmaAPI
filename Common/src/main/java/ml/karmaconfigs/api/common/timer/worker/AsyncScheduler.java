@@ -1,6 +1,6 @@
 package ml.karmaconfigs.api.common.timer.worker;
 
-import ml.karmaconfigs.api.common.karma.KarmaSource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.timer.scheduler.Scheduler;
 import ml.karmaconfigs.api.common.timer.worker.event.TaskListener;
 import org.jetbrains.annotations.Nullable;

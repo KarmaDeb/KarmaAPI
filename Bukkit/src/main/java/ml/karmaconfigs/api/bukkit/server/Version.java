@@ -258,6 +258,58 @@ public enum Version {
      */
     v1_19_2,
     /**
+     * Minecraft 1.19 version
+     */
+    v1_19_3,
+    /**
+     * Minecraft 1.19 version
+     */
+    v1_19_4,
+    /**
+     * Minecraft 1.19 version
+     */
+    v1_19_5,
+    /**
+     * Minecraft 1.19 version
+     */
+    v1_19_6,
+    /**
+     * Minecraft 1.20 version
+     */
+    v1_20,
+    /**
+     * Minecraft 1.20 version
+     */
+    v1_20_1,
+    /**
+     * Minecraft 1.20 version
+     */
+    v1_20_2,
+    /**
+     * Minecraft 1.20 version
+     */
+    v1_20_3,
+    /**
+     * Minecraft 1.20 version
+     */
+    v1_20_4,
+    /**
+     * Minecraft 1.20 version
+     */
+    v2,
+    /**
+     * Minecraft 1.20 version
+     */
+    v2_1,
+    /**
+     * Minecraft 1.20 version
+     */
+    v2_2,
+    /**
+     * Minecraft 1.20 version
+     */
+    v2_3,
+    /**
      * Minecraft unknown version
      */
     UNKNOWN,

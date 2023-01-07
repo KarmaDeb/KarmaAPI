@@ -27,13 +27,13 @@ package ml.karmaconfigs.api.common.utils.uuid;
 
 import com.google.gson.*;
 import ml.karmaconfigs.api.common.annotations.Unstable;
-import ml.karmaconfigs.api.common.karma.Identifiable;
+import ml.karmaconfigs.api.common.karma.source.Identifiable;
 import ml.karmaconfigs.api.common.karma.KarmaAPI;
-import ml.karmaconfigs.api.common.karma.KarmaSource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
 import ml.karmaconfigs.api.common.utils.enums.Level;
-import ml.karmaconfigs.api.common.utils.string.StringUtils;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import ml.karmaconfigs.api.common.utils.url.HttpUtil;
 import ml.karmaconfigs.api.common.utils.url.Post;
 import ml.karmaconfigs.api.common.utils.url.URLUtils;
@@ -69,10 +69,10 @@ public final class UUIDUtil {
      * @param name         the client name
      */
     public static void registerMinecraftClient(final Identifiable identifiable, final String name) {
-        URL first = URLUtils.getOrBackup("https://karmadev.es/?nick=" + name,
+        URL first = URLUtils.getOrBackup("https://karmadev.es/api/?nick=" + name,
                 "https://karmaconfigs.ml/api/?nick=" + name,
                 "https://karmarepo.ml/api/?nick=" + name,
-                "https://backup.karmadev.es/?nick=" + name,
+                "https://backup.karmadev.es/api/?nick=" + name,
                 "https://backup.karmaconfigs.ml/api/?nick=" + name,
                 "https://backup.karmarepo.ml/api/?nick=" + name);
 

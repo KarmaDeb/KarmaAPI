@@ -25,7 +25,7 @@ package ml.karmaconfigs.api.common.timer.scheduler.errors;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.karma.KarmaSource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
 
 /**
