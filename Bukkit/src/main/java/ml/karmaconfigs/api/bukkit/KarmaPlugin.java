@@ -25,15 +25,15 @@ package ml.karmaconfigs.api.bukkit;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.console.Colors;
+import ml.karmaconfigs.api.common.console.Console;
+import ml.karmaconfigs.api.common.karma.file.element.types.Element;
+import ml.karmaconfigs.api.common.karma.file.element.types.ElementPrimitive;
 import ml.karmaconfigs.api.common.logger.Logger;
 import ml.karmaconfigs.api.common.karma.source.APISource;
 import ml.karmaconfigs.api.common.karma.source.Identifiable;
 import ml.karmaconfigs.api.common.karma.KarmaAPI;
 import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaObject;
 import ml.karmaconfigs.api.common.logger.KarmaLogger;
 import ml.karmaconfigs.api.common.placeholder.GlobalPlaceholderEngine;
 import ml.karmaconfigs.api.common.placeholder.util.Placeholder;
@@ -56,7 +56,7 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
     /**
      * The plugin console
      */
-    private final Colors console;
+    private final Console console;
 
     private String plugin_identifier = TokenGenerator.generateToken();
 
@@ -73,7 +73,7 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
             APISource.addProvider(this);
         }
 
-        console = new Colors(this, (msg) -> Bukkit.getServer().getConsoleSender().sendMessage(StringUtils.toColor(StringUtils.fromAnyOsColor(msg))));
+        console = new Console(this, (msg) -> Bukkit.getServer().getConsoleSender().sendMessage(StringUtils.toColor(StringUtils.fromAnyOsColor(msg))));
         logger = new Logger(this);
         loadIdentifier("DEFAULT");
     }
@@ -94,7 +94,7 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
             }
         }
 
-        console = new Colors(this, (msg) -> Bukkit.getServer().getConsoleSender().sendMessage(StringUtils.toColor(StringUtils.fromAnyOsColor(msg))));
+        console = new Console(this, (msg) -> Bukkit.getServer().getConsoleSender().sendMessage(StringUtils.toColor(StringUtils.fromAnyOsColor(msg))));
         logger = new Logger(this);
         loadIdentifier("DEFAULT");
     }
@@ -161,7 +161,7 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
      * @return the source out
      */
     @Override
-    public Colors console() {
+    public Console console() {
         return console;
     }
 
@@ -197,7 +197,7 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
         if (!main.exists())
             main.create();
 
-        main.set(name, new KarmaObject(plugin_identifier));
+        main.setRaw(name, plugin_identifier);
 
         return main.save();
     }
@@ -214,9 +214,12 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
             main.create();
 
         if (main.isSet(name)) {
-            KarmaElement element = main.get(name);
-            if (element.isString()) {
-                plugin_identifier = element.getObjet().getString();
+            Element<?> element = main.get(name);
+            if (element.isPrimitive()) {
+                ElementPrimitive primitive = element.getAsPrimitive();
+                if (primitive.isString()) {
+                    plugin_identifier = primitive.asString();
+                }
             }
         }
     }

@@ -28,15 +28,15 @@ package ml.karmaconfigs.api.velocity;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import ml.karmaconfigs.api.common.console.Colors;
+import ml.karmaconfigs.api.common.console.Console;
+import ml.karmaconfigs.api.common.karma.file.element.types.Element;
+import ml.karmaconfigs.api.common.karma.file.element.types.ElementPrimitive;
 import ml.karmaconfigs.api.common.logger.Logger;
 import ml.karmaconfigs.api.common.karma.source.APISource;
 import ml.karmaconfigs.api.common.karma.source.Identifiable;
 import ml.karmaconfigs.api.common.karma.KarmaAPI;
 import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaObject;
 import ml.karmaconfigs.api.common.logger.KarmaLogger;
 import ml.karmaconfigs.api.common.placeholder.GlobalPlaceholderEngine;
 import ml.karmaconfigs.api.common.placeholder.util.Placeholder;
@@ -64,7 +64,7 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
     /**
      * Plugin console
      */
-    private final Colors console;
+    private final Console console;
 
     /**
      * The plugin logger
@@ -85,7 +85,7 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
             APISource.addProvider(this);
         }
 
-        console = new Colors(this, (msg) -> VelocityBridge.getServer().getConsoleCommandSource().sendMessage(Component.text().content(StringUtils.toColor(StringUtils.fromAnyOsColor(msg))).build()));
+        console = new Console(this, (msg) -> VelocityBridge.getServer().getConsoleCommandSource().sendMessage(Component.text().content(StringUtils.toColor(StringUtils.fromAnyOsColor(msg))).build()));
         logger = new Logger(this);
         loadIdentifier("DEFAULT");
     }
@@ -109,7 +109,7 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
             }
         }
 
-        console = new Colors(this, (msg) -> VelocityBridge.getServer().getConsoleCommandSource().sendMessage(Component.text().content(StringUtils.toColor(StringUtils.fromAnyOsColor(msg))).build()));
+        console = new Console(this, (msg) -> VelocityBridge.getServer().getConsoleCommandSource().sendMessage(Component.text().content(StringUtils.toColor(StringUtils.fromAnyOsColor(msg))).build()));
         logger = new Logger(this);
         loadIdentifier("DEFAULT");
     }
@@ -197,7 +197,7 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
      * @return the source out
      */
     @Override
-    public Colors console() {
+    public Console console() {
         return console;
     }
 
@@ -233,7 +233,7 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
         if (!main.exists())
             main.create();
 
-        main.set(name, new KarmaObject(plugin_identifier));
+        main.setRaw(name, plugin_identifier);
 
         return main.save();
     }
@@ -250,9 +250,12 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
             main.create();
 
         if (main.isSet(name)) {
-            KarmaElement element = main.get(name);
-            if (element.isString()) {
-                plugin_identifier = element.getObjet().getString();
+            Element<?> element = main.get(name);
+            if (element.isPrimitive()) {
+                ElementPrimitive primitive = element.getAsPrimitive();
+                if (primitive.isString()) {
+                    plugin_identifier = primitive.asString();
+                }
             }
         }
     }

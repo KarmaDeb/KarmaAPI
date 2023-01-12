@@ -1,4 +1,4 @@
-name: ${plugin.name}
+name: KarmaAPI
 version: ${plugin.version}
 main: ml.karmaconfigs.api.bukkit.Main
 api-version: 1.13

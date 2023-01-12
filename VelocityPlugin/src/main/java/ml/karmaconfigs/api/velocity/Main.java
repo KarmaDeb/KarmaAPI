@@ -5,13 +5,13 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import ml.karmaconfigs.api.common.karma.file.element.types.Element;
+import ml.karmaconfigs.api.common.karma.file.element.types.ElementPrimitive;
 import ml.karmaconfigs.api.common.karma.source.APISource;
 import ml.karmaconfigs.api.common.karma.source.Identifiable;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
 import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaObject;
 import ml.karmaconfigs.api.common.timer.SchedulerUnit;
 import ml.karmaconfigs.api.common.timer.SourceScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
@@ -30,9 +30,9 @@ import java.nio.file.Path;
 import java.util.List;
 
 @Plugin(
-        id = "anotherbarelycodedkarmaplugin",
-        name = "ABCKarmaPlugin",
-        version = "1.3.3-13",
+        id = "karmaapi",
+        name = "KarmaAPI",
+        version = "1.3.4-1",
         description = "A plugin that creates a bridge between the KarmaAPI and Bukkit",
         url = "https://karmaconfigs.ml",
         authors = {"KarmaDev"}
@@ -84,11 +84,13 @@ public class Main implements KarmaSource, Identifiable {
                 checker.getUpdateURL().whenComplete((url, error) -> {
                     if (error == null) {
                         String latest = checker.getLatest();
-                        String current = version();
+                        if (latest != null) {
+                            String current = version();
 
-                        if (!latest.equals(current)) {
-                            console().send("There's an update for the KarmaAPI platform. We highly recommend you to update now! ({0} -> {1})", Level.WARNING, current, latest);
-                            console().send("Download from: {0}", url);
+                            if (!latest.equals(current)) {
+                                console().send("There's an update for the KarmaAPI platform. We highly recommend you to update now! ({0} -> {1})", Level.WARNING, current, latest);
+                                console().send("Download from: {0}", url);
+                            }
                         }
                     } else {
                         logger().scheduleLog(Level.GRAVE, error);
@@ -171,7 +173,7 @@ public class Main implements KarmaSource, Identifiable {
         if (!main.exists())
             main.create();
 
-        main.set(name, new KarmaObject(plugin_identifier));
+        main.setRaw(name, plugin_identifier);
 
         return main.save();
     }
@@ -188,9 +190,11 @@ public class Main implements KarmaSource, Identifiable {
             main.create();
 
         if (main.isSet(name)) {
-            KarmaElement element = main.get(name);
-            if (element.isString()) {
-                plugin_identifier = element.getObjet().getString();
+            Element<?> element = main.get(name);
+            if (element.isPrimitive()) {
+                ElementPrimitive primitive = element.getAsPrimitive();
+                if (primitive.isString())
+                    plugin_identifier = primitive.asString();
             }
         }
     }

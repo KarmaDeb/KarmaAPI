@@ -6,7 +6,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import ml.karmaconfigs.api.bukkit.KarmaPlugin;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -46,9 +45,9 @@ public final class InventorySerializer {
         if (!container.exists())
             container.create();
 
-        container.set("title", KarmaElement.from(name));
-        container.set("size", KarmaElement.from(inventory.getSize()));
-        container.set("type", KarmaElement.from(inventory.getType().name()));
+        container.setRaw("title", name);
+        container.setRaw("size", inventory.getSize());
+        container.setRaw("type", inventory.getType().name());
 
         Gson gson = new GsonBuilder().create();
         JsonArray array = new JsonArray();
@@ -65,7 +64,7 @@ public final class InventorySerializer {
             array.add(json_item);
         }
 
-        container.set("items", KarmaElement.from(Base64.getEncoder().encodeToString(gson.toJson(array).getBytes())));
+        container.setRaw("items", Base64.getEncoder().encodeToString(gson.toJson(array).getBytes()));
         if (container.save()) {
             return new SerializedInventory(random, plugin);
         } else {

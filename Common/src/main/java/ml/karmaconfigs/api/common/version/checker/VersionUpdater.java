@@ -25,11 +25,14 @@ package ml.karmaconfigs.api.common.version.checker;
  *  SOFTWARE.
  */
 
+import ml.karmaconfigs.api.common.karma.file.element.multi.KarmaArray;
+import ml.karmaconfigs.api.common.karma.file.element.types.Element;
+import ml.karmaconfigs.api.common.karma.file.element.types.ElementArray;
+import ml.karmaconfigs.api.common.karma.file.element.types.ElementPrimitive;
 import ml.karmaconfigs.api.common.logger.Logger;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
 import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
 import ml.karmaconfigs.api.common.utils.enums.Level;
@@ -111,7 +114,7 @@ public abstract class VersionUpdater {
      *              of returning the cached result
      * @return the fetch result
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "unchecked"})
     public LateScheduler<VersionFetchResult> fetch(boolean force) {
         KarmaConfig config = new KarmaConfig();
         AsyncLateScheduler<VersionFetchResult> asyncLateScheduler = new AsyncLateScheduler<>();
@@ -136,25 +139,25 @@ public abstract class VersionUpdater {
                     AtomicReference<String[]> changelog = new AtomicReference<>(new String[0]);
 
                     KarmaMain kFile = new KarmaMain(source, temp);
-                    KarmaElement v = kFile.get("version");
-                    KarmaElement u = kFile.get("update_url");
-                    KarmaElement c = kFile.get("changelog");
+                    Element<?> v = kFile.get("version");
+                    Element<?> u = kFile.get("update_url");
+                    Element<?> c = kFile.get("changelog");
 
-                    if (v.isString() && (u.isString() || u.isArray()) && c.isString()) {
-                        version.set(v.getObjet().getString());
-                        if (u.isString()) {
-                            update.set(new String[]{u.getObjet().getString()});
+                    if (v.isPrimitive() && (u.isPrimitive() || u.isArray()) && c.isArray()) {
+                        version.set(v.toString());
+                        if (u.isPrimitive()) {
+                            update.set(new String[]{u.toString()});
                         } else {
+                            ElementArray<ElementPrimitive> array = (KarmaArray) u;
                             Set<String> update_hosts = new HashSet<>();
-                            u.getArray().forEach((element) -> {
-                                update_hosts.add(element.getObjet().textValue());
-                            });
+                            array.forEach((element) -> update_hosts.add(element.toString()));
 
                             update.set(update_hosts.toArray(new String[0]));
                         }
 
                         List<String> tmpChangelog = new ArrayList<>();
-                        c.getArray().forEach((element) -> tmpChangelog.add(element.getObjet().textValue()));
+                        ElementArray<ElementPrimitive> array = (KarmaArray) c;
+                        array.forEach((element) -> tmpChangelog.add(element.toString()));
 
                         changelog.set(tmpChangelog.toArray(new String[0]));
                     } else {

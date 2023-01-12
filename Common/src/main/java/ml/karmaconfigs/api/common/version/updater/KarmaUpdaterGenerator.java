@@ -25,11 +25,12 @@ package ml.karmaconfigs.api.common.version.updater;
  *  SOFTWARE.
  */
 
+import ml.karmaconfigs.api.common.karma.file.element.KarmaPrimitive;
+import ml.karmaconfigs.api.common.karma.file.element.multi.KarmaArray;
+import ml.karmaconfigs.api.common.karma.file.element.types.ElementArray;
+import ml.karmaconfigs.api.common.karma.file.element.types.ElementPrimitive;
 import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaArray;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaObject;
 import ml.karmaconfigs.api.common.data.path.PathUtilities;
 
 import java.net.MalformedURLException;
@@ -188,21 +189,21 @@ public final class KarmaUpdaterGenerator {
                 .internal(KarmaUpdaterGenerator.class.getResourceAsStream("/update_template.kup"));
 
         try {
-            KarmaArray urls = new KarmaArray();
+            ElementArray<ElementPrimitive> urls = new KarmaArray();
             for (URI uri : updateURL) {
-                urls.add(KarmaElement.from(uri.toString()));
+                urls.add(new KarmaPrimitive(uri.toString()));
             }
 
             file.validate();
-            file.set("version", new KarmaObject(source.version()));
+            file.set("version", new KarmaPrimitive(source.version()));
             file.set("update_url", urls);
 
-            List<KarmaElement> elements = new ArrayList<>();
+            ElementArray<ElementPrimitive> elements = new KarmaArray();
             for (String line : lines) {
-                elements.add(new KarmaObject(line));
+                elements.add(new KarmaPrimitive(line));
             }
 
-            file.set("changelog", new KarmaArray(elements.toArray(new KarmaElement[0])));
+            file.set("changelog", elements);
 
             if (!file.save()) {
                 throw new RuntimeException("Failed to save update file for " + source.name());

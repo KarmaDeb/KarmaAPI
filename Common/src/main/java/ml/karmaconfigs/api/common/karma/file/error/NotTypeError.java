@@ -1,6 +1,6 @@
 package ml.karmaconfigs.api.common.karma.file.error;
 
-import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
+import ml.karmaconfigs.api.common.karma.file.element.types.Element;
 
 /**
  * An error when a KarmaElement is tried to be cast
@@ -19,7 +19,7 @@ public class NotTypeError extends RuntimeException {
      *                to be cast
      * @param type    the element cast target
      */
-    public NotTypeError(final KarmaElement element, final Class<? extends KarmaElement> type) {
+    public NotTypeError(final Element<?> element, final Class<? extends Element<?>> type) {
         super("The element " + element + " cannot be converted to " + type);
     }
 }

@@ -25,7 +25,7 @@ package ml.karmaconfigs.api.common.karma.source;
  *  SOFTWARE.
  */
 
-import ml.karmaconfigs.api.common.console.Colors;
+import ml.karmaconfigs.api.common.console.Console;
 import ml.karmaconfigs.api.common.logger.Logger;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
 import ml.karmaconfigs.api.common.timer.scheduler.Scheduler;
@@ -248,8 +248,8 @@ public interface KarmaSource extends Serializable {
      *
      * @return the source out
      */
-    default Colors console() {
-        Colors simple = new Colors(this);
+    default Console console() {
+        Console simple = new Console(this);
 
         try {
             //Fixes a problem related with papermc and 'nag authors'
@@ -266,7 +266,7 @@ public interface KarmaSource extends Serializable {
             Class<?> consoleCommandSender = commandSender.getClass();
             Method sendMessage = consoleCommandSender.getMethod("sendMessage", String.class);
 
-            return new Colors(this, (msg) -> {
+            return new Console(this, (msg) -> {
                 try {
                     sendMessage.invoke(commandSender, StringUtils.toColor(msg));
                 } catch (Throwable ex) {

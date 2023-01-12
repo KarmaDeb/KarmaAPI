@@ -1,6 +1,7 @@
 package ml.karmaconfigs.api.common.karma.file.element;
 
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
+import ml.karmaconfigs.api.common.karma.file.element.types.Element;
 
 import java.util.Set;
 
@@ -13,8 +14,9 @@ public abstract class KarmaSection {
      * Get the main that handles this section
      *
      * @return the section main
+     * @throws IllegalAccessError may be thrown by its instances
      */
-    public abstract KarmaMain getMain();
+    public abstract KarmaMain getMain() throws IllegalAccessError;
 
     /**
      * Get the section parent
@@ -59,7 +61,7 @@ public abstract class KarmaSection {
      * @param key the value key
      * @return the value
      */
-    public abstract KarmaElement get(final String key);
+    public abstract Element<?> get(final String key);
 
     /**
      * Get a value
@@ -68,7 +70,7 @@ public abstract class KarmaSection {
      * @param def the default value
      * @return the value
      */
-    public abstract KarmaElement get(final String key, final KarmaElement def);
+    public abstract Element<?> get(final String key, final Element<?> def);
 
     /**
      * Get a key
@@ -76,7 +78,7 @@ public abstract class KarmaSection {
      * @param element the key value
      * @return the key
      */
-    public abstract String get(final KarmaElement element);
+    public abstract String get(final Element<?> element);
 
     /**
      * Get a key
@@ -85,7 +87,7 @@ public abstract class KarmaSection {
      * @param def     the default key
      * @return the key
      */
-    public abstract String get(final KarmaElement element, final String def);
+    public abstract String get(final Element<?> element, final String def);
 
     /**
      * Get if a key element is recursive
@@ -101,7 +103,7 @@ public abstract class KarmaSection {
      * @param element the element
      * @return if the element is recursive
      */
-    public abstract boolean isRecursive(final KarmaElement element);
+    public abstract boolean isRecursive(final Element<?> element);
 
     /**
      * Get if a key is set

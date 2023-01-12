@@ -1,670 +1,214 @@
 package ml.karmaconfigs.api.common.console;
 
-/*
- * This file is part of KarmaAPI, licensed under the MIT License.
- *
- *  Copyright (c) karma (KarmaDev) <karmaconfigs@gmail.com>
- *  Copyright (c) contributors
- *
- *  Permission is hereby granted, free of charge, to any person obtaining a copy
- *  of this software and associated documentation files (the "Software"), to deal
- *  in the Software without restriction, including without limitation the rights
- *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  copies of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be included in all
- *  copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- *  SOFTWARE.
- */
-
-import ml.karmaconfigs.api.common.karma.KarmaConfig;
-import ml.karmaconfigs.api.common.karma.source.KarmaSource;
-import ml.karmaconfigs.api.common.timer.SchedulerUnit;
-import ml.karmaconfigs.api.common.timer.SourceScheduler;
-import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
-import ml.karmaconfigs.api.common.console.prefix.PrefixConsoleData;
-import ml.karmaconfigs.api.common.console.packet.ConsolePacket;
-import ml.karmaconfigs.api.common.utils.enums.Level;
-import ml.karmaconfigs.api.common.placeholder.GlobalPlaceholderEngine;
-import ml.karmaconfigs.api.common.placeholder.util.PlaceholderEngine;
-import ml.karmaconfigs.api.common.string.ListTransformation;
 import ml.karmaconfigs.api.common.string.StringUtils;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
- * Karma console
+ * Known console colors
  */
-public final class Colors {
-
+public enum Colors {
     /**
-     * The custom message actions
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(0, 0, 0)">Black</p>
      */
-    private final static Map<KarmaSource, Consumer<String>> messageActions = new ConcurrentHashMap<>();
-    private final static Map<KarmaSource, Set<PlaceholderEngine>> engines = new ConcurrentHashMap<>();
-
-    private final static Map<KarmaSource, Map<Integer, String>> sequence = new ConcurrentHashMap<>();
-
-    private final static Map<KarmaSource, SimpleScheduler> sequential_consoles = new ConcurrentHashMap<>();
-
+    BLACK("0"),
     /**
-     * The console source
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(0, 0, 128)">Navy</p>
      */
-    private final KarmaSource source;
+    DARK_BLUE("1"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(0, 128, 0)">Green</p>
+     */
+    DARK_GREEN("2"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(0, 128, 128)">Teal</p>
+     */
+    DARK_AQUA("3"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(128, 0, 0)">Maroon</p>
+     */
+    DARK_RED("4"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(128, 0, 128)">Purple</p>
+     */
+    DARK_PURPLE("5"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(128, 128, 0)">Olive</p>
+     */
+    DARK_YELLOW("6"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(192, 192, 192)">Silver</p>
+     */
+    GRAY("7"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(128, 128, 128)">Grey</p>
+     */
+    DARK_GRAY("8"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(0, 95, 255)">Dodger blue 2</p>
+     */
+    BLUE("9"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(0, 255, 0)">Lime</p>
+     */
+    GREEN("a"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(0, 255, 255)">Aqua</p>
+     */
+    AQUA("b"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(255, 0, 0)">Red</p>
+     */
+    RED("c"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(255, 0, 255)">Fuchsia</p>
+     */
+    PURPLE("d"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(255, 255, 0)">Yellow</p>
+     */
+    YELLOW("e"),
+    /**
+     * Console color<br>
+     * <br>
+     * <p style="color: rgb(255, 255, 255)">White</p>
+     */
+    WHITE("f"),
+    /**
+     * Console color
+     * <br>
+     * <p style="font-weight: bold">Bold</p>
+     */
+    BOLD("l"),
+    /**
+     * Console color
+     * <br>
+     * <p style="text-decoration: line-through">Strikethrough</p>
+     */
+    STRIKETHROUGH("m"),
+    /**
+     * Console color
+     * <br>
+     * <p style="text-decoration: underline">Underline</p>
+     */
+    UNDERLINE("n"),
+    /**
+     * Console color
+     * <br>
+     * <p style="font-style: italic">Italic</p>
+     */
+    ITALIC("o"),
+    /**
+     * Console color
+     * <br>
+     * <p>Default</p>
+     */
+    RESET("r"),
+    /**
+     * Console color
+     * <br>
+     * <p>Custom</p>
+     */
+    CUSTOM("r");
+
+    private String color_code;
 
     /**
-     * Initialize a new console
+     * Initialize the console color
      *
-     * @param src the console source
+     * @param code the color code
      */
-    public Colors(final KarmaSource src) {
-        source = src;
-
-        PlaceholderEngine global = new GlobalPlaceholderEngine(src);
-        Set<PlaceholderEngine> stored = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-        stored.add(global);
-
-        engines.put(source, stored);
+    Colors(final String code) {
+        color_code = code;
     }
 
     /**
-     * Initialize a new console
+     * Set the color code
      *
-     * @param src       the console source
-     * @param onMessage the console message action
-     */
-    public Colors(final KarmaSource src, final Consumer<String> onMessage) {
-        this.source = src;
-
-        if (onMessage != null) {
-            boolean isNew = messageActions.getOrDefault(src, null) == null;
-
-            messageActions.put(src, onMessage);
-            if (isNew) {
-                KarmaConfig config = new KarmaConfig();
-
-                if (config.debug(Level.INFO)) {
-                    send(StringUtils.formatString(src, "Using custom console message sender", Level.INFO));
-                }
-            }
-        } else {
-            messageActions.remove(src);
-        }
-
-        PlaceholderEngine global = new GlobalPlaceholderEngine(src);
-        Set<PlaceholderEngine> stored = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-        stored.add(global);
-
-        engines.put(source, stored);
-    }
-
-    /**
-     * Update the console sequential status for
-     * this source
-     * <p>
-     * SEQUENTIAL CONSOLE ALLOWS SOURCES TO FORCE THE
-     * MESSAGE ORDER, USEFUL WHEN YOU RUN A LOT OF ASYNC
-     * TASKS BUT WANT TO KEEP AN ORDER
-     *
-     * @param seq_status the console sequential status
+     * @param code the color code
      * @return this instance
      */
-    public Colors sequential(final boolean seq_status) {
-        SimpleScheduler scheduler = sequential_consoles.getOrDefault(source, null);
-        if (scheduler == null) {
-            scheduler = new SourceScheduler(source, 1, SchedulerUnit.SECOND, true).multiThreading(false).restartAction(() -> {
-                Map<Integer, String> execution_queue = sequence.getOrDefault(source, new ConcurrentHashMap<>());
-                List<Integer> order = new ArrayList<>(execution_queue.keySet());
-                if (!order.isEmpty()) {
-                    Collections.sort(order);
-                    int next_message = order.get(0);
-
-                    String next = execution_queue.remove(next_message);
-                    ConsolePacket packet = new ConsolePacket(Base64.getDecoder().decode(next));
-                    readPacket(packet);
-
-                    sequence.put(source, execution_queue);
-                }
-            });
-
-            sequential_consoles.put(source, scheduler);
-        }
-
-        if (seq_status) {
-            if (!scheduler.isRunning()) {
-                scheduler.start();
-            }
-        } else {
-            if (scheduler.isRunning()) {
-                scheduler.pause();
-            }
-        }
+    private Colors setCode(final String code) {
+        color_code = code;
 
         return this;
     }
 
     /**
-     * Get the console prefix data
+     * Get if the current color is custom
      *
-     * @return this source prefix console data
+     * @return if the current color has a custom color code
      */
-    public PrefixConsoleData getData() {
-        return new PrefixConsoleData(this.source);
-    }
-
-    /**
-     * Add placeholder engine to parse automatically
-     * placeholders on the messages
-     *
-     * @param engine the engine to add
-     */
-    public void addEngine(final PlaceholderEngine engine) {
-        Set<PlaceholderEngine> stored = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-        stored.add(engine);
-
-        engines.put(source, stored);
-    }
-
-    /**
-     * Remove a placeholder engine
-     *
-     * @param engine the placeholder engine to remove
-     */
-    public void removeEngine(final PlaceholderEngine engine) {
-        Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-        added.remove(engine);
-
-        engines.put(source, added);
-    }
-
-    /**
-     * Get the placeholder engines of the console
-     *
-     * @return the placeholder engines of the console
-     */
-    public Set<PlaceholderEngine> getEngines() {
-        return engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-    }
-
-    /**
-     * Send a message to the console
-     *
-     * @param message the message to send
-     */
-    public void send(final CharSequence message) {
-        SimpleScheduler scheduler = sequential_consoles.getOrDefault(source, null);
-
-        if (scheduler != null && scheduler.isRunning()) {
-            ConsolePacket packet = new ConsolePacket(message);
-            Map<Integer, String> sequences = sequence.get(source);
-            sequences.put(sequences.size() + 1, packet.serialize());
-            sequence.put(source, sequences);
-        } else {
-            Consumer<String> messageAction = messageActions.getOrDefault(source, null);
-
-            String msg = String.valueOf(message);
-            Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-            for (PlaceholderEngine engine : added)
-                msg = engine.parse(msg);
-
-            if (messageAction == null) {
-                System.out.println("\033[0m" + StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode() + msg + ConsoleColor.RESET.getCode()));
-            } else {
-                messageAction.accept(msg);
+    public final boolean isCustom() {
+        for (Colors color : values()) {
+            if (color != CUSTOM) {
+                if (color_code.equals(color.color_code))
+                    return false;
             }
         }
+
+        return true;
     }
 
     /**
-     * Send a message to the console
+     * Get the color code
      *
-     * @param message  the message to send
-     * @param replaces the message replaces
+     * @return the color code
      */
-    public void send(final CharSequence message, final Object... replaces) {
-        SimpleScheduler scheduler = sequential_consoles.getOrDefault(source, null);
-
-        if (scheduler != null && scheduler.isRunning()) {
-            ConsolePacket packet = new ConsolePacket(message, replaces);
-            Map<Integer, String> sequences = sequence.get(source);
-            sequences.put(sequences.size() + 1, packet.serialize());
-            sequence.put(source, sequences);
-        } else {
-            Consumer<String> messageAction = messageActions.getOrDefault(source, null);
-
-            String tmpMessage = String.valueOf(message);
-            for (int i = 0; i < replaces.length; i++) {
-                String placeholder = "{" + i + "}";
-                String value = String.valueOf(replaces[i]);
-                tmpMessage = tmpMessage.replace(placeholder, value);
-            }
-
-            Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-            for (PlaceholderEngine engine : added)
-                tmpMessage = engine.parse(tmpMessage);
-
-            if (messageAction == null) {
-                System.out.println("\033[0m" + StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode() + tmpMessage + ConsoleColor.RESET.getCode()));
-            } else {
-                messageAction.accept(tmpMessage);
-            }
-        }
+    public final String getCode() {
+        return StringUtils.SINGLE_COLOR_IDENTIFIER + color_code;
     }
 
     /**
-     * Send a message to the console
+     * Create a new custom color
      *
-     * @param message the message to send
-     * @param level   the message level
+     * @param code the color code
+     * @return the custom color code
      */
-    public void send(final @NotNull CharSequence message, final @NotNull Level level) {
-        SimpleScheduler scheduler = sequential_consoles.getOrDefault(source, null);
-
-        if (scheduler != null && scheduler.isRunning()) {
-            ConsolePacket packet = new ConsolePacket(message, level, new Object[]{});
-            Map<Integer, String> sequences = sequence.get(source);
-            sequences.put(sequences.size() + 1, packet.serialize());
-            sequence.put(source, sequences);
-        } else {
-            Consumer<String> messageAction = messageActions.getOrDefault(source, null);
-
-            String tmpMessage = String.valueOf(message);
-
-            PrefixConsoleData data = getData();
-            String prefix = data.getPrefix(level);
-
-            tmpMessage = StringUtils.stripColor(tmpMessage);
-            Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-            for (PlaceholderEngine engine : added)
-                tmpMessage = engine.parse(tmpMessage);
-
-            if (messageAction == null) {
-                if (tmpMessage.contains("\n")) {
-                    for (String msg : tmpMessage.split("\n"))
-                        send(msg);
-                } else {
-                    send(prefix + tmpMessage);
-                }
-            } else {
-                if (tmpMessage.contains("\n"))
-                    tmpMessage = StringUtils.listToString(Arrays.asList(tmpMessage.split("\n")), ListTransformation.NEW_LINES);
-
-                messageAction.accept(prefix + tmpMessage);
-            }
-        }
+    public static Colors customColor(final String code) {
+        return Colors.CUSTOM.setCode(code);
     }
 
     /**
-     * Send a message to the console
+     * Get a color from the specified color code
      *
-     * @param message  the message to send
-     * @param level    the message level
-     * @param replaces the message replaces
+     * @param code the color code
+     * @return the color
      */
-    public void send(final @NotNull CharSequence message, final @NotNull Level level, final @NotNull Object... replaces) {
-        SimpleScheduler scheduler = sequential_consoles.getOrDefault(source, null);
-
-        if (scheduler != null && scheduler.isRunning()) {
-            ConsolePacket packet = new ConsolePacket(message, level, replaces);
-            Map<Integer, String> sequences = sequence.get(source);
-            sequences.put(sequences.size() + 1, packet.serialize());
-            sequence.put(source, sequences);
-        } else {
-            Consumer<String> messageAction = messageActions.getOrDefault(source, null);
-
-            String tmpMessage = String.valueOf(message);
-
-            PrefixConsoleData data = getData();
-            String prefix = data.getPrefix(level);
-
-            for (int i = 0; i < replaces.length; i++) {
-                String placeholder = "{" + i + "}";
-                String value = String.valueOf(replaces[i]);
-                tmpMessage = tmpMessage.replace(placeholder, value);
-            }
-            tmpMessage = StringUtils.stripColor(tmpMessage);
-            Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-            for (PlaceholderEngine engine : added)
-                tmpMessage = engine.parse(tmpMessage);
-
-            if (messageAction == null) {
-                if (tmpMessage.contains("\n")) {
-                    boolean first_message = true;
-
-                    for (String msg : tmpMessage.split("\n")) {
-                        send((first_message ? prefix : "") + msg);
-
-                        first_message = false;
-                    }
-                } else {
-                    send(prefix + tmpMessage);
-                }
-            } else {
-                if (tmpMessage.contains("\n"))
-                    tmpMessage = StringUtils.listToString(Arrays.asList(tmpMessage.split("\n")), ListTransformation.NEW_LINES);
-
-                messageAction.accept(prefix + tmpMessage);
-            }
+    public static Colors fromCode(final String code) {
+        for (Colors color : values()) {
+            if (color.getCode().equals(code))
+                return color;
         }
-    }
 
-    /**
-     * Send a message to the console
-     *
-     * @param message the message to send
-     * @param level   the message level
-     */
-    public void debug(final @NotNull CharSequence message, final @NotNull Level level) {
-        KarmaConfig config = new KarmaConfig();
-
-        if (config.debug(level)) {
-            Consumer<String> messageAction = messageActions.getOrDefault(source, null);
-
-            String tmpMessage = String.valueOf(message);
-
-            PrefixConsoleData data = getData();
-            String prefix = data.getPrefix(level);
-
-            tmpMessage = StringUtils.stripColor(tmpMessage);
-            Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-            for (PlaceholderEngine engine : added)
-                tmpMessage = engine.parse(tmpMessage);
-
-            if (messageAction == null) {
-                if (tmpMessage.contains("\n")) {
-                    for (String msg : tmpMessage.split("\n"))
-                        send(msg);
-                } else {
-                    send(prefix + tmpMessage);
-                }
-            } else {
-                if (tmpMessage.contains("\n"))
-                    tmpMessage = StringUtils.listToString(Arrays.asList(tmpMessage.split("\n")), ListTransformation.NEW_LINES);
-
-                messageAction.accept(prefix + tmpMessage);
-            }
-        }
-    }
-
-    /**
-     * Send a message to the console
-     *
-     * @param message the message to send
-     * @param level   the message level
-     */
-    public void debugFile(final @NotNull CharSequence message, final @NotNull Level level) {
-        KarmaConfig config = new KarmaConfig();
-
-        if (config.fileDebug(level)) {
-            Consumer<String> messageAction = messageActions.getOrDefault(source, null);
-
-            String tmpMessage = String.valueOf(message);
-
-            PrefixConsoleData data = getData();
-            String prefix = data.getPrefix(level);
-
-            tmpMessage = StringUtils.stripColor(tmpMessage);
-            Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-            for (PlaceholderEngine engine : added)
-                tmpMessage = engine.parse(tmpMessage);
-
-            if (messageAction == null) {
-                if (tmpMessage.contains("\n")) {
-                    for (String msg : tmpMessage.split("\n"))
-                        send(msg);
-                } else {
-                    send(prefix + tmpMessage);
-                }
-            } else {
-                if (tmpMessage.contains("\n"))
-                    tmpMessage = StringUtils.listToString(Arrays.asList(tmpMessage.split("\n")), ListTransformation.NEW_LINES);
-
-                messageAction.accept(prefix + tmpMessage);
-            }
-        }
-    }
-
-    /**
-     * Send a message to the console
-     *
-     * @param message the message to send
-     * @param level   the message level
-     */
-    public void debugUtil(final @NotNull CharSequence message, final @NotNull Level level) {
-        KarmaConfig config = new KarmaConfig();
-
-        if (config.utilDebug(level)) {
-            Consumer<String> messageAction = messageActions.getOrDefault(source, null);
-
-            String tmpMessage = String.valueOf(message);
-
-            PrefixConsoleData data = getData();
-            String prefix = data.getPrefix(level);
-
-            tmpMessage = StringUtils.stripColor(tmpMessage);
-            Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-            for (PlaceholderEngine engine : added)
-                tmpMessage = engine.parse(tmpMessage);
-
-            if (messageAction == null) {
-                if (tmpMessage.contains("\n")) {
-                    for (String msg : tmpMessage.split("\n"))
-                        send(msg);
-                } else {
-                    send(prefix + tmpMessage);
-                }
-            } else {
-                if (tmpMessage.contains("\n"))
-                    tmpMessage = StringUtils.listToString(Arrays.asList(tmpMessage.split("\n")), ListTransformation.NEW_LINES);
-
-                messageAction.accept(prefix + tmpMessage);
-            }
-        }
-    }
-
-    /**
-     * Send a message to the console
-     *
-     * @param message  the message to send
-     * @param level    the message level
-     * @param replaces the message replaces
-     */
-    public void debug(final @NotNull CharSequence message, final @NotNull Level level, final @NotNull Object... replaces) {
-        KarmaConfig config = new KarmaConfig();
-
-        if (config.debug(level)) {
-            Consumer<String> messageAction = messageActions.getOrDefault(source, null);
-
-            String tmpMessage = String.valueOf(message);
-
-            PrefixConsoleData data = getData();
-            String prefix = data.getPrefix(level);
-
-            for (int i = 0; i < replaces.length; i++) {
-                String placeholder = "{" + i + "}";
-                String value = String.valueOf(replaces[i]);
-                tmpMessage = tmpMessage.replace(placeholder, value);
-            }
-            tmpMessage = StringUtils.stripColor(tmpMessage);
-            Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-            for (PlaceholderEngine engine : added)
-                tmpMessage = engine.parse(tmpMessage);
-
-            if (messageAction == null) {
-                if (tmpMessage.contains("\n")) {
-                    for (String msg : tmpMessage.split("\n"))
-                        send(msg);
-                } else {
-                    send(prefix + tmpMessage);
-                }
-            } else {
-                if (tmpMessage.contains("\n"))
-                    tmpMessage = StringUtils.listToString(Arrays.asList(tmpMessage.split("\n")), ListTransformation.NEW_LINES);
-
-                messageAction.accept(prefix + tmpMessage);
-            }
-        }
-    }
-
-    /**
-     * Send a message to the console
-     *
-     * @param message  the message to send
-     * @param level    the message level
-     * @param replaces the message replaces
-     */
-    public void debugFile(final @NotNull CharSequence message, final @NotNull Level level, final @NotNull Object... replaces) {
-        KarmaConfig config = new KarmaConfig();
-
-        if (config.fileDebug(level)) {
-            Consumer<String> messageAction = messageActions.getOrDefault(source, null);
-
-            String tmpMessage = String.valueOf(message);
-
-            PrefixConsoleData data = getData();
-            String prefix = data.getPrefix(level);
-
-            for (int i = 0; i < replaces.length; i++) {
-                String placeholder = "{" + i + "}";
-                String value = String.valueOf(replaces[i]);
-                tmpMessage = tmpMessage.replace(placeholder, value);
-            }
-            tmpMessage = StringUtils.stripColor(tmpMessage);
-            Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-            for (PlaceholderEngine engine : added)
-                tmpMessage = engine.parse(tmpMessage);
-
-            if (messageAction == null) {
-                if (tmpMessage.contains("\n")) {
-                    for (String msg : tmpMessage.split("\n"))
-                        send(msg);
-                } else {
-                    send(prefix + tmpMessage);
-                }
-            } else {
-                if (tmpMessage.contains("\n"))
-                    tmpMessage = StringUtils.listToString(Arrays.asList(tmpMessage.split("\n")), ListTransformation.NEW_LINES);
-
-                messageAction.accept(prefix + tmpMessage);
-            }
-        }
-    }
-
-    /**
-     * Send a message to the console
-     *
-     * @param message  the message to send
-     * @param level    the message level
-     * @param replaces the message replaces
-     */
-    public void debugUtil(final @NotNull CharSequence message, final @NotNull Level level, final @NotNull Object... replaces) {
-        KarmaConfig config = new KarmaConfig();
-
-        if (config.utilDebug(level)) {
-            Consumer<String> messageAction = messageActions.getOrDefault(source, null);
-
-            String tmpMessage = String.valueOf(message);
-
-            PrefixConsoleData data = getData();
-            String prefix = data.getPrefix(level);
-
-            for (int i = 0; i < replaces.length; i++) {
-                String placeholder = "{" + i + "}";
-                String value = String.valueOf(replaces[i]);
-                tmpMessage = tmpMessage.replace(placeholder, value);
-            }
-            tmpMessage = StringUtils.stripColor(tmpMessage);
-            Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-            for (PlaceholderEngine engine : added)
-                tmpMessage = engine.parse(tmpMessage);
-
-            if (messageAction == null) {
-                if (tmpMessage.contains("\n")) {
-                    for (String msg : tmpMessage.split("\n"))
-                        send(msg);
-                } else {
-                    send(prefix + tmpMessage);
-                }
-            } else {
-                if (tmpMessage.contains("\n"))
-                    tmpMessage = StringUtils.listToString(Arrays.asList(tmpMessage.split("\n")), ListTransformation.NEW_LINES);
-
-                messageAction.accept(prefix + tmpMessage);
-            }
-        }
-    }
-
-    /**
-     * Read the console packet
-     *
-     * @param packet the packet to read
-     */
-    private void readPacket(final ConsolePacket packet) {
-        String message = packet.getMessage();
-        Object[] replaces = packet.getReplaces();
-        Level level = packet.getLevel();
-
-        Consumer<String> messageAction = messageActions.getOrDefault(source, null);
-
-        if (level == null) {
-            for (int i = 0; i < replaces.length; i++) {
-                String placeholder = "{" + i + "}";
-                String value = String.valueOf(replaces[i]);
-                message = message.replace(placeholder, value);
-            }
-
-            Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-            for (PlaceholderEngine engine : added)
-                message = engine.parse(message);
-
-            if (messageAction == null) {
-                System.out.println("\033[0m" + StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode() + message + ConsoleColor.RESET.getCode()));
-            } else {
-                messageAction.accept(message);
-            }
-        } else {
-            PrefixConsoleData data = getData();
-            String prefix = data.getPrefix(level);
-
-            for (int i = 0; i < replaces.length; i++) {
-                String placeholder = "{" + i + "}";
-                String value = String.valueOf(replaces[i]);
-                message = message.replace(placeholder, value);
-            }
-            message = StringUtils.stripColor(message);
-            Set<PlaceholderEngine> added = engines.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-            for (PlaceholderEngine engine : added)
-                message = engine.parse(message);
-
-            if (messageAction == null) {
-                if (message.contains("\n")) {
-                    boolean first_message = true;
-
-                    for (String msg : message.split("\n")) {
-                        System.out.println("\033[0m" + StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode() + (first_message ? prefix : "") + msg + ConsoleColor.RESET.getCode()));
-
-                        first_message = false;
-                    }
-                } else {
-                    System.out.println("\033[0m" + StringUtils.toAnyOsColor(ConsoleColor.RESET.getCode() + prefix + message + ConsoleColor.RESET.getCode()));
-                }
-            } else {
-                if (message.contains("\n"))
-                    message = StringUtils.listToString(Arrays.asList(message.split("\n")), ListTransformation.NEW_LINES);
-
-                messageAction.accept(prefix + message);
-            }
-        }
+        return customColor(code);
     }
 }

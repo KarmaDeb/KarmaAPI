@@ -1,6 +1,8 @@
-package ml.karmaconfigs.api.common.karma.file.element;
+package ml.karmaconfigs.api.common.karma.file.element.section;
 
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
+import ml.karmaconfigs.api.common.karma.file.element.KarmaSection;
+import ml.karmaconfigs.api.common.karma.file.element.types.Element;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,6 +19,7 @@ public class SectionContainer extends KarmaSection {
     /**
      * Initialize the section container
      *
+     * @param source the source file
      * @param p the section path
      * @param n the section name
      */
@@ -133,7 +136,7 @@ public class SectionContainer extends KarmaSection {
      * @return the value
      */
     @Override
-    public KarmaElement get(final String key) {
+    public Element<?> get(final String key) {
         String tmpKey = key;
         if (key.startsWith(name + "\\.")) {
             tmpKey = key.replaceFirst(name + "\\.", "");
@@ -151,7 +154,7 @@ public class SectionContainer extends KarmaSection {
      * @return the value
      */
     @Override
-    public KarmaElement get(final String key, final KarmaElement def) {
+    public Element<?> get(final String key, final Element<?> def) {
         String tmpKey = key;
         if (key.startsWith(name + "\\.")) {
             tmpKey = key.replaceFirst(name + "\\.", "");
@@ -168,7 +171,7 @@ public class SectionContainer extends KarmaSection {
      * @return the key
      */
     @Override
-    public String get(final KarmaElement element) {
+    public String get(final Element<?> element) {
         String tmp_path = "main." + main.get(element);
         if (tmp_path.startsWith(path + "." + name)) {
             return tmp_path;
@@ -185,7 +188,7 @@ public class SectionContainer extends KarmaSection {
      * @return the key
      */
     @Override
-    public String get(final KarmaElement element, final String def) {
+    public String get(final Element<?> element, final String def) {
         String tmp_path = "main." + main.get(element);
         if (tmp_path.startsWith(path + "." + name)) {
             return tmp_path;
@@ -218,7 +221,7 @@ public class SectionContainer extends KarmaSection {
      * @return if the element is recursive
      */
     @Override
-    public boolean isRecursive(final KarmaElement element) {
+    public boolean isRecursive(final Element<?> element) {
         String tmp_path = "main." + main.get(element);
         if (tmp_path.startsWith(path + "." + name)) {
             return main.isRecursive(tmp_path);
@@ -242,7 +245,7 @@ public class SectionContainer extends KarmaSection {
 
         String tmp_path = path + "." + name + "." + tmpKey;
 
-        KarmaElement res = main.get(tmp_path);
-        return res != null && res.isValid();
+        Element<?> res = main.get(tmp_path);
+        return res != null && !res.isElementNull();
     }
 }

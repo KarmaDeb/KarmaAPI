@@ -36,7 +36,7 @@ import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.placeholder.GlobalPlaceholderEngine;
 import ml.karmaconfigs.api.common.placeholder.SimplePlaceholder;
 import ml.karmaconfigs.api.common.placeholder.util.Placeholder;
-import ml.karmaconfigs.api.common.console.ConsoleColor;
+import ml.karmaconfigs.api.common.console.Colors;
 import ml.karmaconfigs.api.common.version.comparator.VersionComparator;
 import ml.karmaconfigs.api.common.string.split.SplitIndex;
 import ml.karmaconfigs.api.common.time.name.CleanTimeBuilder;
@@ -870,14 +870,14 @@ public final class StringUtils {
      * @return a random color
      */
     public static String randomColor() {
-        ConsoleColor[] colors = ConsoleColor.values();
+        Colors[] colors = Colors.values();
         int random = new Random().nextInt(colors.length);
         if (random == colors.length)
             random--;
 
-        ConsoleColor color = colors[random];
+        Colors color = colors[random];
         if (color.isCustom())
-            color = ConsoleColor.customColor("k");
+            color = Colors.customColor("k");
 
         return color.getCode();
     }

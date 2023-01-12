@@ -35,8 +35,8 @@ import ml.karmaconfigs.api.bukkit.region.wall.RegionWall;
 import ml.karmaconfigs.api.bukkit.region.wall.util.Wall;
 import ml.karmaconfigs.api.bukkit.region.wall.util.WallType;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaObject;
+import ml.karmaconfigs.api.common.karma.file.element.types.Element;
+import ml.karmaconfigs.api.common.karma.file.element.types.ElementPrimitive;
 import ml.karmaconfigs.api.common.security.token.TokenGenerator;
 import ml.karmaconfigs.api.common.string.StringUtils;
 import org.bukkit.Bukkit;
@@ -377,11 +377,13 @@ public class Region extends Cuboid implements Serializable {
     public boolean exists(KarmaPlugin owner) {
         Path regionFile = owner.getDataPath().resolve("cache").resolve("regions").resolve(token + ".region");
         if (Files.exists(regionFile)) {
-            KarmaMain file = new KarmaMain(owner, regionFile);
+            KarmaMain file = new KarmaMain(regionFile);
             if (file.isSet("region")) {
-                KarmaElement result = file.get("region");
-                if (result.isString()) {
-                    Object serialized = StringUtils.load(result.getObjet().getString());
+                Element<?> result = file.get("region");
+                if (result.isPrimitive()) {
+                    ElementPrimitive primitive = (ElementPrimitive) result;
+
+                    Object serialized = StringUtils.load(primitive.asString());
                     return serialized instanceof Region;
                 }
             }
@@ -686,8 +688,8 @@ public class Region extends Cuboid implements Serializable {
     public void saveToMemory(final KarmaPlugin owner) {
         Path regionFile = owner.getDataPath().resolve("cache").resolve("regions").resolve(token + ".region");
 
-        KarmaMain file = new KarmaMain(owner, regionFile);
-        file.set("region", new KarmaObject(StringUtils.serialize(this)));
+        KarmaMain file = new KarmaMain(regionFile);
+        file.setRaw("region", StringUtils.serialize(this));
         file.save();
     }
 
@@ -716,11 +718,12 @@ public class Region extends Cuboid implements Serializable {
         String reason = "";
 
         if (Files.exists(regionFile)) {
-            KarmaMain file = new KarmaMain(owner, regionFile);
+            KarmaMain file = new KarmaMain(regionFile);
             if (file.isSet("region")) {
-                KarmaElement result = file.get("region", null);
-                if (result.isString()) {
-                    Object serialized = StringUtils.load(result.getObjet().getString());
+                Element<?> result = file.get("region", null);
+                if (result.isPrimitive()) {
+                    ElementPrimitive primitive = (ElementPrimitive) result;
+                    Object serialized = StringUtils.load(primitive.asString());
 
                     if (serialized instanceof Region) {
                         region = (Region) serialized;

@@ -25,12 +25,16 @@ package ml.karmaconfigs.api.common.karma;
  *  SOFTWARE.
  */
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import ml.karmaconfigs.api.common.data.file.FileUtilities;
 import ml.karmaconfigs.api.common.data.path.PathUtilities;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaArray;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaElement;
-import ml.karmaconfigs.api.common.karma.file.element.KarmaObject;
+import ml.karmaconfigs.api.common.karma.file.element.KarmaPrimitive;
+import ml.karmaconfigs.api.common.karma.file.element.multi.KarmaArray;
+import ml.karmaconfigs.api.common.karma.file.element.types.Element;
+import ml.karmaconfigs.api.common.karma.file.element.types.ElementArray;
+import ml.karmaconfigs.api.common.karma.file.element.types.ElementPrimitive;
 import ml.karmaconfigs.api.common.karma.file.yaml.FileCopy;
 import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.utils.enums.Level;
@@ -51,10 +55,12 @@ public final class KarmaConfig {
      */
     public boolean printLicense() {
         if (mn != null) {
-            KarmaElement element = mn.get("print_license", new KarmaObject(false));
+            Element<?> element = mn.get("print_license", new KarmaPrimitive(false));
 
-            if (element.isBoolean()) {
-                return element.getObjet().getBoolean();
+            if (element.isPrimitive()) {
+                ElementPrimitive primitive = element.getAsPrimitive();
+                if (primitive.isBoolean())
+                    return primitive.asBoolean();
             }
         }
 
@@ -75,9 +81,9 @@ public final class KarmaConfig {
             case OK:
                 placeholder = "&b[ &3%project% &b| &2OK &b] >> &9";
                 if (mn != null) {
-                    KarmaElement element = mn.get("ok_prefix", null);
-                    if (element != null && element.isString()) {
-                        String rs = element.getObjet().getString();
+                    Element<?> element = mn.get("ok_prefix", null);
+                    if (element != null && element.isPrimitive()) {
+                        String rs = element.toString();
                         if (!StringUtils.isNullOrEmpty(rs))
                             placeholder = rs;
                     }
@@ -86,9 +92,9 @@ public final class KarmaConfig {
             case INFO:
                 placeholder = "&b[ &3%project% &b| &7INFO &b] >> &9";
                 if (mn != null) {
-                    KarmaElement element = mn.get("info_prefix", null);
-                    if (element != null && element.isString()) {
-                        String rs = element.getObjet().getString();
+                    Element<?> element = mn.get("info_prefix", null);
+                    if (element != null && element.isPrimitive()) {
+                        String rs = element.toString();
                         if (!StringUtils.isNullOrEmpty(rs))
                             placeholder = rs;
                     }
@@ -97,21 +103,22 @@ public final class KarmaConfig {
             case WARNING:
                 placeholder = "&b[ &3%project% &b| &6WARNING &b] >> &9";
                 if (mn != null) {
-                    KarmaElement element = mn.get("warning_prefix", null);
-                    if (element != null && element.isString()) {
-                        String rs = element.getObjet().getString();
+                    Element<?> element = mn.get("warning_prefix", null);
+                    if (element != null && element.isPrimitive()) {
+                        String rs = element.toString();
                         if (!StringUtils.isNullOrEmpty(rs))
                             placeholder = rs;
                     }
                 }
+
                 break;
             case GRAVE:
             default:
                 placeholder = "&b[ &3%project% &b| &cGRAVE &b] >> &9";
                 if (mn != null) {
-                    KarmaElement element = mn.get("grave_prefix", null);
-                    if (element != null && element.isString()) {
-                        String rs = element.getObjet().getString();
+                    Element<?> element = mn.get("grave_prefix", null);
+                    if (element != null && element.isPrimitive()) {
+                        String rs = element.toString();
                         if (!StringUtils.isNullOrEmpty(rs))
                             placeholder = rs;
                     }
@@ -135,20 +142,23 @@ public final class KarmaConfig {
      */
     public boolean fileDebug(final Level lvl) {
         if (mn != null) {
-            KarmaElement element = mn.get("file_copy_debug", new KarmaObject(false));
+            Element<?> element = mn.get("file_copy_debug", new KarmaPrimitive(false));
 
-            if (element.isBoolean()) {
-                boolean result = element.getObjet().getBoolean();
+            if (element.isPrimitive()) {
+                ElementPrimitive primitive = element.getAsPrimitive();
+                if (primitive.isBoolean()) {
+                    boolean result = primitive.asBoolean();
 
-                if (result) {
-                    KarmaElement levels = mn.get("file_copy_levels", new KarmaArray(
-                            new KarmaObject("WARNING"),
-                            new KarmaObject("INFO")
-                    ));
+                    if (result) {
+                        Element<?> levels = mn.get("file_copy_levels", new KarmaArray(
+                                new KarmaPrimitive("WARNING"),
+                                new KarmaPrimitive("INFO")
+                        ));
 
-                    if (levels.isArray()) {
-                        KarmaArray array = levels.toLowerCase().getArray();
-                        return array.contains(new KarmaObject(lvl.name().toLowerCase()));
+                        if (levels.isArray()) {
+                            ElementArray<ElementPrimitive> array = ((KarmaArray) levels).contentsToLowerCase();
+                            return array.contains(new KarmaPrimitive(lvl.name().toLowerCase()));
+                        }
                     }
                 }
             }
@@ -166,22 +176,25 @@ public final class KarmaConfig {
      */
     public boolean utilDebug(final Level lvl) {
         if (mn != null) {
-            KarmaElement element = mn.get("file_util_debug", new KarmaObject(false));
+            Element<?> element = mn.get("file_util_debug", new KarmaPrimitive(false));
 
-            if (element.isBoolean()) {
-                boolean result = element.getObjet().getBoolean();
+            if (element.isPrimitive()) {
+                ElementPrimitive primitive = element.getAsPrimitive();
+                if (primitive.isBoolean()) {
+                    boolean result = primitive.asBoolean();
 
-                if (result) {
-                    KarmaElement levels = mn.get("file_util_levels", new KarmaArray(
-                            new KarmaObject("OK"),
-                            new KarmaObject("INFO"),
-                            new KarmaObject("WARNING"),
-                            new KarmaObject("GRAVE")
-                    ));
+                    if (result) {
+                        Element<?> levels = mn.get("file_util_levels", new KarmaArray(
+                                new KarmaPrimitive("OK"),
+                                new KarmaPrimitive("INFO"),
+                                new KarmaPrimitive("WARNING"),
+                                new KarmaPrimitive("GRAVE")
+                        ));
 
-                    if (levels.isArray()) {
-                        KarmaArray array = levels.toLowerCase().getArray();
-                        return array.contains(new KarmaObject(lvl.name().toLowerCase()));
+                        if (levels.isArray()) {
+                            ElementArray<ElementPrimitive> array = ((KarmaArray) levels).contentsToLowerCase();
+                            return array.contains(new KarmaPrimitive(lvl.name().toLowerCase()));
+                        }
                     }
                 }
             }
@@ -201,20 +214,23 @@ public final class KarmaConfig {
      */
     public boolean debug(final Level lvl) {
         if (mn != null) {
-            KarmaElement element = mn.get("debug", new KarmaObject(false));
+            Element<?> element = mn.get("debug", new KarmaPrimitive(false));
 
-            if (element.isBoolean()) {
-                boolean result = element.getObjet().getBoolean();
-                if (result) {
-                    KarmaElement levels = mn.get("debug_levels", new KarmaArray(
-                            new KarmaObject("OK"),
-                            new KarmaObject("INFO"),
-                            new KarmaObject("WARNING"),
-                            new KarmaObject("GRAVE")));
+            if (element.isPrimitive()) {
+                ElementPrimitive primitive = element.getAsPrimitive();
+                if (primitive.isBoolean()) {
+                    boolean result = primitive.asBoolean();
+                    if (result) {
+                        Element<?> levels = mn.get("debug_levels", new KarmaArray(
+                                new KarmaPrimitive("OK"),
+                                new KarmaPrimitive("INFO"),
+                                new KarmaPrimitive("WARNING"),
+                                new KarmaPrimitive("GRAVE")));
 
-                    if (levels.isArray()) {
-                        KarmaArray array = levels.toLowerCase().getArray();
-                        return array.contains(new KarmaObject(lvl.name()).toLowerCase());
+                        if (levels.isArray()) {
+                            ElementArray<ElementPrimitive> array = ((KarmaArray) levels).contentsToLowerCase();
+                            return array.contains(new KarmaPrimitive(lvl.name().toLowerCase()));
+                        }
                     }
                 }
             }
@@ -232,19 +248,22 @@ public final class KarmaConfig {
      */
     public boolean log(final Level lvl) {
         if (mn != null) {
-            KarmaElement element = mn.get("logging", new KarmaObject(true));
-            if (element.isBoolean()) {
-                boolean result = element.getObjet().getBoolean();
-                if (result) {
-                    KarmaElement levels = mn.get("logging_levels", new KarmaArray(
-                            new KarmaObject("OK"),
-                            new KarmaObject("INFO"),
-                            new KarmaObject("WARNING"),
-                            new KarmaObject("GRAVE")));
+            Element<?> element = mn.get("logging", new KarmaPrimitive(true));
+            if (element.isPrimitive()) {
+                ElementPrimitive primitive = element.getAsPrimitive();
+                if (primitive.isBoolean()) {
+                    boolean result = primitive.asBoolean();
+                    if (result) {
+                        Element<?> levels = mn.get("logging_levels", new KarmaArray(
+                                new KarmaPrimitive("OK"),
+                                new KarmaPrimitive("INFO"),
+                                new KarmaPrimitive("WARNING"),
+                                new KarmaPrimitive("GRAVE")));
 
-                    if (levels.isArray()) {
-                        KarmaArray array = levels.toLowerCase().getArray();
-                        return array.contains(new KarmaObject(lvl.name()).toLowerCase());
+                        if (levels.isArray()) {
+                            ElementArray<ElementPrimitive> array = ((KarmaArray) levels).contentsToLowerCase();
+                            return array.contains(new KarmaPrimitive(lvl.name().toLowerCase()));
+                        }
                     }
                 }
             }
@@ -261,9 +280,9 @@ public final class KarmaConfig {
      */
     public String getAccessKey(final WebTarget target) {
         if (mn != null) {
-            KarmaElement key = mn.get("paste_credentials." + target.name());
-            if (key != null && key.isString())
-                return key.getObjet().getString();
+            Element<?> key = mn.get("paste_credentials." + target.name());
+            if (key != null && key.isPrimitive())
+                return key.toString();
         }
 
         return "";
