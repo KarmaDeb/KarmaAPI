@@ -141,7 +141,7 @@ public final class BukkitServer {
         ComparatorBuilder builder = VersionComparator.createBuilder()
                 .currentVersion(current_version)
                 .checkVersion(check_version);
-        VersionComparator comparator = StringUtils.compareTo(builder);
+        VersionComparator comparator = new VersionComparator(builder);
 
         return comparator.getDifference().equals(Difference.UPDATED);
     }
@@ -165,7 +165,7 @@ public final class BukkitServer {
         ComparatorBuilder builder = VersionComparator.createBuilder()
                 .currentVersion(current_version)
                 .checkVersion(check_version);
-        VersionComparator comparator = StringUtils.compareTo(builder);
+        VersionComparator comparator = new VersionComparator(builder);
 
         return comparator.getDifference().equals(Difference.UPDATED);
     }
@@ -185,7 +185,7 @@ public final class BukkitServer {
         ComparatorBuilder builder = VersionComparator.createBuilder()
                 .currentVersion(current_version)
                 .checkVersion(check_version);
-        VersionComparator comparator = StringUtils.compareTo(builder);
+        VersionComparator comparator = new VersionComparator(builder);
 
         return comparator.getDifference().equals(Difference.OUTDATED);
     }

@@ -111,13 +111,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
      */
     @Override
     public void put(final String key, final PrimitiveType<?> value) {
-        writeLock.lock();
-        try {
-            ElementPrimitive old = values.put(key, new KarmaPrimitive(value));
-            if (old != null) reverse.remove(old);
-        } finally {
-            writeLock.unlock();
-        }
+        put(key, new KarmaPrimitive(value));
     }
 
     /**
@@ -130,7 +124,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
     public void put(final String key, final ElementPrimitive value) {
         writeLock.lock();
         try {
-            ElementPrimitive old = values.put(key, value);
+            ElementPrimitive old = values.put(key, value.onMap(this));
             if (old != null) reverse.remove(old);
         } finally {
             writeLock.unlock();
@@ -145,13 +139,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
      */
     @Override
     public void put(final String key, final String value) {
-        writeLock.lock();
-        try {
-            ElementPrimitive old = values.put(key, new KarmaPrimitive(value));
-            if (old != null) reverse.remove(old);
-        } finally {
-            writeLock.unlock();
-        }
+        put(key, new KarmaPrimitive(value));
     }
 
     /**
@@ -162,13 +150,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
      */
     @Override
     public void put(final String key, final Number value) {
-        writeLock.lock();
-        try {
-            ElementPrimitive old = values.put(key, new KarmaPrimitive(value));
-            if (old != null) reverse.remove(old);
-        } finally {
-            writeLock.unlock();
-        }
+        put(key, new KarmaPrimitive(value));
     }
 
     /**
@@ -179,13 +161,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
      */
     @Override
     public void put(final String key, final Boolean value) {
-        writeLock.lock();
-        try {
-            ElementPrimitive old = values.put(key, new KarmaPrimitive(value));
-            if (old != null) reverse.remove(old);
-        } finally {
-            writeLock.unlock();
-        }
+        put(key, new KarmaPrimitive(value));
     }
 
     /**
@@ -196,13 +172,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
      */
     @Override
     public void put(final String key, final Character value) {
-        writeLock.lock();
-        try {
-            ElementPrimitive old = values.put(key, new KarmaPrimitive(value));
-            if (old != null) reverse.remove(old);
-        } finally {
-            writeLock.unlock();
-        }
+        put(key, new KarmaPrimitive(value));
     }
 
     /**
@@ -213,13 +183,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
      */
     @Override
     public void put(final String key, final Byte value) {
-        writeLock.lock();
-        try {
-            ElementPrimitive old = values.put(key, new KarmaPrimitive(value));
-            if (old != null) reverse.remove(old);
-        } finally {
-            writeLock.unlock();
-        }
+        put(key, new KarmaPrimitive(value));
     }
 
     /**
@@ -230,14 +194,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
      */
     @Override
     public void putRecursive(final String key, final PrimitiveType<?> value) {
-        writeLock.lock();
-        try {
-            ElementPrimitive element = new KarmaPrimitive(value);
-            values.put(key, element);
-            reverse.put(element, key);
-        } finally {
-            writeLock.unlock();
-        }
+        putRecursive(key, new KarmaPrimitive(value));
     }
 
     /**
@@ -250,8 +207,8 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
     public void putRecursive(final String key, final ElementPrimitive value) {
         writeLock.lock();
         try {
-            values.put(key, value);
-            reverse.put(value, key);
+            values.put(key, value.onMap(this));
+            reverse.put(value.onMap(this), key);
         } finally {
             writeLock.unlock();
         }
@@ -265,14 +222,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
      */
     @Override
     public void putRecursive(final String key, final String value) {
-        writeLock.lock();
-        try {
-            ElementPrimitive element = new KarmaPrimitive(value);
-            values.put(key, element);
-            reverse.put(element, key);
-        } finally {
-            writeLock.unlock();
-        }
+        putRecursive(key, new KarmaPrimitive(value));
     }
 
     /**
@@ -283,14 +233,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
      */
     @Override
     public void putRecursive(final String key, final Number value) {
-        writeLock.lock();
-        try {
-            ElementPrimitive element = new KarmaPrimitive(value);
-            values.put(key, element);
-            reverse.put(element, key);
-        } finally {
-            writeLock.unlock();
-        }
+        putRecursive(key, new KarmaPrimitive(value));
     }
 
     /**
@@ -301,14 +244,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
      */
     @Override
     public void putRecursive(final String key, final Boolean value) {
-        writeLock.lock();
-        try {
-            ElementPrimitive element = new KarmaPrimitive(value);
-            values.put(key, element);
-            reverse.put(element, key);
-        } finally {
-            writeLock.unlock();
-        }
+        putRecursive(key, new KarmaPrimitive(value));
     }
 
     /**
@@ -319,14 +255,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
      */
     @Override
     public void putRecursive(final String key, final Character value) {
-        writeLock.lock();
-        try {
-            ElementPrimitive element = new KarmaPrimitive(value);
-            values.put(key, element);
-            reverse.put(element, key);
-        } finally {
-            writeLock.unlock();
-        }
+        putRecursive(key, new KarmaPrimitive(value));
     }
 
     /**
@@ -337,14 +266,7 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
      */
     @Override
     public void putRecursive(final String key, final Byte value) {
-        writeLock.lock();
-        try {
-            ElementPrimitive element = new KarmaPrimitive(value);
-            values.put(key, element);
-            reverse.put(element, key);
-        } finally {
-            writeLock.unlock();
-        }
+        putRecursive(key, new KarmaPrimitive(value));
     }
 
     /**
@@ -579,9 +501,9 @@ public class KarmaMap implements ElementMap<ElementPrimitive> {
                 }
 
                 if (reverse.containsKey(value)) {
-                    new_map.putRecursive(key, value);
+                    new_map.putRecursive(key, value.onMap(this));
                 } else {
-                    new_map.put(key, value);
+                    new_map.put(key, value.onMap(this));
                 }
             }
 

@@ -401,7 +401,7 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
      * @return the ABC plugin
      */
     public static KarmaPlugin getABC() {
-        return (KarmaPlugin) Bukkit.getServer().getPluginManager().getPlugin("AnotherBarelyCodedKarmaPlugin");
+        return (KarmaPlugin) Bukkit.getServer().getPluginManager().getPlugin("KarmaAPI");
     }
 
     /**

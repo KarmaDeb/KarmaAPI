@@ -106,6 +106,27 @@ public class TriCollector<A, B, C> implements TriCollection<A, B, C> {
     }
 
     /**
+     * Get if the collection has the specified key
+     *
+     * @param key the key to check
+     * @return of the collection has the key
+     */
+    @Override
+    public boolean contains(final A key) {
+        for (int i = 0; i < CONSCIOUS_SIZE; i++) {
+            Object k = data[i][0];
+
+            if (k != null) {
+                if (k.equals(key)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Set a key, value, index at the specified index
      *
      * @param index the index
@@ -252,6 +273,26 @@ public class TriCollector<A, B, C> implements TriCollection<A, B, C> {
         }
 
         return set;
+    }
+
+    /**
+     * Get a secondary value
+     *
+     * @param key   the secondary value key
+     * @param value the secondary value parent
+     * @return the secondary value
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public C get(final A key, final B value) {
+        Collection<Object[]> data = get(key);
+        for (Object[] info : data) {
+            if (info[0].equals(value)) {
+                return (C) info[1];
+            }
+        }
+
+        return null;
     }
 
     /**

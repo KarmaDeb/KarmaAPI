@@ -1,6 +1,16 @@
 (
     */Print the API license whenever the server starts, so the user has knowledge of it
-    'print_license' -> true
+    'print_license' -> false
+
+    ("url"
+        */This will manage how much time will the API wait to retrieve a response when
+        */looking for an URL response code. In ms (1000 ms = 1 second)
+        'request_code_timeout' -> 5000
+
+        */This will control if the API will accept any response code under 300 or only 200
+        */response codes. If enabled, only 200 response codes will be accepted
+        'code_strict' -> false
+    )
 
     */Enable console debug
     'debug' -> false

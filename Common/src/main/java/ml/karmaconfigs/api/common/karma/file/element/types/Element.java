@@ -45,6 +45,42 @@ public interface Element<T> {
     boolean isElementNull();
 
     /**
+     * Get if this element pertains to a map
+     *
+     * @return if the element pertains to a map
+     */
+    default boolean pertainsToMap() {
+        return false;
+    }
+
+    /**
+     * Get the element pertaining map
+     *
+     * @return the element owner map
+     */
+    default ElementMap<?> pertainingMap() {
+        return null;
+    }
+
+    /**
+     * Get if this element pertains to an array
+     *
+     * @return if the element pertains to an array
+     */
+    default boolean pertainsToArray() {
+        return false;
+    }
+
+    /**
+     * Get the element pertaining array
+     *
+     * @return the element owner array
+     */
+    default ElementArray<?> pertainingArray() {
+        return null;
+    }
+
+    /**
      * Get this element as a primitive
      *
      * @return the element as a primitive

@@ -1,4 +1,4 @@
-name: KarmaAPI
+name: ${plugin.name}
 version: ${plugin.version}
 main: ml.karmaconfigs.api.bukkit.Main
 api-version: 1.13
@@ -12,3 +12,7 @@ softdepend:
   - PlaceholderAPI
   - Vault
   - ProtocolLib
+
+commands:
+  test_legacy:
+    description: Test legacy mode utilities

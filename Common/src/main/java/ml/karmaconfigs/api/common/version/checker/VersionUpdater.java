@@ -175,7 +175,6 @@ public abstract class VersionUpdater {
                                     .currentVersion(versionResolver.resolve(source.version()))
                                     .checkVersion(versionResolver.resolve(version.get()));
                             comparator = StringUtils.compareTo(builder);
-
                             updated = comparator.isUpToDate();
                             break;
                         default:

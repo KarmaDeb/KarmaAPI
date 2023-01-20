@@ -1,5 +1,7 @@
 package ml.karmaconfigs.api.common.karma.file.element;
 
+import ml.karmaconfigs.api.common.karma.file.element.types.ElementArray;
+import ml.karmaconfigs.api.common.karma.file.element.types.ElementMap;
 import ml.karmaconfigs.api.common.karma.file.element.types.ElementNull;
 import ml.karmaconfigs.api.common.karma.file.element.types.ElementPrimitive;
 import ml.karmaconfigs.api.common.karma.file.element.types.primitive.*;
@@ -9,6 +11,9 @@ import static ml.karmaconfigs.api.common.karma.file.element.types.primitive.Prim
 public class KarmaPrimitive implements ElementPrimitive {
 
     private final PrimitiveType<?> primitive;
+
+    private ElementMap<?> map = null;
+    private ElementArray<?> array = null;
 
     /**
      * Create a primitive
@@ -114,6 +119,47 @@ public class KarmaPrimitive implements ElementPrimitive {
     }
 
     /**
+     * Create a primitive for object
+     *
+     * @return the primitive
+     */
+    public static KarmaPrimitive forObject(final Object obj) {
+        String str = null;
+        try {
+            str = obj.toString();
+        } catch (Throwable ignored) {}
+
+        if (str == null)
+            return forNull();
+
+        return new KarmaPrimitive(str);
+    }
+
+    /**
+     * Set the primitive owner map
+     *
+     * @param owner the map
+     * @return this instance
+     */
+    @Override
+    public KarmaPrimitive onMap(final ElementMap<?> owner) {
+        map = owner;
+        return this;
+    }
+
+    /**
+     * Set the primitive owner array
+     *
+     * @param owner the array
+     * @return this instance
+     */
+    @Override
+    public KarmaPrimitive onArray(final ElementArray<?> owner) {
+        array = owner;
+        return this;
+    }
+
+    /**
      * Get the element
      *
      * @return the element
@@ -131,6 +177,46 @@ public class KarmaPrimitive implements ElementPrimitive {
     @Override
     public boolean isElementNull() {
         return primitive.get() instanceof ElementNull;
+    }
+
+    /**
+     * Get if this element pertains to a map
+     *
+     * @return if the element pertains to a map
+     */
+    @Override
+    public boolean pertainsToMap() {
+        return map != null;
+    }
+
+    /**
+     * Get the element pertaining map
+     *
+     * @return the element owner map
+     */
+    @Override
+    public ElementMap<?> pertainingMap() {
+        return map;
+    }
+
+    /**
+     * Get if this element pertains to an array
+     *
+     * @return if the element pertains to an array
+     */
+    @Override
+    public boolean pertainsToArray() {
+        return array != null;
+    }
+
+    /**
+     * Get the element pertaining array
+     *
+     * @return the element owner array
+     */
+    @Override
+    public ElementArray<?> pertainingArray() {
+        return array;
     }
 
     /**

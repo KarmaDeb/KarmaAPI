@@ -70,6 +70,44 @@ public interface KarmaAPI extends Serializable {
     }
 
     /**
+     * Get the current API version
+     *
+     * @return the current API version
+     */
+    static String getPluginVersion() {
+        String version = "-1";
+        try {
+            InputStream in = KarmaAPI.class.getResourceAsStream("/api.properties");
+            if (in != null) {
+                Properties properties = new Properties();
+                properties.load(in);
+                version = properties.getProperty("plugin_version", "-1");
+            }
+        } catch (Throwable ignored) {
+        }
+        return version;
+    }
+
+    /**
+     * Get the current API version
+     *
+     * @return the current API version
+     */
+    static String getPluginName() {
+        String version = "-1";
+        try {
+            InputStream in = KarmaAPI.class.getResourceAsStream("/api.properties");
+            if (in != null) {
+                Properties properties = new Properties();
+                properties.load(in);
+                version = properties.getProperty("plugin_name", "-1");
+            }
+        } catch (Throwable ignored) {
+        }
+        return version;
+    }
+
+    /**
      * Get the used java version to compile
      * the API
      *

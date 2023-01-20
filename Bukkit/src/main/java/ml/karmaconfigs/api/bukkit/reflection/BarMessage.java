@@ -26,15 +26,21 @@ package ml.karmaconfigs.api.bukkit.reflection;
  */
 
 import ml.karmaconfigs.api.bukkit.KarmaPlugin;
-import ml.karmaconfigs.api.bukkit.reflection.legacy.LegacyProvider;
-import ml.karmaconfigs.api.bukkit.reflection.legacy.LegacyUtil;
+import ml.karmaconfigs.api.bukkit.nms.NMSHelper;
+import ml.karmaconfigs.api.bukkit.nms.hologram.Hologram;
+import ml.karmaconfigs.api.bukkit.nms.hologram.HologramHolder;
 import ml.karmaconfigs.api.bukkit.server.BukkitServer;
 import ml.karmaconfigs.api.bukkit.server.Version;
 import ml.karmaconfigs.api.common.string.StringUtils;
+import ml.karmaconfigs.api.common.timer.SchedulerUnit;
+import ml.karmaconfigs.api.common.timer.SourceScheduler;
+import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -51,7 +57,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class BarMessage {
 
     private final static Map<UUID, BarMessage> data = new ConcurrentHashMap<>();
-    private final static Map<UUID, UUID> last_send_id = new ConcurrentHashMap<>();
+    private final static Map<UUID, Hologram> bar_holograms = new ConcurrentHashMap<>();
+    private final static Set<Hologram> persistent_bar_holograms = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private final Player player;
 
@@ -62,7 +69,8 @@ public final class BarMessage {
 
     private int remaining = 0;
 
-    private final UUID bar_id = UUID.randomUUID();
+    private Hologram hologram;
+    private SimpleScheduler hologram_scheduler;
 
     /**
      * Initialize the ActionBar class
@@ -77,10 +85,11 @@ public final class BarMessage {
 
     /**
      * Send the action bar
+     * @param persistent if the actionbar is persistent
      */
-    private void send() {
+    private void sendInternal(final boolean persistent) {
         String msg = StringUtils.toColor(message);
-        if (BukkitServer.isOver(Version.v1_7_10)) {
+        if (BukkitServer.isOver(Version.v1_8)) {
             try {
                 Constructor<?> constructor = Objects.requireNonNull(BukkitServer.getMinecraftClass("PacketPlayOutChat")).getConstructor(BukkitServer.getMinecraftClass("IChatBaseComponent"), byte.class);
 
@@ -101,20 +110,50 @@ public final class BarMessage {
                 }
             }
         } else {
-            Bukkit.getServer().getScheduler().runTask(KarmaPlugin.getABC(), () -> {
-                last_send_id.put(player.getUniqueId(), bar_id);
+            if (bar_holograms.containsKey(player.getUniqueId())) {
+                Hologram existing = bar_holograms.getOrDefault(player.getUniqueId(), null);
+                if (persistent_bar_holograms.contains(existing))
+                    return; //Do nothing if it's a persistent hologram
 
-                LegacyProvider provider = LegacyUtil.getProvider();
-                if (provider != null) {
-                    provider.displayActionbarFor(player, msg);
+                if (existing != null) NMSHelper.revokeHologram(existing);
+            }
 
-                    Bukkit.getServer().getScheduler().runTaskLater(KarmaPlugin.getABC(), () -> {
-                        if (last_send_id.getOrDefault(player.getUniqueId(), player.getUniqueId()).equals(bar_id)) {
-                            provider.displayActionbarFor(player, null);
-                        }
-                    }, 20 * 2);
+            Location location = player.getLocation().clone();
+            Vector front = location.getDirection().multiply(2);
+            location.add(front).add(0, 0.5, 0);
+
+            Hologram bar_hologram = new HologramHolder(location);
+            bar_hologram.show(player);
+            bar_hologram.append(StringUtils.toColor(message));
+
+            NMSHelper.invokeHologram(bar_hologram);
+            bar_holograms.put(player.getUniqueId(), bar_hologram);
+            if (persistent) {
+                persistent_bar_holograms.add(bar_hologram);
+            }
+
+            KarmaPlugin plugin = KarmaPlugin.getABC();
+            hologram_scheduler = new SourceScheduler(plugin, 2000, SchedulerUnit.MILLISECOND, persistent);
+            hologram_scheduler.changeAction((second) -> Bukkit.getServer().getScheduler().runTask(plugin, () -> {
+                if (bar_hologram != hologram || !bar_hologram.exists()) {
+                    hologram_scheduler.cancel();
+                } else {
+                    Location new_location = player.getLocation().clone();
+                    Vector new_front = new_location.getDirection().multiply(2);
+                    new_location.add(new_front).add(0, 0.5, 0);
+
+                    bar_hologram.teleport(new_location);
                 }
-            });
+            }));
+            if (!persistent) {
+                hologram_scheduler.endAction(() -> {
+                    bar_hologram.delete();
+                    bar_holograms.remove(player.getUniqueId());
+                });
+            }
+
+            hologram_scheduler.start();
+            hologram = bar_hologram;
         }
     }
 
@@ -135,12 +174,16 @@ public final class BarMessage {
             ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
             timer.scheduleAtFixedRate(() -> {
                 if (!send) {
-                    stop();
-                    timer.shutdown();
+                    sendInternal(false);
+                    timer.schedule(() -> {
+                        stop();
+                        timer.shutdown();
+                    }, 2, TimeUnit.SECONDS);
+                    return;
                 }
 
-                send();
-            }, 0, 1, TimeUnit.SECONDS);
+                sendInternal(persistent);
+            }, 0, 2, TimeUnit.SECONDS);
 
             data.put(player.getUniqueId(), this);
         }
@@ -168,12 +211,12 @@ public final class BarMessage {
                 if (!send)
                     stop();
 
-                send();
+                sendInternal(false);
                 if (repeated.incrementAndGet() >= remaining) {
                     timer.shutdown();
                     stop();
                 }
-            }, 0, 1, TimeUnit.SECONDS);
+            }, 0, 2, TimeUnit.SECONDS);
 
             if (stored != null) {
                 data.put(player.getUniqueId(), this);
@@ -195,7 +238,11 @@ public final class BarMessage {
      */
     public void stop() {
         send = false;
-        last_send_id.remove(player.getUniqueId());
+        if (hologram != null) {
+            hologram_scheduler.cancel();
+            hologram.delete();
+            persistent_bar_holograms.remove(hologram);
+        }
     }
 
     /**

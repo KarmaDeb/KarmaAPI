@@ -29,6 +29,14 @@ public interface TriCollection<A, B, C> extends TriTerable<A, B, C> {
     int add(final A key, final B value, final C secondary);
 
     /**
+     * Get if the collection has the specified key
+     *
+     * @param key the key to check
+     * @return of the collection has the key
+     */
+    boolean contains(final A key);
+
+    /**
      * Set a key, value, index at the specified index
      *
      * @param index the index
@@ -75,6 +83,15 @@ public interface TriCollection<A, B, C> extends TriTerable<A, B, C> {
      * @throws IllegalArgumentException Implementations may
      */
     Collection<Object[]> get(final A key);
+
+    /**
+     * Get a secondary value
+     *
+     * @param key the secondary value key
+     * @param value the secondary value parent
+     * @return the secondary value
+     */
+    C get(final A key, final B value);
 
     /**
      * Get the collection size

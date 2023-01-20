@@ -1,7 +1,11 @@
 package ml.karmaconfigs.api.bukkit;
 
+import ml.karmaconfigs.api.bukkit.legacy.Helper;
+import ml.karmaconfigs.api.bukkit.legacy.command.TestCommand;
 import ml.karmaconfigs.api.bukkit.listener.JoinHandler;
-import ml.karmaconfigs.api.bukkit.reflection.legacy.LegacyUtil;
+import ml.karmaconfigs.api.bukkit.modern.ModernHelper;
+import ml.karmaconfigs.api.bukkit.nms.NMSHelper;
+import ml.karmaconfigs.api.bukkit.old.OldHelper;
 import ml.karmaconfigs.api.bukkit.server.BukkitServer;
 import ml.karmaconfigs.api.bukkit.server.Version;
 import ml.karmaconfigs.api.common.karma.source.APISource;
@@ -15,6 +19,10 @@ import ml.karmaconfigs.api.common.placeholder.util.Placeholder;
 import ml.karmaconfigs.api.common.string.StringUtils;
 import ml.karmaconfigs.api.common.utils.uuid.UUIDUtil;
 import ml.karmaconfigs.api.common.version.spigot.SpigotChecker;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -101,6 +109,7 @@ public final class Main extends KarmaPlugin {
 
         KarmaConfig config = new KarmaConfig();
         if (config.printLicense()) {
+            config.setPrintLicense(false);
             Path file = APISource.getOriginal(true).saveResource(Main.class.getResourceAsStream("/license.txt"), "license.txt");
             List<String> lines = PathUtilities.readAllLines(file);
             getLogger().warning("PLEASE READ CAREFULLY");
@@ -119,8 +128,29 @@ public final class Main extends KarmaPlugin {
         }
 
         if (BukkitServer.isUnder(Version.v1_8)) {
-            console().send("Initializing legacy support for titles and actionbars. This will create invisible entities in front of the player.");
-            LegacyUtil.setProvider(new ml.karmaconfigs.api.bukkit.legacy.LegacyImp());
+            console().send("Initializing legacy support for titles and actionbars. This will create invisible entities in front of the player.", Level.WARNING);
+            NMSHelper.setHelper(new Helper());
+            getCommand("test_legacy").setExecutor(new TestCommand());
+        } else {
+            getCommand("test_legacy").setExecutor((commandSender, command, s, strings) -> {
+                if (commandSender.isOp()) {
+                    commandSender.sendMessage(StringUtils.toColor("&cNot legacy server!"));
+                }
+
+                return false;
+            });
+
+            if (BukkitServer.isUnder(Version.v1_18)) {
+                OldHelper old = OldHelper.getInstance();
+                if (old != null) {
+                    NMSHelper.setHelper(old);
+                }
+            } else {
+                ModernHelper modern = ModernHelper.getInstance();
+                if (modern != null) {
+                    NMSHelper.setHelper(modern);
+                }
+            }
         }
     }
 

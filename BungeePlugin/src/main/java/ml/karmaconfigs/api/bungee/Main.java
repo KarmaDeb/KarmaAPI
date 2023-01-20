@@ -83,6 +83,7 @@ public final class Main extends KarmaPlugin {
 
         KarmaConfig config = new KarmaConfig();
         if (config.printLicense()) {
+            config.setPrintLicense(false);
             Path file = APISource.getOriginal(true).saveResource(Main.class.getResourceAsStream("/license.txt"), "license.txt");
             List<String> lines = PathUtilities.readAllLines(file);
             getLogger().warning("PLEASE READ CAREFULLY");

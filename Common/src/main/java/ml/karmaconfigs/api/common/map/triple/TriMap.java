@@ -194,7 +194,7 @@ public interface TriMap<K, V, S> {
      * @throws IllegalArgumentException if some property of a key or value in
      *         the specified map prevents it from being stored in this map
      */
-    void putAll(Map<? extends K, ? extends V> m);
+    void putAll(TriMap<? super K, ? super V, ? super S> m);
 
     /**
      * Removes all of the mappings from this map (optional operation).
@@ -223,7 +223,7 @@ public interface TriMap<K, V, S> {
      *
      * @return a set view of the keys contained in this map
      */
-    Set<K> keySet();
+    Collection<K> keySet();
 
     /**
      * Returns a {@link Collection} view of the values contained in this map.
@@ -258,7 +258,7 @@ public interface TriMap<K, V, S> {
      *
      * @return a set view of the mappings contained in this map
      */
-    Set<TriEntry<K, V, S>> entrySet();
+    Collection<TriEntry<K, V, S>> entrySet();
 
     /**
      * Compares the specified object with this map for equality.  Returns

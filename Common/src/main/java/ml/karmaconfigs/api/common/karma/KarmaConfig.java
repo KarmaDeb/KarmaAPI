@@ -25,8 +25,6 @@ package ml.karmaconfigs.api.common.karma;
  *  SOFTWARE.
  */
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import ml.karmaconfigs.api.common.data.file.FileUtilities;
 import ml.karmaconfigs.api.common.data.path.PathUtilities;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
@@ -65,6 +63,56 @@ public final class KarmaConfig {
         }
 
         return true;
+    }
+
+    /**
+     * Set the print license status
+     *
+     * @param status the print license status
+     */
+    public void setPrintLicense(final boolean status) {
+        if (mn != null) {
+            mn.setRaw("print_license", status);
+            mn.save();
+        }
+    }
+
+    /**
+     * Get if the API should print the license to the console
+     *
+     * @return if the API prints the license to console
+     */
+    public int requestCodeTimeout() {
+        if (mn != null) {
+            Element<?> element = mn.get("url.request_code_timeout", new KarmaPrimitive(1000));
+
+            if (element.isPrimitive()) {
+                ElementPrimitive primitive = element.getAsPrimitive();
+                if (primitive.isNumber())
+                    return primitive.asInteger();
+            }
+        }
+
+        return 1000;
+    }
+
+    /**
+     * Get if the API should print the license to the console
+     *
+     * @return if the API prints the license to console
+     */
+    public boolean requestCodeStrict() {
+        if (mn != null) {
+            Element<?> element = mn.get("url.code_strict", new KarmaPrimitive(1000));
+
+            if (element.isPrimitive()) {
+                ElementPrimitive primitive = element.getAsPrimitive();
+                if (primitive.isBoolean())
+                    return primitive.asBoolean();
+            }
+        }
+
+        return false;
     }
 
     /**

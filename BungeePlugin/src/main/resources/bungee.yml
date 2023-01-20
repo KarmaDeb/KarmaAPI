@@ -1,4 +1,4 @@
-name: KarmaAPI
+name: ${plugin.name}
 version: ${plugin.version}
 main: ml.karmaconfigs.api.bungee.Main
 author: KarmaDev

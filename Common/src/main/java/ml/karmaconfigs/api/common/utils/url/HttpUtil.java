@@ -37,6 +37,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.StringEntity;
@@ -46,6 +47,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -77,6 +79,27 @@ public final class HttpUtil {
                 .disableCookieManagement()
                 .setUserAgent("KarmaAPI/" + KarmaAPI.getVersion() + " (" + JavaVM.getSystem().getName() + " " + JavaVM.osVersion() + "; " + JavaVM.osModel() + "; " + JavaVM.osArchitecture() + ") JavaWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36")
                 .build();
+    }
+
+    /**
+     * Get the response code from the URL
+     *
+     * @return the URL response code
+     */
+    public int getCode() {
+        try {
+            HttpHead httpHead = new HttpHead(url);
+            HttpResponse httpResponse = httpClient.execute(httpHead);
+
+            return httpResponse.getStatusLine().getStatusCode();
+        } catch (Throwable ignored) {
+        } finally {
+            try {
+                httpClient.close();
+            } catch (Throwable ignored) {}
+        }
+
+        return HttpURLConnection.HTTP_MULT_CHOICE;
     }
 
     /**

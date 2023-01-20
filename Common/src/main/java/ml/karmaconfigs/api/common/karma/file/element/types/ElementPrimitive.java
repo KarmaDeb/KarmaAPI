@@ -1,8 +1,25 @@
 package ml.karmaconfigs.api.common.karma.file.element.types;
 
+import ml.karmaconfigs.api.common.karma.file.element.KarmaPrimitive;
 import ml.karmaconfigs.api.common.karma.file.element.types.primitive.PrimitiveType;
 
 public interface ElementPrimitive extends Element<PrimitiveType<?>> {
+
+    /**
+     * Set the primitive owner map
+     *
+     * @param owner the map
+     * @return this instance
+     */
+    ElementPrimitive onMap(final ElementMap<?> owner);
+
+    /**
+     * Set the primitive owner array
+     *
+     * @param owner the array
+     * @return this instance
+     */
+    ElementPrimitive onArray(final ElementArray<?> owner);
 
     /**
      * Get if the primitive element is a string

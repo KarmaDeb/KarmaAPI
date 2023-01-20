@@ -26,6 +26,7 @@ package ml.karmaconfigs.api.common.utils.url;
  */
 
 import ml.karmaconfigs.api.common.karma.KarmaAPI;
+import ml.karmaconfigs.api.common.karma.KarmaConfig;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.HttpURLConnection;
@@ -48,7 +49,23 @@ public final class URLUtils {
      * @return if the url exists
      */
     public static boolean exists(final String url) {
-        return (getResponseCode(url) == 200);
+        KarmaConfig config = new KarmaConfig();
+        int code = getResponseCode(url);
+
+        return (config.requestCodeStrict() ? code == HttpURLConnection.HTTP_OK : code < HttpURLConnection.HTTP_MULT_CHOICE);
+    }
+
+    /**
+     * Get if the URL exists
+     *
+     * @param url the url
+     * @return if the url exists
+     */
+    public static boolean exists(final URL url) {
+        KarmaConfig config = new KarmaConfig();
+        int code = getResponseCode(url);
+
+        return (config.requestCodeStrict() ? code == HttpURLConnection.HTTP_OK : code < HttpURLConnection.HTTP_MULT_CHOICE);
     }
 
     /**
@@ -59,15 +76,47 @@ public final class URLUtils {
      */
     public static int getResponseCode(final String url) {
         try {
+            URL u = new URL(url);
+
             HttpURLConnection.setFollowRedirects(false);
-            HttpURLConnection con = (HttpURLConnection) (new URL(url)).openConnection();
+            HttpURLConnection con = (HttpURLConnection) u.openConnection();
+            KarmaConfig config = new KarmaConfig();
+
+            con.setConnectTimeout(config.requestCodeTimeout());
             con.setInstanceFollowRedirects(false);
             con.setRequestMethod("HEAD");
+            con.connect();
+
             int code = con.getResponseCode();
             con.disconnect();
             return code;
         } catch (Throwable e) {
             return 503;
+        }
+    }
+
+    /**
+     * Get the URL response code
+     *
+     * @param url the url
+     * @return the URL response code
+     */
+    public static int getResponseCode(final URL url) {
+        try {
+            HttpURLConnection.setFollowRedirects(false);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            KarmaConfig config = new KarmaConfig();
+
+            con.setConnectTimeout(config.requestCodeTimeout());
+            con.setInstanceFollowRedirects(false);
+            con.setRequestMethod("HEAD");
+            con.connect();
+
+            int code = con.getResponseCode();
+            con.disconnect();
+            return code;
+        } catch (Throwable e) {
+            return HttpURLConnection.HTTP_INTERNAL_ERROR;
         }
     }
 
@@ -82,12 +131,10 @@ public final class URLUtils {
     public static URL getOrNull(final String target) {
         try {
             URL url = new URL(target);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            int code = connection.getResponseCode();
+            int code = getResponseCode(url.toString());
 
-            connection.disconnect();
-
-            if (code == HttpURLConnection.HTTP_OK) {
+            KarmaConfig config = new KarmaConfig();
+            if (config.requestCodeStrict() ? code == HttpURLConnection.HTTP_OK : code < HttpURLConnection.HTTP_MULT_CHOICE) {
                 return url;
             }
         } catch (Throwable ignored) {
@@ -107,7 +154,9 @@ public final class URLUtils {
         URL url = null;
         for (String host : hosts) {
             int response = getResponseCode(host);
-            if (response == 200) {
+            KarmaConfig config = new KarmaConfig();
+
+            if (config.requestCodeStrict() ? response == HttpURLConnection.HTTP_OK : response < HttpURLConnection.HTTP_MULT_CHOICE) {
                 try {
                     url = new URL(host);
                     break;
@@ -172,7 +221,13 @@ public final class URLUtils {
      */
     @Nullable
     public static String getDomainName(final URL url) {
-        return getDomainName(url.toString());
+        try {
+            URI uri = url.toURI();
+            String domain = uri.getHost();
+            return domain.startsWith("www.") ? domain.substring(4) : domain;
+        } catch (Throwable ex) {
+            return null;
+        }
     }
 
     /**
@@ -184,7 +239,6 @@ public final class URLUtils {
     @Nullable
     public static HttpUtil extraUtils(final URL url) {
         try {
-            //KarmaAPI.install();
             return new HttpUtil(url);
         } catch (Throwable ex) {
             ex.printStackTrace();

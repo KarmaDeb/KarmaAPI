@@ -89,16 +89,16 @@ public class VersionComparator {
                 int currentPart = (i < currentParts.length) ? Integer.parseInt(currentParts[i]) : 0;
                 int checkPart = (i < checkParts.length) ? Integer.parseInt(checkParts[i]) : 0;
 
-                if (currentPart < checkPart) {
-                    return Difference.OUTDATED;
+                if (currentPart != checkPart) {
+                    if (currentPart < checkPart) {
+                        return Difference.OUTDATED;
+                    }
                 }
-
-                return Difference.UPDATED;
             } catch (Throwable ignored) {
             }
         }
 
-        return Difference.ERROR;
+        return Difference.UPDATED;
     }
 
     /**

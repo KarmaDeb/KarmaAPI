@@ -202,7 +202,11 @@ public final class FileCopy {
                                     if (this.keySet.get(key) instanceof String) {
                                         writer.write(line.replace(": " + val, "") + ": '" + this.keySet.get(key).toString().replace("'", "''").replace("\"", "") + "'\n");
                                     } else {
-                                        writer.write(line.replace(": " + val, "") + ": " + this.keySet.get(key).toString().replace("'", "").replace("\"", "") + "\n");
+                                        if (keySet.containsKey(key)) {
+                                            writer.write(line.replace(": " + val, "") + ": " + this.keySet.get(key).toString().replace("'", "").replace("\"", "") + "\n");
+                                        } else {
+                                            writer.write(line.replace(": " + val, "") + "\n");
+                                        }
                                     }
                                     if (config.fileDebug(Level.INFO))
                                         source(true).console().send("Writing single value {0} of {1}", Level.INFO, val, key);

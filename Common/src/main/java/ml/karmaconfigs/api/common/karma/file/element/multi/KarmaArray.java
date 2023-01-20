@@ -23,7 +23,9 @@ public class KarmaArray implements ElementArray<ElementPrimitive> {
      * @param elements the elements to start with
      */
     public KarmaArray(final ElementPrimitive... elements) {
-        contents.addAll(Arrays.asList(elements));
+        for (ElementPrimitive element : elements) {
+            contents.add(element.onArray(this));
+        }
     }
 
     /**
@@ -104,7 +106,7 @@ public class KarmaArray implements ElementArray<ElementPrimitive> {
     public void add(final ElementPrimitive... elements) {
         for (ElementPrimitive element : elements) {
             if (element != null && !element.isElementNull()) {
-                contents.add(element);
+                contents.add(element.onArray(this));
             }
         }
     }
@@ -181,7 +183,7 @@ public class KarmaArray implements ElementArray<ElementPrimitive> {
         List<ElementPrimitive> remove = new ArrayList<>();
         for (ElementPrimitive element : contents) {
             if (element != null && objects.contains(element.getValue().get())) {
-                remove.add(element);
+                remove.add(element.onArray(this));
             }
         }
         contents.removeAll(remove);
