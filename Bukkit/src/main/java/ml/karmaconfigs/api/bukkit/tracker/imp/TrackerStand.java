@@ -8,6 +8,7 @@ import ml.karmaconfigs.api.bukkit.tracker.property.PropertyValue;
 import ml.karmaconfigs.api.bukkit.tracker.property.flag.TrackerFlag;
 import ml.karmaconfigs.api.bukkit.util.LineOfSight;
 import ml.karmaconfigs.api.bukkit.util.sight.PointToEntity;
+import ml.karmaconfigs.api.bukkit.util.sight.SightPart;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.string.StringUtils;
 import org.bukkit.Bukkit;
@@ -170,19 +171,21 @@ public class TrackerStand extends Tracker {
     /**
      * Get the tracker line of sight
      *
-     * @param part the line of sight part to use
      * @return the tracker line of sight
      */
     @Override
-    public LineOfSight getLineOfSight(final SightPart part) {
-        PointToEntity sight;
-
+    public LineOfSight getLineOfSight() {
         boolean small = getProperty(TrackerFlag.PROPERTY_BOOLEAN, "small").getUnsafe();
+        PointToEntity sight = new PointToEntity(stand.getLocation(), (tracking != null ? tracking : stand), SightPart.HEAD)
+                .sourceOffset(0, (small ? 0.5 : 1.5), 0)
+                .targetOffset(0, (tracking != null ? tracking.getEyeHeight() : (small ? 0.5 : 1.5)), 0);
+
+        /*
         switch (part) {
             case HEAD:
                 sight = new PointToEntity(stand.getLocation(), (tracking != null ? tracking : stand))
-                        .sourceOffset(0, (small ? 0.5 : 1.5), 0)
-                        .targetOffset(0, (tracking != null ? tracking.getEyeHeight() : (small ? 0.5 : 1.5)), 0);
+                    .sourceOffset(0, (small ? 0.5 : 1.5), 0)
+                    .targetOffset(0, (tracking != null ? tracking.getEyeHeight() : (small ? 0.5 : 1.5)), 0);
                 break;
             case BODY:
                 sight = new PointToEntity(stand.getLocation(), (tracking != null ? tracking : stand))
@@ -195,23 +198,25 @@ public class TrackerStand extends Tracker {
                         .sourceOffset(0, (small ? 0.5 : 1.5), 0)
                         .targetOffset(0, 0, 0);
                 break;
-        }
+        }*/
 
-        return sight.ignore(stand).ignoreMiddle(true).precission(Math.PI / 8);
+        return sight.ignore(stand).ignoreMiddle(true).precision(0.3);
     }
 
     /**
      * Get the tracker line of sight with another entity
      *
      * @param target the entity to check with
-     * @param part the line of sight part to use
      * @return the tracker line of sight with entity
      */
     @Override
-    public LineOfSight getLineOfSight(final LivingEntity target, final SightPart part) {
-        PointToEntity sight;
-
+    public LineOfSight getLineOfSight(final LivingEntity target) {
         boolean small = getProperty(TrackerFlag.PROPERTY_BOOLEAN, "small").getUnsafe();
+        PointToEntity sight = new PointToEntity(stand.getLocation(), target, SightPart.HEAD)
+                .sourceOffset(0, (small ? 0.5 : 1.5), 0)
+                .targetOffset(0, (target != null ? target.getEyeHeight() : (small ? 0.5 : 1.5)), 0);
+
+        /*
         switch (part) {
             case HEAD:
                 sight = new PointToEntity(stand.getLocation(), target)
@@ -229,9 +234,9 @@ public class TrackerStand extends Tracker {
                         .sourceOffset(0, (small ? 0.5 : 1.5), 0)
                         .targetOffset(0, 0, 0);
                 break;
-        }
+        }*/
 
-        return sight.ignore(stand).ignoreMiddle(true).precission(Math.PI / 8);
+        return sight.ignore(stand).ignoreMiddle(true).precision(0.3);
     }
 
     /**
@@ -388,17 +393,17 @@ public class TrackerStand extends Tracker {
                         Location standLocation = stand.getLocation().clone();
                         standLocation.setY(standLocation.getY() + Math.max(1.5, tracking.getEyeHeight()));
 
-                        LineOfSight hSight = getLineOfSight(SightPart.HEAD);
-                        LineOfSight bSight = getLineOfSight(SightPart.BODY);
-                        LineOfSight fSight = getLineOfSight(SightPart.FEET);
+                        LineOfSight sight = getLineOfSight();
 
-                        if (hSight.inLineOfSight(max_dist) || bSight.inLineOfSight(max_dist) || fSight.inLineOfSight(max_dist) || always_track) {
-                            if (!hSight.inLineOfSight(max_dist)) {
-                                if (bSight.inLineOfSight(max_dist)) {
+                        SightPart part = sight.getLineOfSight(max_dist);
+                        if (!part.equals(SightPart.NONE) || always_track) {
+                            switch (part) {
+                                case BODY:
                                     trackLocation.subtract(0d, tracking.getEyeHeight() / 2, 0d);
-                                } else {
+                                    break;
+                                case FEET:
                                     trackLocation.subtract(0d, tracking.getEyeHeight() / 4, 0d);
-                                }
+                                    break;
                             }
 
                             Vector vector = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
@@ -490,22 +495,18 @@ public class TrackerStand extends Tracker {
                     tracking = null;
                     for (LivingEntity entity : multi) {
                         if (entity != null) {
-                            LineOfSight hSight = getLineOfSight(entity, SightPart.HEAD);
-                            LineOfSight bSight = getLineOfSight(entity, SightPart.BODY);
-                            LineOfSight fSight = getLineOfSight(entity, SightPart.FEET);
+                            LineOfSight e_sight = getLineOfSight(entity);
 
-                            if (hSight.inLineOfSight(max_dist) || bSight.inLineOfSight(max_dist) || fSight.inLineOfSight(max_dist) || always_track) {
+                            if (!e_sight.getLineOfSight(max_dist).equals(SightPart.NONE) || always_track) {
                                 tracking = entity;
                                 break;
                             }
                         }
                     }
                     if (track_lock && last_track != null && last_track.isValid() && !last_track.isDead()) {
-                        LineOfSight hSight = getLineOfSight(last_track, SightPart.HEAD);
-                        LineOfSight bSight = getLineOfSight(last_track, SightPart.BODY);
-                        LineOfSight fSight = getLineOfSight(last_track, SightPart.FEET);
+                        LineOfSight t_sight = getLineOfSight(last_track);
 
-                        if (hSight.inLineOfSight(max_dist) || bSight.inLineOfSight(max_dist) || fSight.inLineOfSight(max_dist) || always_track) {
+                        if (!t_sight.getLineOfSight(max_dist).equals(SightPart.NONE) || always_track) {
                             tracking = last_track;
                         }
                     }

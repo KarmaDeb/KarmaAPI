@@ -1,8 +1,6 @@
 package ml.karmaconfigs.api.bukkit.util;
 
-import org.bukkit.Location;
-
-import java.util.Iterator;
+import ml.karmaconfigs.api.bukkit.util.sight.SightPart;
 
 /**
  * Line of sight entity detection. Better than minecraft's one 😳
@@ -10,26 +8,19 @@ import java.util.Iterator;
 public abstract class LineOfSight {
 
     /**
-     * Get if line of sight
+     * Set the line of sight precision
      *
-     * @return if line of sight
+     * @param precision the sight precision
+     * @return this line of sight
      */
-    public abstract boolean inLineOfSight();
-
-    /**
-     * Get if line of sight with max distance
-     *
-     * @param max_distance the maximum distance
-     * @return if line of sight inside the range
-     */
-    public abstract boolean inLineOfSight(final double max_distance);
+    public abstract LineOfSight precision(final double precision);
 
     /**
      * Get line of sight
      *
      * @return the line of sight
      */
-    public abstract Iterator<Location> getLineOfSight();
+    public abstract SightPart getLineOfSight();
 
     /**
      * Get line of sight with max distance
@@ -37,5 +28,5 @@ public abstract class LineOfSight {
      * @param max_distance the maximum distance
      * @return the line of sight inside the range
      */
-    public abstract Iterator<Location> getLineOfSight(final double max_distance);
+    public abstract SightPart getLineOfSight(final double max_distance);
 }

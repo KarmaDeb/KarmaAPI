@@ -12,10 +12,10 @@ import ml.karmaconfigs.api.common.data.path.PathUtilities;
 import ml.karmaconfigs.api.common.string.ListTransformation;
 import ml.karmaconfigs.api.common.string.StringUtils;
 import ml.karmaconfigs.api.common.utils.url.HttpUtil;
-import ml.karmaconfigs.api.common.utils.url.Post;
+import ml.karmaconfigs.api.common.utils.url.request.HeaderAdapter;
+import ml.karmaconfigs.api.common.utils.url.request.Post;
 import ml.karmaconfigs.api.common.utils.url.URLUtils;
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
+import org.apache.hc.core5.http.message.BasicHeader;
 
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -53,7 +53,7 @@ public final class WebLog {
      * @param headers the request headers
      * @throws UploadOverflowException if the source is trying to upload logs too fast
      */
-    public void upload(final WebTarget target, final Post extra, final Header... headers) throws UploadOverflowException {
+    public void upload(final WebTarget target, final Post extra, final HeaderAdapter... headers) throws UploadOverflowException {
         Instant last_upload = last_log_request.getOrDefault(source, null);
         if (last_upload != null) {
             Instant now = Instant.now();
@@ -156,20 +156,21 @@ public final class WebLog {
 
                             extra.setJson(data);
 
-                            List<Header> reOrganization = new ArrayList<>(Arrays.asList(headers));
-                            reOrganization.add(new BasicHeader("Content-Type", "application/json"));
+                            List<HeaderAdapter> reOrganization = new ArrayList<>(Arrays.asList(headers));
+                            reOrganization.add(new HeaderAdapter("Content-Type", "application/json"));
                             boolean needKey = true;
-                            for (Header h : reOrganization)
-                                if (h.getName().equalsIgnoreCase("X-Auth-Token")) {
+                            for (HeaderAdapter h : reOrganization)
+                                if (h.getKey().equalsIgnoreCase("X-Auth-Token")) {
                                     needKey = false;
+                                    break;
                                 }
 
                             if (needKey) {
                                 KarmaConfig config = new KarmaConfig();
-                                reOrganization.add(new BasicHeader("X-Auth-Token", config.getAccessKey(target)));
+                                reOrganization.add(new HeaderAdapter("X-Auth-Token", config.getAccessKey(target)));
                             }
 
-                            String response = util.getResponse(extra, reOrganization.toArray(new Header[0]));
+                            String response = util.getResponse(extra, reOrganization.toArray(new HeaderAdapter[0]));
                             if (!StringUtils.isNullOrEmpty(response)) {
                                 Gson gson = new GsonBuilder().create();
                                 JsonObject json = gson.fromJson(response, JsonObject.class);

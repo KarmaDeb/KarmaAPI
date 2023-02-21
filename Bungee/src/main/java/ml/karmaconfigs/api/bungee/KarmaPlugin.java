@@ -70,6 +70,8 @@ public abstract class KarmaPlugin extends Plugin implements KarmaSource, Identif
      * Initialize the KarmaPlugin
      */
     public KarmaPlugin() {
+        KarmaAPI.install();
+
         if (!APISource.hasProvider(name())) {
             APISource.addProvider(this);
         }
@@ -88,6 +90,8 @@ public abstract class KarmaPlugin extends Plugin implements KarmaSource, Identif
      *                           set
      */
     public KarmaPlugin(final boolean defineDefault) throws SecurityException {
+        KarmaAPI.install();
+
         if (!APISource.hasProvider(name())) {
             APISource.addProvider(this);
             if (defineDefault) {

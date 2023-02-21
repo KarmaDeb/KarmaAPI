@@ -8,7 +8,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.*;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Action to perform
@@ -185,5 +191,35 @@ public interface Action extends TriConsumer<InventoryBook, Event, Player> {
                 } catch (Throwable ignored) {}
             }
         }, delay);
+    }
+
+    /**
+     * Run an action on the click event
+     *
+     * @param click the click consumer
+     * @return the action
+     */
+    static Action handle(final BiConsumer<Integer, InventoryView> click) {
+        return handle(click, () -> true);
+    }
+
+    /**
+     * Run an action on the click event
+     *
+     * @param click the click consumer
+     * @param cancel the cancel function
+     * @return the action
+     */
+    static Action handle(final BiConsumer<Integer, InventoryView> click, Supplier<Boolean> cancel) {
+        return (book, e, player) -> {
+            if (e instanceof InventoryClickEvent) {
+                InventoryClickEvent ce = (InventoryClickEvent) e;
+                int slot = ce.getSlot();
+                InventoryView view = ce.getView();
+
+                click.accept(ce.getSlot(), view);
+                ce.setCancelled(cancel.get());
+            }
+        };
     }
 }

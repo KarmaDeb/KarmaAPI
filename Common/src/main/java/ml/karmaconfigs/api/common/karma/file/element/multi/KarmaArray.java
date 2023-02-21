@@ -178,7 +178,7 @@ public class KarmaArray implements ElementArray<ElementPrimitive> {
      */
     @Override
     public void remove(final ElementPrimitive... elements) {
-        Set<Object> objects = Arrays.stream(elements).map((element) -> element.getValue().type()).collect(Collectors.toSet());
+        Set<Object> objects = Arrays.stream(elements).map((element) -> element.getValue().get()).collect(Collectors.toSet());
 
         List<ElementPrimitive> remove = new ArrayList<>();
         for (ElementPrimitive element : contents) {
@@ -247,7 +247,7 @@ public class KarmaArray implements ElementArray<ElementPrimitive> {
      */
     @Override
     public boolean contains(final Element<?> element) {
-        Set<Object> objects = contents.stream().map((e) -> e.getValue().type()).collect(Collectors.toSet());
+        Set<Object> objects = contents.stream().map((e) -> e.getValue().get()).collect(Collectors.toSet());
 
         if (element.isPrimitive()) {
             ElementPrimitive primitive = element.getAsPrimitive();
@@ -265,7 +265,7 @@ public class KarmaArray implements ElementArray<ElementPrimitive> {
      */
     @Override
     public boolean containsAll(final Element<?>... elements) {
-        Set<Object> objects = contents.stream().map((element) -> element.getValue().type()).collect(Collectors.toSet());
+        Set<Object> objects = contents.stream().map((element) -> element.getValue().get()).collect(Collectors.toSet());
 
         for (Element<?> element : elements) {
             if (element != null && element.isPrimitive()) {

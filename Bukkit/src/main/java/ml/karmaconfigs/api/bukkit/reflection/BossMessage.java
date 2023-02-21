@@ -1,39 +1,24 @@
 package ml.karmaconfigs.api.bukkit.reflection;
 
-/*
- * This file is part of KarmaAPI, licensed under the MIT License.
- *
- *  Copyright (c) karma (KarmaDev) <karmaconfigs@gmail.com>
- *  Copyright (c) contributors
- *
- *  Permission is hereby granted, free of charge, to any person obtaining a copy
- *  of this software and associated documentation files (the "Software"), to deal
- *  in the Software without restriction, including without limitation the rights
- *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  copies of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be included in all
- *  copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- *  SOFTWARE.
- */
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import ml.karmaconfigs.api.bukkit.KarmaPlugin;
 import ml.karmaconfigs.api.bukkit.server.BukkitServer;
 import ml.karmaconfigs.api.bukkit.server.Version;
 import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.minecraft.boss.*;
+import ml.karmaconfigs.api.common.string.StringUtils;
 import ml.karmaconfigs.api.common.timer.SchedulerUnit;
 import ml.karmaconfigs.api.common.timer.SourceScheduler;
 import ml.karmaconfigs.api.common.timer.TimeCondition;
 import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
-import ml.karmaconfigs.api.common.string.StringUtils;
+import ml.karmaconfigs.api.common.utils.enums.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
@@ -42,201 +27,86 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
- * Karma boss bar message
+ * Boss message
  */
+@SuppressWarnings("unused")
 public final class BossMessage extends BossProvider<Player> {
 
-    /**
-     * Boss bar source
-     */
-    private final KarmaSource plugin;
+    private final KarmaSource source;
 
-    /**
-     * Boss bar message
-     */
     private String message;
 
-    /**
-     * Boss bar time to live
-     */
+    private boolean health = false;
     private final double live_time;
 
-    /**
-     * Boss bars amount
-     */
-    private static int bars = 0;
+    private static boolean legacy;
 
-    /**
-     * If the boss bar needs reflection
-     */
-    private static boolean isLegacy = BukkitServer.isUnder(Version.v1_13);
-
-    /**
-     * If the boss bar set health/progress method
-     * is float instead of double
-     */
-    private static boolean toFloat = false;
-
-    /**
-     * Craft world
-     */
     private static Class<?> craft_world;
-    /**
-     * Craft player
-     */
+
     private static Class<?> craft_player;
-    /**
-     * Packet
-     */
-    private static Class<?> packet_class;
-    /**
-     * Connection packet
-     */
+
     private static Class<?> packet_connection;
-    /**
-     * Destroy packet
-     */
+
     private static Class<?> packet_play_out_destroy;
 
-    /**
-     * Create wither
-     */
     private static Constructor<?> wither_constructor;
-    /**
-     * Create living entity
-     */
-    private static Constructor<?> entity_living_constructor;
-    /**
-     * Teleport entity
-     */
-    private static Constructor<?> packet_play_teleport_constructor;
 
-    /**
-     * Craft world handler
-     */
+    private static Constructor<?> entity_living_constructor;
+
+    private static Constructor<?> packet_play_teleport_constructor;
+    private static Constructor<?> packet_play_metadata;
+
     private static Method craft_world_handle;
-    /**
-     * Craft player handler
-     */
+
     private static Method craft_player_handle;
-    /**
-     * Send packet
-     */
+
     private static Method packet_connect_send;
-    /**
-     * Set wither location
-     */
+
     private static Method wither_set_location_method;
-    /**
-     * Set boss bar progress
-     */
+
     private static Method wither_set_progress_method;
 
-    /**
-     * List of boss bars
-     */
-    private static final List<BossMessage> b_bars = new ArrayList<>();
+    private static final Map<UUID, SimpleScheduler> bar_schedulers = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> player_bars = new ConcurrentHashMap<>();
+    private static final Map<UUID, Queue<BossMessage>> b_bars = new ConcurrentHashMap<>();
 
-    /**
-     * A map containing id => boss bar
-     */
-    private static final Map<Integer, BossMessage> boss_bars = new LinkedHashMap<>();
-    /**
-     * A map containing id => bar util
-     */
-    private static final Map<Integer, Object> wither_objects = new LinkedHashMap<>();
+    private static final Map<Integer, BossMessage> boss_bars = new ConcurrentHashMap<>();
 
-    /**
-     * Boss bar shown players
-     */
-    private final Set<UUID> shown = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private static final Map<Integer, Object> wither_objects = new ConcurrentHashMap<>();
 
-    /**
-     * Boss bar color style
-     */
+
     private BossColor color = BossColor.PURPLE;
-    /**
-     * Boss bar type style
-     */
+
     private BossType type = BossType.SOLID;
-    /**
-     * Boss bar progress style
-     */
+
     private ProgressiveBar progress = ProgressiveBar.NONE;
 
-    /**
-     * The boss bar lived time
-     */
-    private double lived_time = 0.0;
+    private double lived_time = 0.0D;
 
-    /**
-     * If the boss bar is cancelled
-     */
     private boolean cancelled = false;
 
-    /**
-     * Last boss bar ID, used for new boss bar
-     * creations
-     */
     private static int total_ids = 0;
 
-    /**
-     * Boss bar id
-     */
     private final int id;
 
-    /**
-     * Boss bar timer
-     */
     private SimpleScheduler bar_timer = null;
-
-    /**
-     * New boss bar location
-     */
-    private Location newLoc;
-
-    /**
-     * Boss bar teleport packet
-     */
-    private Object teleport_packet;
-    /**
-     * Craft player
-     */
-    private Object new_c_player;
-    /**
-     * Entity player
-     */
-    private Object new_e_player;
-    /**
-     * Player connection
-     */
-    private Object new_p_connection;
-    /**
-     * Destroy wither and boss bar
-     */
-    private Object remove_wither;
 
     /**
      * Initialize the boss message
      *
-     * @param owner    the boss message source
-     * @param _message the boss bar message
-     * @param duration the boss bar duration
+     * @param owner the message owner
+     * @param _message the message
+     * @param duration the message duration
      */
     public BossMessage(final KarmaSource owner, final String _message, final double duration) {
-        plugin = owner;
+        source = owner;
         message = _message;
         live_time = duration;
-        if (isLegacy) {
+        legacy = BukkitServer.isUnder(Version.v1_14);
+
+        if (legacy)
             doReflectionStuff();
-        }
 
         id = ++total_ids;
     }
@@ -244,50 +114,35 @@ public final class BossMessage extends BossProvider<Player> {
     /**
      * Set the boss bar color
      *
-     * @param newColor the boss bar color
+     * @param color_style the boss bar color
      * @return this boss bar instance
      */
-    @Override
-    public BossProvider<Player> color(final BossColor newColor) {
-        color = newColor;
+    public BossMessage color(final BossColor color_style) {
+        color = color_style;
         return this;
     }
 
     /**
      * Set the boss bar style
      *
-     * @param newType the boss bar style
+     * @param type_style the boss bar style
      * @return this boss bar instance
      */
     @Override
-    public BossProvider<Player> style(final BossType newType) {
-        type = newType;
-        try {
-            BossBar wither = (BossBar) wither_objects.get(id);
-            wither.setColor(BarColor.valueOf(color.name()));
-            wither.setVisible(false);
-            wither.setVisible(true);
-        } catch (Throwable ignored) {
-        }
+    public BossProvider<Player> style(final BossType type_style) {
+        type = type_style;
         return this;
     }
 
     /**
      * Set the boss bar progress type
      *
-     * @param type the boss bar progress type
+     * @param progress_style the boss bar progress type
      * @return this boss bar instance
      */
     @Override
-    public BossProvider<Player> progress(final ProgressiveBar type) {
-        progress = type;
-        try {
-            BossBar wither = (BossBar) wither_objects.get(id);
-            wither.setStyle(BarStyle.valueOf(type.name()));
-            wither.setVisible(false);
-            wither.setVisible(true);
-        } catch (Throwable ignored) {
-        }
+    public BossProvider<Player> progress(final ProgressiveBar progress_style) {
+        progress = progress_style;
         return this;
     }
 
@@ -297,230 +152,291 @@ public final class BossMessage extends BossProvider<Player> {
     @Override
     public void cancel() {
         cancelled = true;
+        if (bar_timer != null) {
+            bar_timer.cancel();
+        }
+    }
+
+    /**
+     * Display the boss bar to the specified player
+     *
+     * @param target the player to display to
+     */
+    @Override
+    protected void displayBar(final Player target) {
+        if (cancelled)
+            cancelled = false;
+
+        switch (progress) {
+            case UP:
+                lived_time = 0d;
+                break;
+            case DOWN:
+                lived_time = live_time;
+                break;
+        }
+
+        final KarmaPlugin plugin = KarmaPlugin.getABC();
+        if (legacy) {
+            try {
+                int init_bars = player_bars.getOrDefault(target.getUniqueId(), 0);
+                init_bars++;
+
+                player_bars.put(target.getUniqueId(), init_bars);
+
+                Location location = target.getLocation();
+                Object c_world = craft_world.cast(location.getWorld());
+                Object world_server = craft_world_handle.invoke(c_world);
+
+                Object wither = wither_constructor.newInstance(world_server);
+
+                Method customName = wither.getClass().getMethod("setCustomName", String.class);
+                Method setInvisible = wither.getClass().getMethod("setInvisible", boolean.class);
+                Method setLocation = wither.getClass().getMethod("setLocation", double.class, double.class, double.class, float.class, float.class);
+
+                customName.invoke(wither, StringUtils.toColor(message));
+                setInvisible.invoke(wither, true);
+                setLocation.invoke(wither, location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+
+                Object packetPlayOutEntityLiving = entity_living_constructor.newInstance(wither);
+                Object c_player = craft_player.cast(target);
+                Object entity_player = craft_player_handle.invoke(c_player);
+
+                Field playerConnection = entity_player.getClass().getField("playerConnection");
+                Object connection = playerConnection.get(entity_player);
+
+                packet_connect_send.invoke(packet_connection.cast(connection), packetPlayOutEntityLiving);
+                try {
+                    Method getId = wither.getClass().getMethod("getId");
+                    Method getDataWatcher = wither.getClass().getMethod("getDataWatcher");
+                    int id = (int) getId.invoke(wither);
+                    Object dataWatcher = getDataWatcher.invoke(wither);
+
+                    Object packetPlayOutEntityMetadata = packet_play_metadata.newInstance(id, dataWatcher, true);
+                    packet_connect_send.invoke(packet_connection.cast(connection), packetPlayOutEntityMetadata); //Apply invisibility
+                } catch (Throwable ex) {
+                    ex.printStackTrace();
+                }
+
+                wither_objects.put(id, wither);
+                bar_timer = new SourceScheduler(source, live_time, SchedulerUnit.SECOND, false);
+                bar_timer.condition(TimeCondition.OVER_OF, 2, (time) -> plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    try {
+                        Location new_location = target.getLocation().clone().add(target.getLocation().getDirection().multiply(20));
+
+                        wither_set_location_method.invoke(wither,
+                                new_location.getX(),
+                                new_location.getY(),
+                                new_location.getZ(),
+
+                                new_location.getYaw(),
+                                new_location.getPitch());
+
+                        Object packetPlayOutEntityTeleport = packet_play_teleport_constructor.newInstance(wither);
+                        packet_connect_send.invoke(packet_connection.cast(connection), packetPlayOutEntityTeleport);
+                    } catch (Throwable ex) {
+                        bar_timer.cancel();
+                        source.logger().scheduleLog(Level.GRAVE, ex);
+                        source.logger().scheduleLog(Level.INFO, "Failed to run task on boss bar display");
+
+                        bar_timer.cancel();
+                    }
+                })).endAction(() -> plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    try {
+                        cancelled = true;
+                        Constructor<?> packetPlayOutEntityDestroyConstructor = packet_play_out_destroy.getConstructor(int[].class);
+                        Method getId = wither.getClass().getMethod("getId");
+
+                        int id = (int) getId.invoke(wither);
+                        Object packetPlayOutEntityDestroy = packetPlayOutEntityDestroyConstructor.newInstance(new int[]{id});
+                        if (target.isOnline()) {
+                            packet_connect_send.invoke(packet_connection.cast(connection), packetPlayOutEntityDestroy);
+                        }
+
+                        boss_bars.remove(id);
+                        wither_objects.remove(id);
+                        int bars = player_bars.getOrDefault(target.getUniqueId(), 0);
+                        if (bars > 0)
+                            bars--;
+
+                        player_bars.put(target.getUniqueId(), bars);
+                    } catch (Throwable ex) {
+                        bar_timer.cancel();
+                        source.logger().scheduleLog(Level.GRAVE, ex);
+                        source.logger().scheduleLog(Level.INFO, "Failed to run task on boss bar end");
+                    }
+                })).cancelAction((when) -> plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    try {
+                        cancelled = true;
+                        Constructor<?> packetPlayOutEntityDestroyConstructor = packet_play_out_destroy.getConstructor(int[].class);
+                        Method getId = wither.getClass().getMethod("getId");
+
+                        int id = (int) getId.invoke(wither);
+                        Object packetPlayOutEntityDestroy = packetPlayOutEntityDestroyConstructor.newInstance(new int[]{id});
+                        if (target.isOnline()) {
+                            packet_connect_send.invoke(packet_connection.cast(connection), packetPlayOutEntityDestroy);
+                        }
+
+                        boss_bars.remove(id);
+                        wither_objects.remove(id);
+                        int bars = player_bars.getOrDefault(target.getUniqueId(), 0);
+                        if (bars > 0)
+                            bars--;
+
+                        player_bars.put(target.getUniqueId(), bars);
+                    } catch (Throwable ex) {
+                        bar_timer.cancel();
+                        source.logger().scheduleLog(Level.GRAVE, ex);
+                        source.logger().scheduleLog(Level.INFO, "Failed to run task on boss bar end");
+                    }
+                }));
+
+                SimpleScheduler hp_timer = new SourceScheduler(source, 1, SchedulerUnit.SECOND, true);
+                hp_timer.restartAction(() -> plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    if (!cancelled && target.isOnline()) {
+                        try {
+                            double percentage = 1000;
+                            switch (progress) {
+                                case UP:
+                                    percentage = lived_time / live_time;
+                                    lived_time++;
+                                    break;
+                                case DOWN:
+                                    percentage = lived_time / live_time;
+                                    lived_time--;
+                                    break;
+                            }
+                            percentage = Math.max(0, percentage);
+                            if (health) {
+                                percentage *= 300;
+                            }
+
+                            try {
+                                wither_set_progress_method.invoke(wither, percentage);
+                            } catch (Throwable ex) {
+                                try {
+                                    wither_set_progress_method.invoke(wither, (float) percentage);
+                                } catch (Throwable ex2) {
+                                    source.logger().scheduleLog(Level.GRAVE, ex2);
+                                    source.logger().scheduleLog(Level.INFO, "Failed to change health/progress to boss bar");
+                                    return;
+                                }
+                            }
+
+                            try {
+                                Method getId = wither.getClass().getMethod("getId");
+                                Method getDataWatcher = wither.getClass().getMethod("getDataWatcher");
+                                int id = (int) getId.invoke(wither);
+                                Object dataWatcher = getDataWatcher.invoke(wither);
+
+                                Object packetPlayOutEntityMetadata = packet_play_metadata.newInstance(id, dataWatcher, true);
+                                packet_connect_send.invoke(packet_connection.cast(connection), packetPlayOutEntityMetadata);
+                            } catch (Throwable ex) {
+                                ex.printStackTrace();
+                            }
+                        } catch (Throwable ex) {
+                            bar_timer.cancel();
+                            hp_timer.cancel();
+                            source.logger().scheduleLog(Level.GRAVE, ex);
+                            source.logger().scheduleLog(Level.INFO, "Failed to run task on boss bar HP modifier");
+                        }
+                    } else {
+                        bar_timer.cancel();
+                        hp_timer.cancel();
+                    }
+                }));
+
+                bar_timer.start();
+                hp_timer.start();
+            } catch (Throwable ex) {
+                source.logger().scheduleLog(Level.GRAVE, ex);
+                source.logger().scheduleLog(Level.INFO, "Failed to display bar");
+            }
+        } else {
+            BossBar wither = Bukkit.getServer().createBossBar(
+                    StringUtils.toColor(message),
+                    BarColor.valueOf(color.name()),
+                    BarStyle.valueOf(type.name()));
+            wither.addPlayer(target);
+
+            wither.setVisible(true);
+            wither_objects.put(id, wither);
+
+            bar_timer = new SourceScheduler(source, live_time, SchedulerUnit.SECOND, false);
+            bar_timer.endAction(() -> plugin.getServer().getScheduler().runTask(plugin, () -> {
+                cancelled = true;
+                boss_bars.remove(id);
+                wither_objects.remove(id);
+
+                wither.removePlayer(target);
+                int bars = player_bars.getOrDefault(target.getUniqueId(), 0);
+                if (bars > 0)
+                    bars--;
+
+                player_bars.put(target.getUniqueId(), bars);
+                wither.setVisible(false);
+            })).cancelAction((when) -> plugin.getServer().getScheduler().runTask(plugin, () -> {
+                cancelled = true;
+                boss_bars.remove(id);
+                wither_objects.remove(id);
+
+                wither.removePlayer(target);
+                int bars = player_bars.getOrDefault(target.getUniqueId(), 0);
+                if (bars > 0)
+                    bars--;
+
+                player_bars.put(target.getUniqueId(), bars);
+                wither.setVisible(false);
+            }));
+
+            SimpleScheduler progress_scheduler = new SourceScheduler(source, 1, SchedulerUnit.SECOND, true);
+            progress_scheduler.restartAction(() -> plugin.getServer().getScheduler().runTask(plugin, () -> {
+                if (!cancelled && target.isOnline()) {
+                    try {
+                        wither.setColor(BarColor.valueOf(color.name()));
+                        wither.setStyle(BarStyle.valueOf(type.name()));
+
+                        double percentage = 1;
+                        switch (progress) {
+                            case UP:
+                                percentage = lived_time / live_time;
+                                lived_time++;
+                                break;
+                            case DOWN:
+                                percentage = lived_time / live_time;
+                                lived_time--;
+                                break;
+                        }
+
+                        wither.setProgress(Math.max(0, percentage));
+                    } catch (Throwable ex) {
+                        bar_timer.cancel();
+                        progress_scheduler.cancel();
+                        source.logger().scheduleLog(Level.GRAVE, ex);
+                        source.logger().scheduleLog(Level.INFO, "Failed to run task on boss bar HP modifier");
+                    }
+                } else {
+                    bar_timer.cancel();
+                    progress_scheduler.cancel();
+                }
+            }));
+
+            bar_timer.start();
+            progress_scheduler.start();
+        }
     }
 
     /**
      * Display the boss bar to the specified players
      *
      * @param players the players to display to
+     * @deprecated This can result in bar duplicates; Use {@link BossProvider#displayBar(Object) single target} alternative
      */
+    @Deprecated
     @Override
+    @SuppressWarnings("all")
     protected void displayBar(final Collection<Player> players) {
-        bars++;
-        if (cancelled) {
-            cancelled = false;
-        }
-
-        switch (progress) {
-            case DOWN: {
-                lived_time = live_time - 1.0;
-                break;
-            }
-            case UP: {
-                lived_time = 0.0;
-                break;
-            }
-        }
-
-        if (isLegacy) {
-            try {
-                for (final Player player : players) {
-                    AtomicBoolean showing = new AtomicBoolean(false);
-
-                    if (!shown.contains(player.getUniqueId())) {
-                        shown.add(player.getUniqueId());
-                        Location location = player.getLocation();
-
-                        Object c_world = craft_world.cast(player.getWorld());
-                        Object w_server = craft_world_handle.invoke(c_world);
-                        Object wither = wither_constructor.newInstance(w_server);
-
-                        wither.getClass().getMethod("setCustomName", String.class).invoke(wither, message);
-                        wither.getClass().getMethod("setInvisible", Boolean.TYPE).invoke(wither, true);
-                        wither.getClass().getMethod("setLocation", Double.TYPE, Double.TYPE, Double.TYPE, Float.TYPE, Float.TYPE).invoke(wither, location.getX(), location.getY(), location.getZ(), 0, 0);
-
-                        Object packet = entity_living_constructor.newInstance(wither);
-                        Object c_player = craft_player.cast(player);
-                        Object e_player = craft_player_handle.invoke(c_player);
-                        Object p_connection = e_player.getClass().getField("playerConnection").get(e_player);
-
-                        wither_objects.put(id, wither);
-                        bar_timer = new SourceScheduler(plugin, live_time, SchedulerUnit.SECOND, false).cancelUnloaded(false);
-
-                        bar_timer.condition(TimeCondition.OVER_OF, 2, second -> {
-                            if (showing.get()) {
-                                try {
-                                    newLoc = player.getEyeLocation().add(player.getEyeLocation().getDirection().normalize().multiply(20).add(new Vector(0, 5, 0)));
-                                    wither_set_location_method.invoke(player, newLoc.getX(), newLoc.getY(), newLoc.getZ(), newLoc.getYaw(), newLoc.getPitch());
-                                    teleport_packet = packet_play_teleport_constructor.newInstance(player);
-                                    new_c_player = craft_player.cast(player);
-                                    new_e_player = craft_player_handle.invoke(new_c_player);
-                                    new_p_connection = new_e_player.getClass().getField("playerConnection").get(new_e_player);
-                                    packet_connection = BukkitServer.getMinecraftClass("PlayerConnection");
-                                    packet_class = BukkitServer.getMinecraftClass("Packet");
-                                    packet_connect_send.invoke(packet_connection.cast(new_p_connection), teleport_packet);
-                                } catch (Throwable ex) {
-                                    ex.printStackTrace();
-                                    bar_timer.cancel();
-                                }
-                            }
-                        }).endAction(() -> {
-                            if (showing.get()) {
-                                try {
-                                    remove_wither = packet_play_out_destroy.getConstructor(BukkitServer.getMinecraftClass("EntityLiving"))
-                                            .newInstance(player.getUniqueId());
-                                    packet_connection = BukkitServer.getMinecraftClass("PlayerConnection");
-                                    packet_class = BukkitServer.getMinecraftClass("Packet");
-                                    craft_player = BukkitServer.getMinecraftClass("entity.CraftPlayer");
-                                    if (craft_player != null) {
-                                        new_c_player = craft_player.cast(player);
-                                        new_e_player = craft_player_handle.invoke(new_c_player);
-                                        new_p_connection = new_e_player.getClass().getField("playerConnection").get(new_e_player);
-                                        packet_connect_send.invoke(packet_connection.cast(new_p_connection), remove_wither);
-                                        boss_bars.remove(id);
-                                        wither_objects.remove(id);
-                                        shown.remove(player.getUniqueId());
-                                        --bars;
-                                    }
-                                } catch (Throwable ex2) {
-                                    ex2.printStackTrace();
-                                    bar_timer.cancel();
-                                }
-                            }
-                        }).cancelAction(time -> {
-                            if (showing.get()) {
-                                try {
-                                    remove_wither = packet_play_out_destroy.getConstructor(BukkitServer.getMinecraftClass("EntityLiving"))
-                                            .newInstance(player.getUniqueId());
-                                    packet_connection = BukkitServer.getMinecraftClass("PlayerConnection");
-                                    packet_class = BukkitServer.getMinecraftClass("Packet");
-                                    craft_player = BukkitServer.getMinecraftClass("entity.CraftPlayer");
-                                    if (craft_player != null) {
-                                        new_c_player = craft_player.cast(player);
-                                        new_e_player = craft_player_handle.invoke(new_c_player);
-                                        new_p_connection = new_e_player.getClass().getField("playerConnection").get(new_e_player);
-                                        packet_connect_send.invoke(packet_connection.cast(new_p_connection), remove_wither);
-                                        boss_bars.remove(id);
-                                        wither_objects.remove(id);
-                                        shown.remove(player.getUniqueId());
-                                        --bars;
-                                    }
-                                } catch (Throwable ex3) {
-                                    ex3.printStackTrace();
-                                    bar_timer.cancel();
-                                }
-                            }
-                        }).start();
-
-                        SimpleScheduler hp_timer = new SourceScheduler(plugin, live_time - 1.0, SchedulerUnit.SECOND, false).cancelUnloaded(false);
-                        hp_timer.changeAction(second -> {
-                            if (!cancelled) {
-                                try {
-                                    double percentage;
-
-                                    switch (progress) {
-                                        case UP: {
-                                            percentage = lived_time / live_time;
-                                            wither_set_progress_method.invoke(wither, (toFloat ? ((float) percentage) : percentage));
-
-                                            lived_time++;
-                                            break;
-                                        }
-                                        case DOWN: {
-                                            percentage = second / live_time;
-                                            wither_set_progress_method.invoke(wither, (toFloat ? ((float) percentage) : percentage));
-
-                                            lived_time--;
-                                            break;
-                                        }
-                                    }
-
-                                    if (!showing.get()) {
-                                        packet_connect_send.invoke(packet_connection.cast(p_connection), packet);
-                                        showing.set(true);
-                                    }
-                                } catch (Throwable ex5) {
-                                    cancel();
-                                }
-                            } else {
-                                bar_timer.cancel();
-                                hp_timer.cancel();
-                            }
-                        }).start();
-                    }
-                }
-            } catch (Throwable ex4) {
-                ex4.printStackTrace();
-            }
-        } else {
-            BossBar wither = Bukkit.getServer()
-                    .createBossBar(StringUtils.toColor(message), BarColor.valueOf(color.name()), BarStyle.valueOf(type.name()));
-            for (final Player player2 : players) {
-                wither.addPlayer(player2);
-            }
-
-            wither_objects.put(id, wither);
-            bar_timer = new SourceScheduler(plugin, live_time, SchedulerUnit.SECOND, false).cancelUnloaded(false);
-
-            bar_timer.endAction(() -> {
-                wither.setVisible(false);
-                wither.removeAll();
-                boss_bars.remove(id);
-                wither_objects.remove(id);
-                for (Player player : players) {
-                    shown.remove(player.getUniqueId());
-                }
-
-                bars--;
-            }).cancelAction(end -> {
-                wither.setVisible(false);
-                wither.removeAll();
-                boss_bars.remove(id);
-                wither_objects.remove(id);
-                for (Player player : players) {
-                    shown.remove(player.getUniqueId());
-                }
-
-                bars--;
-            }).start();
-
-            SimpleScheduler hp_timer = new SourceScheduler(plugin, live_time - 1.0, SchedulerUnit.SECOND, false).cancelUnloaded(false);
-            hp_timer.changeAction(second -> {
-                if (!cancelled) {
-                    double percentage;
-
-                    try {
-                        wither.setColor(BarColor.valueOf(color.name()));
-                        wither.setStyle(BarStyle.valueOf(type.name()));
-                        switch (progress) {
-                            case UP: {
-                                percentage = lived_time / live_time;
-                                wither.setProgress(percentage);
-
-                                lived_time++;
-                                break;
-                            }
-                            case DOWN: {
-                                percentage = second / live_time;
-                                wither.setProgress(percentage);
-
-                                lived_time--;
-                                break;
-                            }
-                        }
-
-                        if (!wither.isVisible()) {
-                            wither.setVisible(true);
-                        }
-                    } catch (Throwable ex6) {
-                        cancel();
-                    }
-                } else {
-                    bar_timer.cancel();
-                    hp_timer.cancel();
-                }
-            }).start();
-        }
+        players.forEach(this::displayBar);
     }
 
     /**
@@ -530,37 +446,55 @@ public final class BossMessage extends BossProvider<Player> {
      */
     @Override
     public void scheduleBar(final Collection<Player> players) {
-        b_bars.add(this);
-        boss_bars.put(id, this);
-
-        SimpleScheduler timer = new SourceScheduler(plugin, 1, SchedulerUnit.SECOND, false).cancelUnloaded(false).multiThreading(true);
-        timer.changeAction(second -> {
-            if (!b_bars.isEmpty() && getBarsAmount() < 4) {
-                BossMessage boss = b_bars.get(0);
-                boss.displayBar(players);
-                b_bars.remove(boss);
-            }
-        }).start();
+        scheduleBar(players.toArray(new Player[0]));
     }
 
     /**
      * Schedule the bar to the specified player
      *
-     * @param player the player to display to
+     * @param players the player to display to
      */
     @Override
-    public void scheduleBar(final Player player) {
-        b_bars.add(this);
-        boss_bars.put(id, this);
+    public void scheduleBar(final Player... players) {
+        for (Player player : players) {
+            Queue<BossMessage> player_b_bars = b_bars.getOrDefault(player.getUniqueId(), new ConcurrentLinkedQueue<>());
+            player_b_bars.add(this);
+            b_bars.put(player.getUniqueId(), player_b_bars);
+            boss_bars.put(id, this);
 
-        SimpleScheduler timer = new SourceScheduler(plugin, 1, SchedulerUnit.SECOND, false).cancelUnloaded(false).multiThreading(true);
-        timer.changeAction(second -> {
-            if (!b_bars.isEmpty() && getBarsAmount() < 4) {
-                BossMessage boss = b_bars.get(0);
-                boss.displayBar(Collections.singleton(player));
-                b_bars.remove(boss);
+            /*
+                if (!player_b_bars.isEmpty() && bars < (legacy ? 1 : 4)) {
+                    BossMessage boss = player_b_bars.get(0);
+                    boss.displayBar(players);
+                    player_b_bars.remove(boss);
+                    b_bars.put(player.getUniqueId(), player_b_bars);
+                } else {
+                    if (player_b_bars.isEmpty()) {
+                        scheduler.cancel();
+                    }
+                }*/
+
+            int max_bars = (legacy ? 1 : 4);
+            SimpleScheduler scheduler = bar_schedulers.getOrDefault(player.getUniqueId(), null);
+            if (scheduler == null) {
+                scheduler = new SourceScheduler(source, 1, SchedulerUnit.SECOND, true);
+                scheduler.restartAction(() -> {
+                    Player instance = Bukkit.getPlayer(player.getUniqueId());
+                    if (instance != null && instance.isOnline()) {
+                        int bars = player_bars.getOrDefault(player.getUniqueId(), 0);
+                        if (bars < max_bars) {
+                            Queue<BossMessage> queue = b_bars.getOrDefault(player.getUniqueId(), new ConcurrentLinkedQueue<>());
+                            BossMessage next = queue.poll();
+                            if (next != null) {
+                                next.displayBar(instance);
+                            }
+                        }
+                    }
+                }).start();
+
+                bar_schedulers.put(player.getUniqueId(), scheduler);
             }
-        }).start();
+        }
     }
 
     /**
@@ -568,9 +502,22 @@ public final class BossMessage extends BossProvider<Player> {
      *
      * @return the amount of bars created
      */
-    @Override
+    @Deprecated
     public int getBarsAmount() {
-        return bars;
+        AtomicInteger final_size = new AtomicInteger();
+        player_bars.values().forEach(final_size::addAndGet);
+        return final_size.get();
+    }
+
+    /**
+     * Get the amount of bars that exist
+     *
+     * @param source the bar source
+     * @return the amount of bars created
+     */
+    @Override
+    public int getBarsAmount(final Player source) {
+        return player_bars.getOrDefault(source.getUniqueId(), 0);
     }
 
     /**
@@ -586,42 +533,71 @@ public final class BossMessage extends BossProvider<Player> {
     /**
      * Update the boss bar
      *
-     * @param _message the new boss bar text
-     * @param restart  restart the bar progress
+     * @param title  the new boss bar text
+     * @param restart restart the bar progress
      * @return if the boss bar could be updated
      */
     @Override
-    public boolean update(final String _message, final boolean restart) {
+    public boolean update(final String title, final boolean restart) {
         try {
-            message = _message;
-            if (isLegacy) {
-                final Object wither = wither_objects.get(id);
-                wither.getClass().getMethod("setCustomName", String.class).invoke(wither, StringUtils.toColor(message));
-            } else {
-                BossBar bar = (BossBar) wither_objects.get(id);
-                bar.setTitle(StringUtils.toColor(message));
-                List<Player> players = bar.getPlayers();
-                players.forEach(bar::addPlayer);
+            if (!title.equals(message)) {
+                if (legacy) {
+                    Object wither = wither_objects.getOrDefault(id, null);
+                    if (wither != null) {
+                        Method customName = wither.getClass().getMethod("setCustomName", String.class);
+                        customName.invoke(wither, StringUtils.toColor(title));
+
+                        try {
+                            Method getId = wither.getClass().getMethod("getId");
+                            Method getDataWatcher = wither.getClass().getMethod("getDataWatcher");
+                            int id = (int) getId.invoke(wither);
+                            Object dataWatcher = getDataWatcher.invoke(wither);
+
+                            Object packetPlayOutEntityMetadata = packet_play_metadata.newInstance(id, dataWatcher, true);
+                            for (Player player : Bukkit.getOnlinePlayers()) {
+                                try {
+                                    Object c_player = craft_player.cast(player);
+                                    Object entity_player = craft_player_handle.invoke(c_player);
+
+                                    Field playerConnection = entity_player.getClass().getField("playerConnection");
+                                    Object connection = playerConnection.get(entity_player);
+
+                                    packet_connect_send.invoke(packet_connection.cast(connection), packetPlayOutEntityMetadata);
+                                } catch (Throwable ignored) {}
+                            }
+                        } catch (Throwable ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                } else {
+                    BossBar bar = (BossBar) wither_objects.getOrDefault(id, null);
+                    bar.setTitle(StringUtils.toColor(title));
+                    bar.getPlayers().forEach(bar::addPlayer);
+                }
+
+                message = title;
             }
-            if (bar_timer != null && restart) {
-                bar_timer.restart();
-            }
+
             return true;
         } catch (Throwable ex) {
-            return false;
+            source.logger().scheduleLog(Level.GRAVE, ex);
+            source.logger().scheduleLog(Level.INFO, "Failed to update boss bar");
         }
+
+        return false;
     }
 
     /**
      * Set the boss bar display time
      *
-     * @param displayTime the boss bar display time
+     * @param time the boss bar display time
      * @return the boss bar display time
      */
     @Override
-    public BossProvider<Player> displayTime(final double displayTime) {
+    public BossProvider<Player> displayTime(final double time) {
         cancel();
-        return new BossMessage(plugin, message, displayTime).color(color).style(type).progress(progress);
+        return new BossMessage(source, message, time)
+                .color(color).style(type).progress(progress);
     }
 
     /**
@@ -675,7 +651,7 @@ public final class BossMessage extends BossProvider<Player> {
     }
 
     /**
-     * Prepare the boss bar for legacy ( non-vanilla implemented boss bar API ) instances
+     * Initialize for reflection
      */
     private void doReflectionStuff() {
         try {
@@ -685,34 +661,34 @@ public final class BossMessage extends BossProvider<Player> {
                 Class<?> packet_entity_living_out = BukkitServer.getMinecraftClass("PacketPlayOutSpawnEntityLiving");
                 if (packet_entity_living_out != null) {
                     craft_player = BukkitServer.getBukkitClass("entity.CraftPlayer");
-                    packet_class = BukkitServer.getMinecraftClass("Packet");
+                    Class<?> packet_class = BukkitServer.getMinecraftClass("Packet");
                     packet_connection = BukkitServer.getMinecraftClass("PlayerConnection");
                     packet_play_out_destroy = BukkitServer.getMinecraftClass("PacketPlayOutEntityDestroy");
-                    Class<?> packet_play_teleport = BukkitServer.getMinecraftClass("PacketPlayOutEntityTeleport");
-                    if (packet_play_teleport != null) {
-                        wither_constructor = entity_wither.getConstructor(BukkitServer.getMinecraftClass("World"));
-                        entity_living_constructor = packet_entity_living_out.getConstructor(BukkitServer.getMinecraftClass("EntityLiving"));
-                        packet_play_teleport_constructor = packet_play_teleport.getConstructor(BukkitServer.getMinecraftClass("Entity"));
-                        craft_world_handle = craft_world.getMethod("getHandle");
-                        craft_player_handle = craft_player.getMethod("getHandle");
-                        packet_connect_send = packet_connection.getMethod("sendPacket", packet_class);
-                        wither_set_location_method = entity_wither.getMethod("setLocation", Double.TYPE, Double.TYPE, Double.TYPE, Float.TYPE, Float.TYPE);
-                        wither_set_location_method = entity_wither.getMethod("setLocation", Double.TYPE, Double.TYPE, Double.TYPE, Float.TYPE, Float.TYPE);
-                        try {
-                            wither_set_progress_method = entity_wither.getMethod("setProgress", Double.TYPE);
-                        } catch (Throwable ex) {
+
+                    Class<?> dataWatcher = BukkitServer.getMinecraftClass("DataWatcher");
+                    Class<?> entityMetadata = BukkitServer.getMinecraftClass("PacketPlayOutEntityMetadata");
+                    if (entityMetadata != null) {
+                        packet_play_metadata = entityMetadata.getConstructor(int.class, dataWatcher, boolean.class);
+                        Class<?> packet_play_teleport = BukkitServer.getMinecraftClass("PacketPlayOutEntityTeleport");
+                        if (packet_play_teleport != null) {
+                            wither_constructor = entity_wither.getConstructor(BukkitServer.getMinecraftClass("World"));
+                            entity_living_constructor = packet_entity_living_out.getConstructor(BukkitServer.getMinecraftClass("EntityLiving"));
+                            packet_play_teleport_constructor = packet_play_teleport.getConstructor(BukkitServer.getMinecraftClass("Entity"));
+                            craft_world_handle = craft_world.getMethod("getHandle");
+                            craft_player_handle = craft_player.getMethod("getHandle");
+                            packet_connect_send = packet_connection.getMethod("sendPacket", packet_class);
+                            wither_set_location_method = entity_wither.getMethod("setLocation", double.class, double.class, double.class, float.class, float.class);
                             try {
-                                wither_set_progress_method = entity_wither.getMethod("setProgress", Float.TYPE);
-                                toFloat = true;
-                            } catch (Throwable exc) {
+                                wither_set_progress_method = entity_wither.getMethod("setProgress", double.class);
+                            } catch (Throwable ex) {
                                 try {
-                                    wither_set_progress_method = entity_wither.getMethod("setHealth", Double.TYPE);
-                                } catch (Throwable exce) {
+                                    wither_set_progress_method = entity_wither.getMethod("setProgress", float.class);
+                                } catch (Throwable ex2) {
+                                    health = true;
                                     try {
-                                        wither_set_progress_method = entity_wither.getMethod("setHealth", Float.TYPE);
-                                        toFloat = true;
-                                    } catch (Throwable excep) {
-                                        isLegacy = false;
+                                        wither_set_progress_method = entity_wither.getMethod("setHealth", double.class);
+                                    } catch (Throwable ex3) {
+                                        wither_set_progress_method = entity_wither.getMethod("setHealth", float.class);
                                     }
                                 }
                             }
@@ -726,30 +702,17 @@ public final class BossMessage extends BossProvider<Player> {
     }
 
     /**
-     * Boss bar getters
+     * Get a boss message from its id
+     *
+     * @param id the boss id
+     * @return the boss id
      */
-    @SuppressWarnings("unused")
-    public interface getters {
-
-        /**
-         * Get a boss bar by ID
-         *
-         * @param id the bar ID
-         * @return the boss bar
-         * @throws BossNotFoundException if the boss bar could not be found
-         */
-        static BossProvider<Player> getByID(final int id) throws BossNotFoundException {
-            try {
-                if (boss_bars.containsKey(id)) {
-                    final BossProvider<Player> boss = boss_bars.getOrDefault(id, null);
-                    if (boss != null) {
-                        return boss;
-                    }
-                }
-                throw new BossNotFoundException(id, boss_bars.keySet());
-            } catch (Throwable ex) {
-                throw new BossNotFoundException(id, boss_bars.keySet());
-            }
+    public static BossMessage fromId(final int id) throws BossNotFoundException {
+        BossMessage provider = boss_bars.getOrDefault(id, null);
+        if (provider != null) {
+            return provider;
+        } else {
+            throw new BossNotFoundException(id, BossMessage.boss_bars.keySet());
         }
     }
 }

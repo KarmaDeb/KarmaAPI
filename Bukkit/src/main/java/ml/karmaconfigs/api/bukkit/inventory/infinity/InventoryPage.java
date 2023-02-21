@@ -35,13 +35,15 @@ public final class InventoryPage implements FunctionalInventory, InventoryHolder
 
     private final int page;
     private final InventoryBook book;
-    private final Inventory inventory;
+
 
     private final Map<Integer, ItemFunction> functions = new ConcurrentHashMap<>();
     private final Set<Action> open_actions = new LinkedHashSet<>();
     private final Set<Action> close_actions = new LinkedHashSet<>();
 
+    private Inventory inventory;
     private boolean canClose = true;
+    private String title;
 
     /**
      * Initialize the inventory page
@@ -53,6 +55,7 @@ public final class InventoryPage implements FunctionalInventory, InventoryHolder
     public InventoryPage(final int page, final InventoryBook book, final String title) {
         this.page = page;
         this.book = book;
+        this.title = title;
 
         KarmaPlugin registrar = KarmaPlugin.getABC();
 
@@ -73,7 +76,7 @@ public final class InventoryPage implements FunctionalInventory, InventoryHolder
 
         ItemStack spacer;
         try {
-            spacer = new ItemStack(Material.valueOf("STAINED_GLASS_PANE"), (byte) 15);
+            spacer = new ItemStack(Material.valueOf("STAINED_GLASS_PANE"), 1, (byte) 15);
         } catch (Throwable ex) {
             spacer = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
         }
@@ -158,6 +161,51 @@ public final class InventoryPage implements FunctionalInventory, InventoryHolder
     }
 
     /**
+     * Set the inventory title
+     *
+     * @param title the new inventory title
+     * @return this page
+     */
+    public InventoryPage title(final String title) {
+        this.title = title;
+        return this;
+    }
+
+    /**
+     * Set the next page item name
+     *
+     * @param name the new item name
+     * @return this page
+     */
+    public InventoryPage nextItemName(final String name) {
+        ItemMeta meta = NEXT.getItemMeta();
+        assert meta != null;
+
+        meta.setDisplayName(StringUtils.toColor(name));
+        NEXT.setItemMeta(meta);
+
+        setItem(53, NEXT).onClick(Action.nextPage(0));
+        return this;
+    }
+
+    /**
+     * Set the previous page item name
+     *
+     * @param name the new item name
+     * @return this page
+     */
+    public InventoryPage previousItemName(final String name) {
+        ItemMeta meta = PREV.getItemMeta();
+        assert meta != null;
+
+        meta.setDisplayName(StringUtils.toColor(name));
+        PREV.setItemMeta(meta);
+
+        setItem(45, PREV).onClick(Action.previousPage(0));
+        return this;
+    }
+
+    /**
      * Add an item to the inventory page
      *
      * @param item the item to add
@@ -197,6 +245,40 @@ public final class InventoryPage implements FunctionalInventory, InventoryHolder
         functions.put(index, function);
 
         return function;
+    }
+
+    /**
+     * Update the inventory title
+     */
+    public void updateTitle() {
+        KarmaPlugin plugin = KarmaPlugin.getABC();
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            Collection<HumanEntity> viewers = new ArrayList<>(inventory.getViewers()); //This way we prevent concurrent modifications
+
+            try {
+                for (HumanEntity entity : viewers) {
+                    if (entity instanceof Player) {
+                        Player player = (Player) entity;
+                        InventoryUpdate.updateInventory(plugin, player, StringUtils.toColor(title));
+                    }
+                }
+            } catch (Throwable ex) {
+                Inventory n_inventory = plugin.getServer().createInventory(this, 54, StringUtils.toColor(title));
+                for (int i = 0; i < inventory.getSize(); i++) {
+                    ItemStack item = inventory.getItem(i);
+                    if (item != null) {
+                        n_inventory.setItem(i, item);
+                    }
+                }
+                viewers.forEach(HumanEntity::closeInventory);
+
+                inventory = n_inventory;
+
+                for (HumanEntity human : viewers) {
+                    human.openInventory(inventory);
+                }
+            }
+        });
     }
 
     /**
@@ -365,3 +447,4 @@ public final class InventoryPage implements FunctionalInventory, InventoryHolder
         return this;
     }
 }
+

@@ -1,4 +1,4 @@
-package ml.karmaconfigs.api.common.utils.url;
+package ml.karmaconfigs.api.common.utils.url.request;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;

@@ -90,6 +90,28 @@ public final class ResourceDownloader {
     }
 
     /**
+     * Initialize the resource downloader
+     *
+     * @param destination the resource destination
+     * @param _url        the resource download URL
+     */
+    public ResourceDownloader(final File destination, final URL _url) {
+        this.destFile = destination;
+        this.url = _url.toString();
+    }
+
+    /**
+     * Initialize the resource downloader
+     *
+     * @param destination the resource destination
+     * @param _url        the resource download URL
+     */
+    public ResourceDownloader(final Path destination, final URL _url) {
+        this.destFile = destination.toFile();
+        this.url = _url.toString();
+    }
+
+    /**
      * Download something to cache
      *
      * @param source      the resource source

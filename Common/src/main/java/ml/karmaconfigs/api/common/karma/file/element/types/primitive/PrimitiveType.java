@@ -10,6 +10,16 @@ public interface PrimitiveType<T> {
     T get();
 
     /**
+     * If the final value have some modifications
+     * this method should return the raw type
+     *
+     * @return the literal (raw)
+     */
+    default T getLiteral() {
+        return get();
+    }
+
+    /**
      * Get the primitive type
      *
      * @return the primitive type

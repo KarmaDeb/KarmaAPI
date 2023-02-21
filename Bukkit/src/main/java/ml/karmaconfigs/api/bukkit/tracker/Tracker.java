@@ -4,6 +4,7 @@ import ml.karmaconfigs.api.bukkit.tracker.event.TrackerSpawnEvent;
 import ml.karmaconfigs.api.bukkit.tracker.property.PropertyValue;
 import ml.karmaconfigs.api.bukkit.tracker.property.flag.TrackerFlag;
 import ml.karmaconfigs.api.bukkit.util.LineOfSight;
+import ml.karmaconfigs.api.bukkit.util.sight.SightPart;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
@@ -73,32 +74,30 @@ public abstract class Tracker {
     /**
      * Get the tracker line of sight
      *
-     * @param part the line of sight part to use
      * @return the tracker line of sight
      */
-    public abstract LineOfSight getLineOfSight(final SightPart part);
+    public abstract LineOfSight getLineOfSight();
 
     /**
      * Get the tracker line of sight with another entity
      *
      * @param target the entity to check with
-     * @param part the line of sight part to use
      * @return the tracker line of sight with entity
      */
-    public abstract LineOfSight getLineOfSight(final LivingEntity target, final SightPart part);
+    public abstract LineOfSight getLineOfSight(final LivingEntity target);
 
     /**
      * Get the tracker location
      *
      * @return the tracker location
      */
-    public abstract Location getLocation();/**
+    public abstract Location getLocation();
+
+    /**
      * Get the tracker variable location
      *
      * @return the tracker variable location
      */
-
-
     public abstract Location getVariableLocation();
 
     /**
@@ -184,23 +183,5 @@ public abstract class Tracker {
      */
     public final long randomPeriod(final int max) {
         return (long) ((Math.random() * (Math.max(10, Math.abs(max)) - 1)) + 1);
-    }
-
-    /**
-     * Tracker line of sight part
-     */
-    public enum SightPart {
-        /**
-         * Head part
-         */
-        HEAD,
-        /**
-         * Body part
-         */
-        BODY,
-        /**
-         * Feet part
-         */
-        FEET
     }
 }

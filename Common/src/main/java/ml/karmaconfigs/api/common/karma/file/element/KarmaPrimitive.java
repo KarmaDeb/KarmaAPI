@@ -176,7 +176,7 @@ public class KarmaPrimitive implements ElementPrimitive {
      */
     @Override
     public boolean isElementNull() {
-        return primitive.get() instanceof ElementNull;
+        return primitive.getLiteral() instanceof ElementNull;
     }
 
     /**
@@ -271,10 +271,15 @@ public class KarmaPrimitive implements ElementPrimitive {
             characters
          */
         if (primitive.type().equals(ObjectType.CHARACTER)) {
-            return String.valueOf(primitive.get());
+            return String.valueOf(primitive.getLiteral());
         }
 
-        return (String) primitive.get();
+        Object value = primitive.getLiteral();
+        if (value instanceof String) {
+            return (String) primitive.getLiteral();
+        } else {
+            return String.valueOf(value);
+        }
     }
 
     /**
@@ -284,7 +289,7 @@ public class KarmaPrimitive implements ElementPrimitive {
      */
     @Override
     public boolean asBoolean() {
-        return (Boolean) primitive.get();
+        return (Boolean) primitive.getLiteral();
     }
 
     /**
@@ -294,11 +299,11 @@ public class KarmaPrimitive implements ElementPrimitive {
      */
     @Override
     public int asInteger() {
-        if (primitive.get() instanceof Number) {
-            return ((Number) primitive.get()).intValue();
+        if (primitive.getLiteral() instanceof Number) {
+            return ((Number) primitive.getLiteral()).intValue();
         }
 
-        return (Integer) primitive.get();
+        return (Integer) primitive.getLiteral();
     }
 
     /**
@@ -308,11 +313,11 @@ public class KarmaPrimitive implements ElementPrimitive {
      */
     @Override
     public double asDouble() {
-        if (primitive.get() instanceof Number) {
-            return ((Number) primitive.get()).doubleValue();
+        if (primitive.getLiteral() instanceof Number) {
+            return ((Number) primitive.getLiteral()).doubleValue();
         }
 
-        return (Double) primitive.get();
+        return (Double) primitive.getLiteral();
     }
 
     /**
@@ -322,11 +327,11 @@ public class KarmaPrimitive implements ElementPrimitive {
      */
     @Override
     public long asLong() {
-        if (primitive.get() instanceof Number) {
-            return ((Number) primitive.get()).longValue();
+        if (primitive.getLiteral() instanceof Number) {
+            return ((Number) primitive.getLiteral()).longValue();
         }
 
-        return (Long) primitive.get();
+        return (Long) primitive.getLiteral();
     }
 
     /**
@@ -336,11 +341,11 @@ public class KarmaPrimitive implements ElementPrimitive {
      */
     @Override
     public short asShort() {
-        if (primitive.get() instanceof Number) {
-            return ((Number) primitive.get()).shortValue();
+        if (primitive.getLiteral() instanceof Number) {
+            return ((Number) primitive.getLiteral()).shortValue();
         }
 
-        return (Short) primitive.get();
+        return (Short) primitive.getLiteral();
     }
 
     /**
@@ -350,11 +355,11 @@ public class KarmaPrimitive implements ElementPrimitive {
      */
     @Override
     public float asFloat() {
-        if (primitive.get() instanceof Number) {
-            return ((Number) primitive.get()).floatValue();
+        if (primitive.getLiteral() instanceof Number) {
+            return ((Number) primitive.getLiteral()).floatValue();
         }
 
-        return (Float) primitive.get();
+        return (Float) primitive.getLiteral();
     }
 
     /**
@@ -364,11 +369,11 @@ public class KarmaPrimitive implements ElementPrimitive {
      */
     @Override
     public byte asByte() {
-        if (primitive.get() instanceof Number) {
-            return ((Number) primitive.get()).byteValue();
+        if (primitive.getLiteral() instanceof Number) {
+            return ((Number) primitive.getLiteral()).byteValue();
         }
 
-        return (Byte) primitive.get();
+        return (Byte) primitive.getLiteral();
     }
 
     /**
@@ -378,7 +383,7 @@ public class KarmaPrimitive implements ElementPrimitive {
      */
     @Override
     public char asCharacter() {
-        return (Character) primitive.get();
+        return (Character) primitive.getLiteral();
     }
 
     /**
@@ -404,13 +409,13 @@ public class KarmaPrimitive implements ElementPrimitive {
      */
     @Override
     public String toString() {
-        String value = String.valueOf(primitive.get());
+        String value = String.valueOf(primitive.getLiteral());
 
-        if (primitive.get() instanceof Double || primitive.get() instanceof Float) {
-            return (primitive.get() instanceof Double ? value.replace(".", ",") : value);
+        if (primitive.getLiteral() instanceof Double || primitive.getLiteral() instanceof Float) {
+            return (primitive.getLiteral() instanceof Double ? value.replace(".", ",") : value);
         }
-        if (primitive.get() instanceof Byte) {
-            return "0x" + Integer.toHexString((Byte) primitive.get());
+        if (primitive.getLiteral() instanceof Byte) {
+            return "0x" + Integer.toHexString((Byte) primitive.getLiteral());
         }
 
         return value;

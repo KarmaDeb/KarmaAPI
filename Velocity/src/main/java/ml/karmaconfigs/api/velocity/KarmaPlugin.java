@@ -79,6 +79,7 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
      * @param c the container
      */
     public KarmaPlugin(final PluginContainer c) {
+        KarmaAPI.install();
         container = c;
 
         if (!APISource.hasProvider(name())) {
@@ -100,6 +101,7 @@ public abstract class KarmaPlugin implements KarmaSource, Identifiable {
      *                           set
      */
     public KarmaPlugin(final PluginContainer c, final boolean defineDefault) throws SecurityException {
+        KarmaAPI.install();
         container = c;
 
         if (!APISource.hasProvider(name())) {

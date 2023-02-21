@@ -69,6 +69,8 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
      * Initialize the KarmaPlugin
      */
     public KarmaPlugin() {
+        KarmaAPI.install();
+
         if (!APISource.hasProvider(name())) {
             APISource.addProvider(this);
         }
@@ -87,6 +89,8 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
      *                           set
      */
     public KarmaPlugin(final boolean defineDefault) throws SecurityException {
+        KarmaAPI.install();
+
         if (!APISource.hasProvider(name())) {
             APISource.addProvider(this);
             if (defineDefault) {

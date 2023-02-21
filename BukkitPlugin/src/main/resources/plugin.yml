@@ -16,3 +16,5 @@ softdepend:
 commands:
   test_legacy:
     description: Test legacy mode utilities
+  test_boss:
+    description: Test the intelligent boss bar utility

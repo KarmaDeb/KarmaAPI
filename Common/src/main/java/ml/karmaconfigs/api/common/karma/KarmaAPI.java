@@ -38,6 +38,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -235,6 +237,31 @@ public interface KarmaAPI extends Serializable {
         }
 
         if (loader != null) {
+            KarmaSource source = source(true);
+
+            try {
+                Class.forName("org.slf4j.LoggerFactory");
+            } catch (Throwable ex) {
+                if (config.debug(Level.WARNING)) {
+                    source(false).console().send("Log4j dependency not found, downloading it...");
+                }
+
+                Path expected_file = source.getDataPath().resolve("dependencies").resolve("Log4j.jar");
+                if (!Files.exists(expected_file)) {
+                    loader.downloadAndInject(
+                            URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/Log4j.jar",
+                                    "https://karmadev.es/karma-repository/Log4j.jar",
+                                    "https://karmaconfigs.ml/karma-repository/Log4j.jar",
+                                    "https://karmarepo.ml/karma-repository/Log4j.jar",
+                                    "https://backup.karmadev.es/karma-repository/Log4j.jar",
+                                    "https://backup.karmaconfigs.ml/karma-repository/Log4j.jar",
+                                    "https://backup.karmarepo.ml/karma-repository/Log4j.jar"),
+                            NameComponent.forFile("Log4j", "jar"));
+                } else {
+                    loader.add(expected_file);
+                }
+            }
+
             try {
                 Class<?> clazz = Class.forName("com.google.gson.GsonBuilder");
                 clazz.getMethod("setLenient");
@@ -243,52 +270,113 @@ public interface KarmaAPI extends Serializable {
                     source(false).console().send("Google GSON dependency not found ( or very old version of it is running ) for UUID utilities, downloading it...", Level.WARNING);
                 }
 
-                loader.downloadAndInject(
-                        URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/GoogleGSON.jar",
-                                "https://karmadev.es/karma-repository/GoogleGSON.jar",
-                                "https://karmaconfigs.ml/karma-repository/GoogleGSON.jar",
-                                "https://karmarepo.ml/karma-repository/GoogleGSON.jar",
-                                "https://backup.karmadev.es/karma-repository/GoogleGSON.jar",
-                                "https://backup.karmaconfigs.ml/karma-repository/GoogleGSON.jar",
-                                "https://backup.karmarepo.ml/karma-repository/GoogleGSON.jar"),
-                        NameComponent.forFile("GoogleGSON", "jar"));
+                Path expected_file = source.getDataPath().resolve("dependencies").resolve("GoogleGSON.jar");
+                if (!Files.exists(expected_file)) {
+                    loader.downloadAndInject(
+                            URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/GoogleGSON.jar",
+                                    "https://karmadev.es/karma-repository/GoogleGSON.jar",
+                                    "https://karmaconfigs.ml/karma-repository/GoogleGSON.jar",
+                                    "https://karmarepo.ml/karma-repository/GoogleGSON.jar",
+                                    "https://backup.karmadev.es/karma-repository/GoogleGSON.jar",
+                                    "https://backup.karmaconfigs.ml/karma-repository/GoogleGSON.jar",
+                                    "https://backup.karmarepo.ml/karma-repository/GoogleGSON.jar"),
+                            NameComponent.forFile("GoogleGSON", "jar"));
+                } else {
+                    loader.add(expected_file);
+                }
             }
 
             try {
-                Class.forName("org.apache.http.HttpRequest");
+                Class.forName("org.apache.hc.client5.http.impl.classic.HttpClients");
             } catch (Throwable ex) {
                 if (config.debug(Level.WARNING)) {
-                    source(false).console().send("Apache HTTP Core Components not found for URL utilities, downloading it...", Level.WARNING);
+                    source(false).console().send("Apache HTTP 5 not found for URL utilities, downloading it...", Level.WARNING);
                 }
 
-                loader.downloadAndInject(
-                        URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/ApacheHTTPCore.jar",
-                                "https://karmadev.es/karma-repository/ApacheHTTPCore.jar",
-                                "https://karmaconfigs.ml/karma-repository/ApacheHTTPCore.jar",
-                                "https://karmarepo.ml/karma-repository/ApacheHTTPCore.jar",
-                                "https://backup.karmadev.es/karma-repository/ApacheHTTPCore.jar",
-                                "https://backup.karmaconfigs.ml/karma-repository/ApacheHTTPCore.jar",
-                                "https://backup.karmarepo.ml/karma-repository/ApacheHTTPCore.jar"),
-                        NameComponent.forFile("ApacheHTTPCore", "jar"));
+                Path expected_file = source.getDataPath().resolve("dependencies").resolve("ApacheHTTP5.jar");
+                if (!Files.exists(expected_file)) {
+                    loader.downloadAndInject(
+                            URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/ApacheHTTP5.jar",
+                                    "https://karmadev.es/karma-repository/ApacheHTTP5.jar",
+                                    "https://karmaconfigs.ml/karma-repository/ApacheHTTP5.jar",
+                                    "https://karmarepo.ml/karma-repository/ApacheHTTP5.jar",
+                                    "https://backup.karmadev.es/karma-repository/ApacheHTTP5.jar",
+                                    "https://backup.karmaconfigs.ml/karma-repository/ApacheHTTP5.jar",
+                                    "https://backup.karmarepo.ml/karma-repository/ApacheHTTP5.jar"),
+                            NameComponent.forFile("ApacheHTTP5", "jar"));
+                } else {
+                    loader.add(expected_file);
+                }
             }
 
             try {
+                Class.forName("org.apache.hc.core5.http.Header");
+            } catch (Throwable ex) {
+                if (config.debug(Level.WARNING)) {
+                    source(false).console().send("Apache HTTP Core 5 not found for URL utilities, downloading it...", Level.WARNING);
+                }
+
+                Path expected_file = source.getDataPath().resolve("dependencies").resolve("ApacheCore5.jar");
+                if (!Files.exists(expected_file)) {
+                    loader.downloadAndInject(
+                            URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/ApacheCore5.jar",
+                                    "https://karmadev.es/karma-repository/ApacheCore5.jar",
+                                    "https://karmaconfigs.ml/karma-repository/ApacheCore5.jar",
+                                    "https://karmarepo.ml/karma-repository/ApacheCore5.jar",
+                                    "https://backup.karmadev.es/karma-repository/ApacheCore5.jar",
+                                    "https://backup.karmaconfigs.ml/karma-repository/ApacheCore5.jar",
+                                    "https://backup.karmarepo.ml/karma-repository/ApacheCore5.jar"),
+                            NameComponent.forFile("ApacheCore5", "jar"));
+                } else {
+                    loader.add(expected_file);
+                }
+            }
+
+            try {
+                Class.forName("org.apache.hc.core5.http2.H2Error");
+            } catch (Throwable ex) {
+                if (config.debug(Level.WARNING)) {
+                    source(false).console().send("Apache HTTP2 Core 5 not found for URL utilities, downloading it...", Level.WARNING);
+                }
+
+                Path expected_file = source.getDataPath().resolve("dependencies").resolve("Apache2Core5.jar");
+                if (!Files.exists(expected_file)) {
+                    loader.downloadAndInject(
+                            URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/Apache2Core5.jar",
+                                    "https://karmadev.es/karma-repository/Apache2Core5.jar",
+                                    "https://karmaconfigs.ml/karma-repository/Apache2Core5.jar",
+                                    "https://karmarepo.ml/karma-repository/Apache2Core5.jar",
+                                    "https://backup.karmadev.es/karma-repository/Apache2Core5.jar",
+                                    "https://backup.karmaconfigs.ml/karma-repository/Apache2Core5.jar",
+                                    "https://backup.karmarepo.ml/karma-repository/Apache2Core5.jar"),
+                            NameComponent.forFile("Apache2Core5", "jar"));
+                } else {
+                    loader.add(expected_file);
+                }
+            }
+
+            /*try {
                 Class.forName("org.apache.http.impl.client.HttpClients");
             } catch (Throwable ex) {
                 if (config.debug(Level.WARNING)) {
                     source(false).console().send("Apache HTTP Client Components not found for URL utilities, downloading it...", Level.WARNING);
                 }
 
-                loader.downloadAndInject(
-                        URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/ApacheHTTPClient.jar",
-                                "https://karmadev.es/karma-repository/ApacheHTTPClient.jar",
-                                "https://karmaconfigs.ml/karma-repository/ApacheHTTPClient.jar",
-                                "https://karmarepo.ml/karma-repository/ApacheHTTPClient.jar",
-                                "https://backup.karmadev.es/karma-repository/ApacheHTTPClient.jar",
-                                "https://backup.karmaconfigs.ml/karma-repository/ApacheHTTPClient.jar",
-                                "https://backup.karmarepo.ml/karma-repository/ApacheHTTPClient.jar"),
-                        NameComponent.forFile("ApacheHTTPClient", "jar"));
-            }
+                Path expected_file = source.getDataPath().resolve("dependencies").resolve("ApacheHTTPClient.jar");
+                if (!Files.exists(expected_file)) {
+                    loader.downloadAndInject(
+                            URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/ApacheHTTPClient.jar",
+                                    "https://karmadev.es/karma-repository/ApacheHTTPClient.jar",
+                                    "https://karmaconfigs.ml/karma-repository/ApacheHTTPClient.jar",
+                                    "https://karmarepo.ml/karma-repository/ApacheHTTPClient.jar",
+                                    "https://backup.karmadev.es/karma-repository/ApacheHTTPClient.jar",
+                                    "https://backup.karmaconfigs.ml/karma-repository/ApacheHTTPClient.jar",
+                                    "https://backup.karmarepo.ml/karma-repository/ApacheHTTPClient.jar"),
+                            NameComponent.forFile("ApacheHTTPClient", "jar"));
+                } else {
+                    loader.add(expected_file);
+                }
+            }*/
 
             try {
                 Class.forName("org.apache.commons.logging.LogFactory");
@@ -297,16 +385,21 @@ public interface KarmaAPI extends Serializable {
                     source(false).console().send("Apache Commons Logging not found for other utilities, downloading it...", Level.WARNING);
                 }
 
-                loader.downloadAndInject(
-                        URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/ApacheLogger.jar",
-                                "https://karmadev.es/karma-repository/ApacheLogger.jar",
-                                "https://karmaconfigs.ml/karma-repository/ApacheLogger.jar",
-                                "https://karmarepo.ml/karma-repository/ApacheLogger.jar",
-                                "https://backup.karmadev.es/karma-repository/ApacheLogger.jar",
-                                "https://backup.karmaconfigs.ml/karma-repository/ApacheLogger.jar",
-                                "https://backup.karmarepo.ml/karma-repository/ApacheLogger.jar"),
-                        NameComponent.forFile("ApacheLogging", "jar")
-                );
+                Path expected_file = source.getDataPath().resolve("dependencies").resolve("ApacheLogging.jar");
+                if (!Files.exists(expected_file)) {
+                    loader.downloadAndInject(
+                            URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/ApacheLogger.jar",
+                                    "https://karmadev.es/karma-repository/ApacheLogger.jar",
+                                    "https://karmaconfigs.ml/karma-repository/ApacheLogger.jar",
+                                    "https://karmarepo.ml/karma-repository/ApacheLogger.jar",
+                                    "https://backup.karmadev.es/karma-repository/ApacheLogger.jar",
+                                    "https://backup.karmaconfigs.ml/karma-repository/ApacheLogger.jar",
+                                    "https://backup.karmarepo.ml/karma-repository/ApacheLogger.jar"),
+                            NameComponent.forFile("ApacheLogging", "jar")
+                    );
+                } else {
+                    loader.add(expected_file);
+                }
             }
 
             try {
@@ -316,16 +409,21 @@ public interface KarmaAPI extends Serializable {
                     source(false).console().send("Okio JVM not found for other utilities, downloading it...", Level.WARNING);
                 }
 
-                loader.downloadAndInject(
-                        URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/OkioJVM.jar",
-                                "https://karmadev.es/karma-repository/OkioJVM.jar",
-                                "https://karmaconfigs.ml/karma-repository/OkioJVM.jar",
-                                "https://karmarepo.ml/karma-repository/OkioJVM.jar",
-                                "https://backup.karmadev.es/karma-repository/OkioJVM.jar",
-                                "https://backup.karmaconfigs.ml/karma-repository/OkioJVM.jar",
-                                "https://backup.karmarepo.ml/karma-repository/OkioJVM.jar"),
-                        NameComponent.forFile("OkioJVM", "jar")
-                );
+                Path expected_file = source.getDataPath().resolve("dependencies").resolve("OkioJVM.jar");
+                if (!Files.exists(expected_file)) {
+                    loader.downloadAndInject(
+                            URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/OkioJVM.jar",
+                                    "https://karmadev.es/karma-repository/OkioJVM.jar",
+                                    "https://karmaconfigs.ml/karma-repository/OkioJVM.jar",
+                                    "https://karmarepo.ml/karma-repository/OkioJVM.jar",
+                                    "https://backup.karmadev.es/karma-repository/OkioJVM.jar",
+                                    "https://backup.karmaconfigs.ml/karma-repository/OkioJVM.jar",
+                                    "https://backup.karmarepo.ml/karma-repository/OkioJVM.jar"),
+                            NameComponent.forFile("OkioJVM", "jar")
+                    );
+                } else {
+                    loader.add(expected_file);
+                }
             }
 
 
@@ -336,16 +434,21 @@ public interface KarmaAPI extends Serializable {
                     source(false).console().send("OkHTTP3 client not found for other utilities, downloading it...", Level.WARNING);
                 }
 
-                loader.downloadAndInject(
-                        URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/OkHTTP3.jar",
-                                "https://karmadev.es/karma-repository/OkHTTP3.jar",
-                                "https://karmaconfigs.ml/karma-repository/OkHTTP3.jar",
-                                "https://karmarepo.ml/karma-repository/OkHTTP3.jar",
-                                "https://backup.karmadev.es/karma-repository/OkHTTP3.jar",
-                                "https://backup.karmaconfigs.ml/karma-repository/OkHTTP3.jar",
-                                "https://backup.karmarepo.ml/karma-repository/OkHTTP3.jar"),
-                        NameComponent.forFile("OkHTTP3", "jar")
-                );
+                Path expected_file = source.getDataPath().resolve("dependencies").resolve("OkHTTP3.jar");
+                if (!Files.exists(expected_file)) {
+                    loader.downloadAndInject(
+                            URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/OkHTTP3.jar",
+                                    "https://karmadev.es/karma-repository/OkHTTP3.jar",
+                                    "https://karmaconfigs.ml/karma-repository/OkHTTP3.jar",
+                                    "https://karmarepo.ml/karma-repository/OkHTTP3.jar",
+                                    "https://backup.karmadev.es/karma-repository/OkHTTP3.jar",
+                                    "https://backup.karmaconfigs.ml/karma-repository/OkHTTP3.jar",
+                                    "https://backup.karmarepo.ml/karma-repository/OkHTTP3.jar"),
+                            NameComponent.forFile("OkHTTP3", "jar")
+                    );
+                } else {
+                    loader.add(expected_file);
+                }
             }
         }
     }

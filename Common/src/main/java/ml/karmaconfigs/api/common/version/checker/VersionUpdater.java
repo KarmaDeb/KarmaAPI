@@ -332,7 +332,7 @@ public abstract class VersionUpdater {
          * @throws IllegalStateException if something goes wrong
          */
         public VersionUpdater build() throws IllegalStateException {
-            if (!StringUtils.isNullOrEmpty(URLUtils.getOrNull(source.updateURL())) && (source.updateURL().endsWith(".kupdter") || source.updateURL().endsWith(".kup"))) {
+            if (source.updateURL() != null && source.updateURL().endsWith(".kup")) {
                 VersionUpdater analyzer = VersionUpdater.instance();
                 analyzer.source = this.source;
                 analyzer.checkURL = URLUtils.getOrNull(source.updateURL());
@@ -346,7 +346,7 @@ public abstract class VersionUpdater {
                 if (StringUtils.isNullOrEmpty(URLUtils.getOrNull(source.updateURL()))) {
                     throw new IllegalStateException("Cannot build a version builder from null update URL");
                 } else {
-                    throw new IllegalStateException("Cannot build a version updater with null/invalid version check URL [" + source.updateURL() + "] ( update url must be a .kupdter or .kup file )");
+                    throw new IllegalStateException("Cannot build a version updater with null/invalid version check URL [" + source.updateURL() + "] ( update url must be a .kup file )");
                 }
             }
         }

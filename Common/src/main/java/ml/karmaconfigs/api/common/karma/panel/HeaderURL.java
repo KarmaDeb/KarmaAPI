@@ -1,15 +1,15 @@
 package ml.karmaconfigs.api.common.karma.panel;
 
-import org.apache.http.Header;
+import ml.karmaconfigs.api.common.utils.url.request.HeaderAdapter;
 
 import java.net.URL;
 
 public final class HeaderURL {
 
     private final URL url;
-    private final Header header;
+    private final HeaderAdapter header;
 
-    public HeaderURL(final URL u, final Header h) {
+    public HeaderURL(final URL u, final HeaderAdapter h) {
         url = u;
         header = h;
     }
@@ -18,7 +18,7 @@ public final class HeaderURL {
         return url;
     }
 
-    public Header getHeader() {
+    public HeaderAdapter getHeader() {
         return header;
     }
 }

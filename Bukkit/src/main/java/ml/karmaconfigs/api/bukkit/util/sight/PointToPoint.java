@@ -4,6 +4,8 @@ import ml.karmaconfigs.api.bukkit.util.LineOfSight;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Ageable;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
@@ -20,12 +22,31 @@ public class PointToPoint extends LineOfSight {
 
     private final Set<UUID> ignored = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+    private double precision = 0.5;
+
     private final double[] a_offset = new double[]{0, 0, 0};
     private final double[] b_offset = new double[]{0, 0, 0};
+    private final SightPart initial_sight;
 
-    public PointToPoint(final Location a, final Location b) {
+    public PointToPoint(final Location a, final Location b, final SightPart initial) {
+        initial_sight = initial;
         pointA = a.clone();
         pointB = b.clone();
+    }
+
+    /**
+     * Set the line of sight precision
+     *
+     * @param pre the sight precision
+     * @return this line of sight
+     */
+    @Override
+    public PointToPoint precision(final double pre) {
+        if (pre <= 1.0 && pre >= 0.1) {
+            precision = pre;
+        }
+
+        return this;
     }
 
     /**
@@ -72,173 +93,13 @@ public class PointToPoint extends LineOfSight {
     }
 
     /**
-     * Get if line of sight
-     *
-     * @return if line of sight
-     */
-    @Override
-    public boolean inLineOfSight() {
-        Location standLocation = pointA.clone().add(a_offset[0], a_offset[1], a_offset[2]);
-        Location trackLocation = pointB.clone().add(b_offset[0], b_offset[1], b_offset[2]);
-
-        Vector direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
-        World world = standLocation.getWorld();
-        assert world != null;
-
-        boolean hit = false;
-        for (double i = 0.1; i < 64; i += 0.1) {
-            direction.multiply(i);
-            standLocation.add(direction);
-
-            Block block = standLocation.getBlock();
-            if (block.getType().isOccluding() && block.getType().isSolid()) {
-                break;
-            } else {
-                Entity ray_entity = null;
-
-                Collection<Entity> entities = world.getEntities();
-                for (Entity entity : entities) {
-                    if (!ignored.contains(entity.getUniqueId())) {
-                        Location ent_location = entity.getLocation().clone();
-                        ent_location.setY(standLocation.clone().getY());
-
-                        if (ent_location.distance(standLocation.clone()) <= 0.1) {
-                            ray_entity = entity;
-                            break;
-                        }
-                    }
-                }
-
-                standLocation.subtract(direction);
-                direction.normalize();
-
-                if (ray_entity != null) {
-                    break;
-                } else {
-                    Location b_chk = pointB.clone();
-                    b_chk.setY(standLocation.clone().getY());
-
-                    if (b_chk.distance(standLocation.clone()) <= 0.1) {
-                        hit = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return hit;
-    }
-
-    /**
-     * Get if line of sight with max distance
-     *
-     * @param max_distance the maximum distance
-     * @return if line of sight inside the range
-     */
-    @Override
-    public boolean inLineOfSight(final double max_distance) {
-        Location standLocation = pointA.clone().add(a_offset[0], a_offset[1], a_offset[2]);
-        Location trackLocation = pointB.clone().add(b_offset[0], b_offset[1], b_offset[2]);
-
-        Vector direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
-        World world = standLocation.getWorld();
-        assert world != null;
-
-        boolean hit = false;
-        for (double i = 0.1; i < max_distance; i += 0.1) {
-            direction.multiply(i);
-            standLocation.add(direction);
-
-            Block block = standLocation.getBlock();
-            if (block.getType().isOccluding() && block.getType().isSolid()) {
-                break;
-            } else {
-                Entity ray_entity = null;
-
-                Collection<Entity> entities = world.getEntities();
-                for (Entity entity : entities) {
-                    if (!ignored.contains(entity.getUniqueId())) {
-                        Location ent_location = entity.getLocation().clone();
-                        ent_location.setY(standLocation.clone().getY());
-
-                        if (ent_location.distance(standLocation.clone()) <= 0.1) {
-                            ray_entity = entity;
-                            break;
-                        }
-                    }
-                }
-
-                standLocation.subtract(direction);
-                direction.normalize();
-
-                if (ray_entity != null) {
-                    break;
-                } else {
-                    Location b_chk = pointB.clone();
-                    b_chk.setY(standLocation.clone().getY());
-
-                    if (b_chk.distance(standLocation.clone()) <= 0.1) {
-                        hit = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return hit;
-    }
-
-    /**
      * Get line of sight
      *
      * @return the line of sight
      */
     @Override
-    public Iterator<Location> getLineOfSight() {
-        List<Location> locations = new ArrayList<>();
-
-        Location standLocation = pointA.clone().add(a_offset[0], a_offset[1], a_offset[2]);
-        Location trackLocation = pointB.clone().add(b_offset[0], b_offset[1], b_offset[2]);
-
-        Vector direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
-        World world = standLocation.getWorld();
-        assert world != null;
-
-        for (double i = 0.1; i < 64; i += 0.1) {
-            direction.multiply(i);
-            standLocation.add(direction);
-
-            locations.add(standLocation.clone());
-            Block block = standLocation.getBlock();
-            if (block.getType().isOccluding() && block.getType().isSolid()) {
-                break;
-            } else {
-                Entity ray_entity = null;
-
-                Collection<Entity> entities = world.getEntities();
-                for (Entity entity : entities) {
-                    if (!ignored.contains(entity.getUniqueId())) {
-                        Location ent_location = entity.getLocation().clone();
-                        ent_location.setY(standLocation.clone().getY());
-
-                        if (ent_location.distance(standLocation.clone()) <= 0.1) {
-                            ray_entity = entity;
-                        }
-                    }
-                }
-
-                standLocation.subtract(direction);
-                direction.normalize();
-
-                if (ray_entity != null) {
-                    break;
-                } else {
-                    locations.add(standLocation.clone());
-                }
-            }
-        }
-
-        return locations.iterator();
+    public SightPart getLineOfSight() {
+        return getLineOfSight(64);
     }
 
     /**
@@ -248,7 +109,7 @@ public class PointToPoint extends LineOfSight {
      * @return the line of sight inside the range
      */
     @Override
-    public Iterator<Location> getLineOfSight(final double max_distance) {
+    public SightPart getLineOfSight(final double max_distance) {
         List<Location> locations = new ArrayList<>();
 
         Location standLocation = pointA.clone().add(a_offset[0], a_offset[1], a_offset[2]);
@@ -258,13 +119,17 @@ public class PointToPoint extends LineOfSight {
         World world = standLocation.getWorld();
         assert world != null;
 
-        for (double i = 0.1; i < max_distance; i += 0.1) {
+        Block hit_block = null;
+        Entity hit_entity = null;
+
+        for (double i = precision; i < max_distance; i += precision) {
             direction.multiply(i);
             standLocation.add(direction);
 
             locations.add(standLocation.clone());
             Block block = standLocation.getBlock();
             if (block.getType().isOccluding() && block.getType().isSolid()) {
+                hit_block = block;
                 break;
             } else {
                 Entity ray_entity = null;
@@ -275,7 +140,7 @@ public class PointToPoint extends LineOfSight {
                         Location ent_location = entity.getLocation().clone();
                         ent_location.setY(standLocation.clone().getY());
 
-                        if (ent_location.distance(standLocation.clone()) <= 0.1) {
+                        if (ent_location.distance(standLocation.clone()) <= Math.max(0.5, precision)) {
                             ray_entity = entity;
                         }
                     }
@@ -285,13 +150,18 @@ public class PointToPoint extends LineOfSight {
                 direction.normalize();
 
                 if (ray_entity != null) {
+                    hit_entity = ray_entity;
                     break;
-                } else {
-                    locations.add(standLocation.clone());
                 }
+
+                locations.add(standLocation.clone());
             }
         }
 
-        return locations.iterator();
+        return initial_sight
+                .setHitBlock(hit_block)
+                .setHitEntity(hit_entity)
+                .setHitLocation(standLocation.clone())
+                .setTraceLocation(locations.toArray(new Location[0]));
     }
 }

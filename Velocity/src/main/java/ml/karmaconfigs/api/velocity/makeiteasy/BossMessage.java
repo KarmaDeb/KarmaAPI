@@ -37,6 +37,8 @@ import net.kyori.adventure.text.Component;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Karma boss bar message
@@ -59,23 +61,15 @@ public final class BossMessage extends BossProvider<Player> {
     private final double live_time;
 
     /**
-     * Boss bars amount
-     */
-    private static int bars = 0;
-
-    /**
      * List of boss bars
      */
-    private static final List<BossMessage> b_bars = new ArrayList<>();
+    private static final Map<UUID, SimpleScheduler> bar_schedulers = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> player_bars = new ConcurrentHashMap<>();
+    private static final Map<UUID, Queue<BossMessage>> b_bars = new ConcurrentHashMap<>();
 
-    /**
-     * A map containing id => boss bar
-     */
-    private static final Map<Integer, BossMessage> boss_bars = new LinkedHashMap<>();
-    /**
-     * A map containing id => bar util
-     */
-    private static final Map<Integer, BossBar> bar_objects = new LinkedHashMap<>();
+    private static final Map<Integer, BossMessage> boss_bars = new ConcurrentHashMap<>();
+
+    private static final Map<Integer, BossBar> bar_objects = new ConcurrentHashMap<>();
 
     /**
      * Boss bar shown players
@@ -180,22 +174,12 @@ public final class BossMessage extends BossProvider<Player> {
     }
 
     /**
-     * Display the boss bar to the specified players
+     * Display the boss bar to the specified player
      *
-     * @param players the players to display to
+     * @param target the player to display to
      */
     @Override
-    protected void displayBar(final Collection<Player> players) {
-        Collection<Player> fixed = new ArrayList<>();
-        for (Player player : players) {
-            if (player != null && !shown.contains(player.getUniqueId())) {
-                fixed.add(player);
-                shown.add(player.getUniqueId());
-            }
-        }
-
-        bars++;
-
+    protected void displayBar(final Player target) {
         if (cancelled) {
             cancelled = false;
         }
@@ -216,35 +200,43 @@ public final class BossMessage extends BossProvider<Player> {
                 1.0f,
                 BossBar.Color.valueOf(color.name()),
                 BossBar.Overlay.valueOf(type.name().replace("SEGMENTED", "NOTCHED").replace("SOLID", "PROGRESS")));
-        for (Player player : fixed)
-            player.showBossBar(bar);
+        target.showBossBar(bar);
+
+        int init_bars = player_bars.getOrDefault(target.getUniqueId(), 0);
+        init_bars++;
+
+        player_bars.put(target.getUniqueId(), init_bars);
 
         bar_objects.put(id, bar);
         bar_timer = new SourceScheduler(plugin, live_time, SchedulerUnit.SECOND, false).cancelUnloaded(false);
 
         bar_timer.endAction(() -> {
-            for (Player player : fixed) {
-                player.hideBossBar(bar);
-                shown.remove(player.getUniqueId());
-            }
+            cancelled = true;
+            target.hideBossBar(bar);
+            shown.remove(target.getUniqueId());
             boss_bars.remove(id);
             bar_objects.remove(id);
 
+            int bars = player_bars.getOrDefault(target.getUniqueId(), 0);
             bars--;
+
+            player_bars.put(target.getUniqueId(), bars);
         }).cancelAction(time -> {
-            for (Player player : fixed) {
-                player.hideBossBar(bar);
-                shown.remove(player.getUniqueId());
-            }
+            cancelled = true;
+            target.hideBossBar(bar);
+            shown.remove(target.getUniqueId());
             boss_bars.remove(id);
             bar_objects.remove(id);
 
+            int bars = player_bars.getOrDefault(target.getUniqueId(), 0);
             bars--;
+
+            player_bars.put(target.getUniqueId(), bars);
         }).start();
 
         SimpleScheduler hp_timer = new SourceScheduler(plugin, live_time - 1.0, SchedulerUnit.SECOND, false).cancelUnloaded(false);
         hp_timer.changeAction(second -> {
-            if (!cancelled) {
+            if (!cancelled && target.isActive()) {
                 try {
                     bar.color(BossBar.Color.valueOf(color.name()));
                     bar.overlay(BossBar.Overlay.valueOf(type.name().replace("SEGMENTED", "NOTCHED").replace("SOLID", "PROGRESS")));
@@ -281,43 +273,55 @@ public final class BossMessage extends BossProvider<Player> {
     }
 
     /**
+     * Display the boss bar to the specified players
+     *
+     * @param players the players to display to
+     */
+    @Override
+    protected void displayBar(final Collection<Player> players) {
+        players.forEach(this::displayBar);
+    }
+
+    /**
      * Schedule the bar to the specified players
      *
      * @param players the players to display to
      */
     @Override
     public void scheduleBar(final Collection<Player> players) {
-        b_bars.add(this);
-        boss_bars.put(id, this);
-
-        SimpleScheduler timer = new SourceScheduler(plugin, 1, SchedulerUnit.SECOND, false).cancelUnloaded(false).multiThreading(true);
-        timer.changeAction(milli -> {
-            if (!b_bars.isEmpty() && getBarsAmount() < 4) {
-                BossMessage boss = b_bars.get(0);
-                boss.displayBar(players);
-                b_bars.remove(boss);
-            }
-        }).start();
+        scheduleBar(players.toArray(new Player[0]));
     }
 
     /**
      * Schedule the bar to the specified player
      *
-     * @param player the player to display to
+     * @param players the player to display to
      */
     @Override
-    public void scheduleBar(final Player player) {
-        b_bars.add(this);
-        boss_bars.put(id, this);
+    public void scheduleBar(final Player... players) {
+        for (Player player : players) {
+            Queue<BossMessage> player_b_bars = b_bars.getOrDefault(player.getUniqueId(), new ConcurrentLinkedQueue<>());
+            player_b_bars.add(this);
+            b_bars.put(player.getUniqueId(), player_b_bars);
+            boss_bars.put(id, this);
 
-        SimpleScheduler timer = new SourceScheduler(plugin, 1, SchedulerUnit.SECOND, false).cancelUnloaded(false).multiThreading(true);
-        timer.changeAction(milli -> {
-            if (!b_bars.isEmpty() && getBarsAmount() < 4) {
-                BossMessage boss = b_bars.get(0);
-                boss.displayBar(Collections.singleton(player));
-                b_bars.remove(boss);
+            SimpleScheduler scheduler = bar_schedulers.getOrDefault(player.getUniqueId(), null);
+            if (scheduler == null) {
+                scheduler = new SourceScheduler(plugin, 1, SchedulerUnit.SECOND, true);
+                scheduler.restartAction(() -> {
+                    int bars = player_bars.getOrDefault(player.getUniqueId(), 0);
+                    if (bars < 4) {
+                        Queue<BossMessage> queue = b_bars.getOrDefault(player.getUniqueId(), new ConcurrentLinkedQueue<>());
+                        BossMessage next = queue.poll();
+                        if (next != null) {
+                            next.displayBar(player);
+                        }
+                    }
+                }).start();
+
+                bar_schedulers.put(player.getUniqueId(), scheduler);
             }
-        }).start();
+        }
     }
 
     /**
@@ -325,9 +329,22 @@ public final class BossMessage extends BossProvider<Player> {
      *
      * @return the amount of bars created
      */
-    @Override
+    @Deprecated
     public int getBarsAmount() {
-        return bars;
+        AtomicInteger final_size = new AtomicInteger();
+        player_bars.values().forEach(final_size::addAndGet);
+        return final_size.get();
+    }
+
+    /**
+     * Get the amount of bars that exist
+     *
+     * @param source the bar source
+     * @return the amount of bars created
+     */
+    @Override
+    public int getBarsAmount(final Player source) {
+        return player_bars.getOrDefault(source.getUniqueId(), 0);
     }
 
     /**

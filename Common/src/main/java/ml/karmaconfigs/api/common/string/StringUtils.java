@@ -1067,8 +1067,9 @@ public final class StringUtils {
      */
     public static String escapeString(final String text) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < text.length(); i++) {
-            Character character = text.charAt(i);
+        String tmpText = StringUtils.unEscapeString(text);
+        for (int i = 0; i < tmpText.length(); i++) {
+            Character character = tmpText.charAt(i);
             switch (character) {
                 case '$':
                 case '(':
@@ -1085,6 +1086,50 @@ public final class StringUtils {
                 case '|':
                 case '}':
                     builder.append("\\").append(character);
+                    break;
+                default:
+                    builder.append(character);
+                    break;
+            }
+        }
+        return builder.toString();
+    }
+
+    /**
+     * Escape text
+     *
+     * @param text the text to scape
+     * @param ignore the characters to not escape
+     * @return the escaped text
+     */
+    public static String escapeString(final String text, final char... ignore) {
+        Set<Character> skip = new HashSet<>();
+        for (char c : ignore) skip.add(c);
+
+        StringBuilder builder = new StringBuilder();
+        String tmpText = StringUtils.unEscapeString(text);
+        for (int i = 0; i < tmpText.length(); i++) {
+            Character character = tmpText.charAt(i);
+            switch (character) {
+                case '$':
+                case '(':
+                case ')':
+                case '*':
+                case '+':
+                case '-':
+                case '.':
+                case '?':
+                case '[':
+                case ']':
+                case '^':
+                case '{':
+                case '|':
+                case '}':
+                    if (!skip.contains(character)) {
+                        builder.append("\\").append(character);
+                    } else {
+                        builder.append(character);
+                    }
                     break;
                 default:
                     builder.append(character);

@@ -13,10 +13,10 @@ import ml.karmaconfigs.api.common.karma.panel.wrapper.post.meta.PostTopicContain
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
 import ml.karmaconfigs.api.common.utils.url.HttpUtil;
-import ml.karmaconfigs.api.common.utils.url.Post;
+import ml.karmaconfigs.api.common.utils.url.request.HeaderAdapter;
+import ml.karmaconfigs.api.common.utils.url.request.Post;
 import ml.karmaconfigs.api.common.utils.url.URLUtils;
 import ml.karmaconfigs.api.common.utils.uuid.UUIDType;
-import org.apache.http.message.BasicHeader;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -45,7 +45,7 @@ public final class APIRequest {
      * @param key the API key
      */
     public APIRequest(final KarmaSource src, final String key) {
-        working_url = new HeaderURL(URLUtils.getOrBackup(hosts), new BasicHeader("access-key", key));
+        working_url = new HeaderURL(URLUtils.getOrBackup(hosts), new HeaderAdapter("access-key", key));
 
         source = src;
     }

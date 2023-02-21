@@ -28,6 +28,7 @@ package ml.karmaconfigs.api.common.timer.scheduler;
 import ml.karmaconfigs.api.common.triple.consumer.TriConsumer;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * KarmaAPI bi-object late scheduler

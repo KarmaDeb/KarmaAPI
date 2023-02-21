@@ -233,7 +233,7 @@ public class KarmaMain {
                             if (!underComment) {
                                 jump = true;
 
-                                if (current == '*') {
+                                if (current == '*' && !string) {
                                     if (next == '(') {
                                         underComment = true;
                                         jump = false;
@@ -244,44 +244,53 @@ public class KarmaMain {
                                 }
 
                                 if (!underComment) {
-                                    if (current == '(') {
-                                        if (next != '"') {
-                                            if (!parsedFirst) {
-                                                parsedFirst = true;
-                                                added.add("main");
-                                                indexes.put("main", index);
-                                            } else {
-                                                breaking = "Error, found invalid section definition at " + line + ", it must be (\"x\" where 'x' is any value!";
-                                            }
-                                        } else {
-                                            StringBuilder secName = new StringBuilder();
-                                            boolean broke = false;
-                                            for (int x = (nextIndex + 1); x < size; x++) {
-                                                char tmp = line.charAt(x);
-                                                if (tmp == '"') {
-                                                    broke = true;
-                                                    break;
-                                                }
-
-                                                secName.append(tmp);
-                                            }
-
-                                            if (broke) {
-                                                String section = secName.toString();
-                                                if (!added.contains(section)) {
-                                                    added.add(section);
-                                                    indexes.put(section, index);
+                                    if (!string) {
+                                        if (current == '(') {
+                                            if (next != '"') {
+                                                if (!parsedFirst) {
+                                                    parsedFirst = true;
+                                                    added.add("main");
+                                                    indexes.put("main", index);
                                                 } else {
-                                                    breaking = "Error, found repeated section definition " + section;
+                                                    breaking = "Error, found invalid section definition at " + line + ", it must be (\"x\" where 'x' is any value!";
                                                 }
                                             } else {
-                                                breaking = "Error, found invalid section definition at " + line + ", it must be (\"x\" where 'x' is any value!";
+                                                StringBuilder secName = new StringBuilder();
+                                                boolean broke = false;
+                                                for (int x = (nextIndex + 1); x < size; x++) {
+                                                    char tmp = line.charAt(x);
+                                                    if (tmp == '"') {
+                                                        broke = true;
+                                                        break;
+                                                    }
+
+                                                    secName.append(tmp);
+                                                }
+
+                                                if (broke) {
+                                                    String section = secName.toString();
+                                                    if (!added.contains(section)) {
+                                                        added.add(section);
+                                                        indexes.put(section, index);
+                                                    } else {
+                                                        breaking = "Error, found repeated section definition " + section;
+                                                    }
+                                                } else {
+                                                    breaking = "Error, found invalid section definition at " + line + ", it must be (\"x\" where 'x' is any value!";
+                                                }
                                             }
                                         }
                                     }
 
-                                    if (current == '"')
-                                        string = !string;
+                                    if (current == '"' || current == '\'') {
+                                        if (string) {
+                                            if (i == line.length() - 1) {
+                                                string = false;
+                                            }
+                                        } else {
+                                            string = true;
+                                        }
+                                    }
 
                                     if (!string) {
                                         char prev = line.charAt((i != 0 ? (i - 1) : 0));
@@ -323,7 +332,12 @@ public class KarmaMain {
                                             rawBuilder.append(current);
                                         }
                                     } else {
-                                        rawBuilder.append(current);
+                                        if (current == '\\') {
+                                            i++;
+                                            rawBuilder.append(next);
+                                        } else {
+                                            rawBuilder.append(current);
+                                        }
                                     }
                                 }
                             } else {
@@ -370,8 +384,8 @@ public class KarmaMain {
                                 Pattern pattern = Pattern.compile("' .?-> ");
                                 Pattern badPattern = Pattern.compile("\" .?-> ");
 
-                                Matcher matcher = pattern.matcher(line);
-                                Matcher badMatcher = badPattern.matcher(line);
+                                Matcher matcher = pattern.matcher(StringUtils.escapeString(line, '-'));
+                                Matcher badMatcher = badPattern.matcher(StringUtils.escapeString(line, '-'));
 
                                 if (!matcher.find() && !badMatcher.find()) {
                                     throw new KarmaFormatException(document, "Error, couldn't find valid key format -> or <-> at ( " + line + " )", indexes.getOrDefault(line, -1));
@@ -390,7 +404,6 @@ public class KarmaMain {
                                 }
 
                                 String target = String.valueOf((bad ? '"' : '\''));
-
                                 String match = line.substring(start + 2, end - 2).replaceAll("\\s", "");
                                 if (match.equalsIgnoreCase("<-")) {
                                     rec = true;
@@ -404,6 +417,7 @@ public class KarmaMain {
 
                                 String name = StringUtils.replaceLast(dt[0].replaceFirst(target, ""), target, "");
                                 String key = parent + "." + name.replaceAll("\\s", "");
+
                                 StringBuilder value = new StringBuilder();
                                 for (int x = 1; x < dt.length; x++) {
                                     value.append(dt[x]).append((x != dt.length - 1 ? (rec ? "<->" : "->") : ""));
@@ -482,11 +496,11 @@ public class KarmaMain {
                                                                                 ka.putRecursive(key, obj);
                                                                             } else {
                                                                                 try {
-                                                                                    Number number = Integer.parseInt(v.replaceAll("\\s", ""));
+                                                                                    Number number = parseNumber(v.replaceAll("\\s", ""));
                                                                                     ElementPrimitive obj = new KarmaPrimitive(number);
 
                                                                                     ka.putRecursive(key, obj);
-                                                                                } catch (NumberFormatException e) {
+                                                                                } catch (Throwable e1) {
                                                                                     if (v.startsWith("0x")) {
                                                                                         String bData = v.replace("0x", "");
                                                                                         ka.putRecursive(key, new KarmaPrimitive((byte) Integer.parseInt(bData, 16)));
@@ -566,11 +580,11 @@ public class KarmaMain {
                                                                                     ka.put(key, obj);
                                                                                 } else {
                                                                                     try {
-                                                                                        Number number = Integer.parseInt(v.replaceAll("\\s", ""));
+                                                                                        Number number = parseNumber(v.replaceAll("\\s", ""));
                                                                                         ElementPrimitive obj = new KarmaPrimitive(number);
 
                                                                                         ka.put(key, obj);
-                                                                                    } catch (NumberFormatException e) {
+                                                                                    } catch (Throwable e1) {
                                                                                         if (v.startsWith("0x")) {
                                                                                             String bData = v.replace("0x", "");
                                                                                             ka.put(key, new KarmaPrimitive((byte) Integer.parseInt(bData, 16)));
@@ -649,12 +663,11 @@ public class KarmaMain {
                                                                                         ka.add(obj);
                                                                                     } else {
                                                                                         try {
-                                                                                            Number number = Integer.parseInt(v.replaceAll("\\s", ""));
+                                                                                            Number number = parseNumber(v.replaceAll("\\s", ""));
                                                                                             ElementPrimitive obj = new KarmaPrimitive(number);
 
                                                                                             ka.add(obj);
-                                                                                        } catch (
-                                                                                                NumberFormatException e) {
+                                                                                        } catch (Throwable e1) {
                                                                                             if (v.startsWith("0x")) {
                                                                                                 String bData = v.replace("0x", "");
                                                                                                 ka.add(new KarmaPrimitive((byte) Integer.parseInt(bData, 16)));
@@ -752,11 +765,11 @@ public class KarmaMain {
                                                                                 map.putRecursive(key, obj);
                                                                             } else {
                                                                                 try {
-                                                                                    Number number = Integer.parseInt(v.replaceAll("\\s", ""));
+                                                                                    Number number = parseNumber(v.replaceAll("\\s", ""));
                                                                                     ElementPrimitive obj = new KarmaPrimitive(number);
 
                                                                                     map.putRecursive(key, obj);
-                                                                                } catch (NumberFormatException e) {
+                                                                                } catch (Throwable e1) {
                                                                                     if (v.startsWith("0x")) {
                                                                                         String bData = v.replace("0x", "");
                                                                                         map.putRecursive(key, new KarmaPrimitive((byte) Integer.parseInt(bData, 16)));
@@ -828,13 +841,13 @@ public class KarmaMain {
                                                                 reverse.put(obj, key);
                                                         } else {
                                                             try {
-                                                                Number number = Integer.parseInt(v.replaceAll("\\s", ""));
+                                                                Number number = parseNumber(v.replaceAll("\\s", ""));
                                                                 ElementPrimitive obj = new KarmaPrimitive(number);
 
                                                                 content.put(key, obj);
                                                                 if (rec)
                                                                     reverse.put(obj, key);
-                                                            } catch (NumberFormatException e) {
+                                                            } catch (Throwable e1) {
                                                                 if (v.startsWith("0x")) {
                                                                     String bData = v.replace("0x", "");
                                                                     content.put(key, new KarmaPrimitive((byte) Integer.parseInt(bData, 16)));
@@ -1469,7 +1482,7 @@ public class KarmaMain {
                                             ElementArray<ElementPrimitive> a = (KarmaArray) element;
                                             for (ElementPrimitive sub : a) {
                                                 if (sub.isString() || sub.isCharacter()) {
-                                                    write.add(space + "\t'" + sub + "'");
+                                                    write.add(space + "\t'" + sub.asString() + "'");
                                                 } else {
                                                     write.add(space + "\t" + sub);
                                                 }
@@ -1488,11 +1501,54 @@ public class KarmaMain {
                                                 boolean rec = kA.isRecursive(k) || kA.isRecursive(primitive);
 
                                                 if (primitive.isString() || primitive.isCharacter()) {
-                                                    write.add(space + "\t'" + k + "' " + (rec ? "<-> '" : "-> '") + primitive + "'");
+                                                    write.add(space + "\t'" + k + "' " + (rec ? "<-> '" : "-> '") + primitive.asString() + "'");
                                                 } else {
                                                     write.add(space + "\t'" + k + "' " + (rec ? "<-> " : "-> ") + primitive);
                                                 }
                                             });
+                                        } else {
+                                            source.console().debug("Writing unknown", Level.INFO);
+                                            if (element.isArray()) {
+                                                readingList = true;
+                                                write.add(space + "'" + name + "' " + (recursive ? "<-> " : "-> ") + "{");
+                                                source.console().debug("Writing list", Level.INFO);
+
+                                                ElementArray<ElementPrimitive> a = (KarmaArray) element;
+                                                for (ElementPrimitive sub : a) {
+                                                    if (sub.isString() || sub.isCharacter()) {
+                                                        write.add(space + "\t'" + sub.asString() + "'");
+                                                    } else {
+                                                        write.add(space + "\t" + sub);
+                                                    }
+                                                }
+                                            } else {
+                                                if (element.isMap()) {
+                                                    readingMap = true;
+                                                    write.add(space + "'" + name + "' " + (recursive ? "<-> " : "-> ") + "[");
+
+                                                    source.console().debug("Writing map", Level.INFO);
+
+                                                    ElementMap<ElementPrimitive> kA = (KarmaMap) element;
+                                                    kA.forEachKey((k) -> {
+                                                        ElementPrimitive primitive = kA.get(k);
+                                                        boolean rec = kA.isRecursive(k) || kA.isRecursive(primitive);
+
+                                                        if (primitive.isString() || primitive.isCharacter()) {
+                                                            write.add(space + "\t'" + k + "' " + (rec ? "<-> '" : "-> '") + primitive.asString() + "'");
+                                                        } else {
+                                                            write.add(space + "\t'" + k + "' " + (rec ? "<-> " : "-> ") + primitive);
+                                                        }
+                                                    });
+                                                } else {
+                                                    source.console().debug("Wrote!", Level.INFO);
+                                                    ElementPrimitive primitive = element.getAsPrimitive();
+                                                    if (primitive.isString() || primitive.isCharacter()) {
+                                                        write.add(space + "'" + name + "' " + (recursive ? "<-> '" : "-> '") + element + "'");
+                                                    } else {
+                                                        write.add(space + "'" + name + "' " + (recursive ? "<-> " : "-> ") + element);
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 } else {
@@ -1655,7 +1711,7 @@ public class KarmaMain {
 
                                                     array.forEach((element) -> {
                                                         if (element.isString() || element.isCharacter()) {
-                                                            write.add(b + "\t\t'" + element + "'");
+                                                            write.add(b + "\t\t'" + element.asString() + "'");
                                                         } else {
                                                             write.add(b + "\t\t" + element);
                                                         }
@@ -1671,7 +1727,7 @@ public class KarmaMain {
                                                         array.forEachKey((k) -> {
                                                             ElementPrimitive val = array.get(k + " ( " + key + " )");
                                                             if (val.isString() || val.isCharacter()) {
-                                                                write.add(b + "\t\t'" + k + "' " + (array.isRecursive(k) ? "<->" : "->") + " '" + val + "'");
+                                                                write.add(b + "\t\t'" + k + "' " + (array.isRecursive(k) ? "<->" : "->") + " '" + val.asString() + "'");
                                                             } else {
                                                                 write.add(b + "\t\t'" + k + "' " + (array.isRecursive(k) ? "<->" : "->") + " " + val);
                                                             }
@@ -1684,7 +1740,7 @@ public class KarmaMain {
                                                         if (element.isPrimitive()) {
                                                             ElementPrimitive primitive = element.getAsPrimitive();
                                                             if (primitive.isString() || primitive.isCharacter()) {
-                                                                write.add(b + "\t'" + key + "' -> '" + primitive + "'");
+                                                                write.add(b + "\t'" + key + "' -> '" + primitive.asString() + "'");
                                                             } else {
                                                                 write.add(b + "\t'" + key + "' -> " + primitive);
                                                             }
@@ -1715,7 +1771,7 @@ public class KarmaMain {
 
                                         array.forEach((element) -> {
                                             if (element.isString() || element.isCharacter()) {
-                                                write.add("\t\t\t'" + element + "'");
+                                                write.add("\t\t\t'" + element.asString() + "'");
                                             } else {
                                                 write.add("\t\t\t" + element);
                                             }
@@ -1731,7 +1787,7 @@ public class KarmaMain {
                                             array.forEachKey((k) -> {
                                                 ElementPrimitive val = array.get(k);
                                                 if (val.isString() || val.isCharacter()) {
-                                                    write.add("\t\t\t'" + k + "' " + (array.isRecursive(k) ? "<->" : "->") + " '" + val + "'");
+                                                    write.add("\t\t\t'" + k + "' " + (array.isRecursive(k) ? "<->" : "->") + " '" + val.asString() + "'");
                                                 } else {
                                                     write.add("\t\t\t'" + k + "' " + (array.isRecursive(k) ? "<->" : "->") + " " + val);
                                                 }
@@ -1744,7 +1800,7 @@ public class KarmaMain {
                                             if (element.isPrimitive()) {
                                                 ElementPrimitive primitive = element.getAsPrimitive();
                                                 if (primitive.isString() || primitive.isCharacter()) {
-                                                    write.add("\t\t'" + key + "' -> '" + primitive + "'");
+                                                    write.add("\t\t'" + key + "' -> '" + primitive.asString() + "'");
                                                 } else {
                                                     write.add("\t\t'" + key + "' -> " + primitive);
                                                 }
@@ -1774,7 +1830,7 @@ public class KarmaMain {
 
                                     array.forEach((element) -> {
                                         if (element.isString() || element.isCharacter()) {
-                                            write.add("\t\t'" + element + "'");
+                                            write.add("\t\t'" + element.asString() + "'");
                                         } else {
                                             write.add("\t\t" + element);
                                         }
@@ -1790,7 +1846,7 @@ public class KarmaMain {
                                         array.forEachKey((k) -> {
                                             ElementPrimitive val = array.get(k);
                                             if (val.isString() || val.isCharacter()) {
-                                                write.add("\t\t'" + k + "' " + (array.isRecursive(k) ? "<->" : "->") + " '" + val + "'");
+                                                write.add("\t\t'" + k + "' " + (array.isRecursive(k) ? "<->" : "->") + " '" + val.asString() + "'");
                                             } else {
                                                 write.add("\t\t'" + k + "' " + (array.isRecursive(k) ? "<->" : "->") + " " + val);
                                             }
@@ -1803,7 +1859,7 @@ public class KarmaMain {
                                         if (element.isPrimitive()) {
                                             ElementPrimitive primitive = element.getAsPrimitive();
                                             if (primitive.isString() || primitive.isCharacter()) {
-                                                write.add("\t'" + key + "' -> '" + primitive + "'");
+                                                write.add("\t'" + key + "' -> '" + primitive.asString() + "'");
                                             } else {
                                                 write.add("\t'" + key + "' -> " + primitive);
                                             }
@@ -1886,7 +1942,7 @@ public class KarmaMain {
 
                                             array.forEach((element) -> {
                                                 if (element.isString() || element.isCharacter()) {
-                                                    write.add(b + "\t\t'" + element + "'");
+                                                    write.add(b + "\t\t'" + element.asString() + "'");
                                                 } else {
                                                     write.add(b + "\t\t" + element);
                                                 }
@@ -2400,10 +2456,10 @@ public class KarmaMain {
                         number = Short.parseShort(string);
                     } catch (NumberFormatException sh) {
                         try {
-                            number = Byte.parseByte(string);
-                        } catch (NumberFormatException by) {
+                            number = Integer.parseInt(string);
+                        } catch (NumberFormatException in) {
                             try {
-                                number = Integer.parseInt(string);
+                                number = Byte.parseByte(string);
                             } catch (NumberFormatException ignored) {
                             }
                         }

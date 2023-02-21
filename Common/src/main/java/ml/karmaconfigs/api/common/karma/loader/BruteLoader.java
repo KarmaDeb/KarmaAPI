@@ -25,22 +25,24 @@ package ml.karmaconfigs.api.common.karma.loader;
  *  SOFTWARE.
  */
 
+import ml.karmaconfigs.api.common.karma.source.APISource;
+import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.utils.JavaVM;
 import ml.karmaconfigs.api.common.ResourceDownloader;
 import ml.karmaconfigs.api.common.karma.loader.component.NameComponent;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.data.file.FileUtilities;
 import ml.karmaconfigs.api.common.data.path.PathUtilities;
-import org.burningwave.core.assembler.StaticComponentContainer;
+import ml.karmaconfigs.api.common.utils.url.URLUtils;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -69,6 +71,7 @@ public final class BruteLoader {
      *
      * @param ucl the main class loader
      */
+    @SuppressWarnings("all")
     public BruteLoader(final ClassLoader ucl) {
         ClassLoader tmp = ucl;
         if (!(tmp instanceof URLClassLoader)) {
@@ -80,8 +83,51 @@ public final class BruteLoader {
 
         loader = tmp;
         if (JavaVM.javaVersion() >= 9 && !open) {
+            KarmaSource source = APISource.getOriginal(false);
+
             open = true;
-            StaticComponentContainer.Modules.exportAllToAll();
+            try {
+                Path bw_file = source.getDataPath().resolve("runtime").resolve("BurningWave.jar");
+                Path jv_file = source.getDataPath().resolve("runtime").resolve("JVMDriver.jar");
+
+                if (!Files.exists(bw_file) && !Files.exists(jv_file)) {
+                    URL bw_url = URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/BurningWave.jar",
+                            "https://karmadev.es/karma-repository/BurningWave.jar",
+                            "https://karmaconfigs.ml/karma-repository/BurningWave.jar",
+                            "https://karmarepo.ml/karma-repository/BurningWave.jar",
+                            "https://backup.karmadev.es/karma-repository/BurningWave.jar",
+                            "https://backup.karmaconfigs.ml/karma-repository/BurningWave.jar",
+                            "https://backup.karmarepo.ml/karma-repository/BurningWave.jar");
+                    URL jv_url = URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/JVMDriver.jar",
+                            "https://karmadev.es/karma-repository/JVMDriver.jar",
+                            "https://karmaconfigs.ml/karma-repository/JVMDriver.jar",
+                            "https://karmarepo.ml/karma-repository/JVMDriver.jar",
+                            "https://backup.karmadev.es/karma-repository/JVMDriver.jar",
+                            "https://backup.karmaconfigs.ml/karma-repository/JVMDriver.jar",
+                            "https://backup.karmarepo.ml/karma-repository/JVMDriver.jar");
+
+                    if (bw_url != null && jv_url != null) {
+
+                        ResourceDownloader bw_downloader = new ResourceDownloader(bw_file, bw_url);
+                        ResourceDownloader jvm_downloader = new ResourceDownloader(jv_file, jv_url);
+
+                        bw_downloader.download();
+                        jvm_downloader.download();
+                    }
+                }
+
+                URL[] urls = {
+                        new URL("jar:file:" + bw_file + "!/"),
+                        new URL("jar:file:" + jv_file + "!/")
+                };
+                URLClassLoader cl = new URLClassLoader(urls, ucl);
+                Class<?> loader = cl.loadClass("org.burningwave.core.assembler.StaticComponentContainer");
+                Field modules = loader.getDeclaredField("Modules");
+
+                Object module = modules.get(loader);
+                Method exportAllToAll = module.getClass().getDeclaredMethod("exportAllToAll");
+                exportAllToAll.invoke(module);
+            } catch (Throwable ignored) {}
         }
     }
 
@@ -94,8 +140,51 @@ public final class BruteLoader {
         loader = ucl;
 
         if (!open) {
+            KarmaSource source = APISource.getOriginal(false);
+
             open = true;
-            StaticComponentContainer.Modules.exportAllToAll();
+            try {
+                Path bw_file = source.getDataPath().resolve("runtime").resolve("BurningWave.jar");
+                Path jv_file = source.getDataPath().resolve("runtime").resolve("JVMDriver.jar");
+
+                if (!Files.exists(bw_file) && !Files.exists(jv_file)) {
+                    URL bw_url = URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/BurningWave.jar",
+                            "https://karmadev.es/karma-repository/BurningWave.jar",
+                            "https://karmaconfigs.ml/karma-repository/BurningWave.jar",
+                            "https://karmarepo.ml/karma-repository/BurningWave.jar",
+                            "https://backup.karmadev.es/karma-repository/BurningWave.jar",
+                            "https://backup.karmaconfigs.ml/karma-repository/BurningWave.jar",
+                            "https://backup.karmarepo.ml/karma-repository/BurningWave.jar");
+                    URL jv_url = URLUtils.getOrBackup("https://github.com/KarmaConfigs/updates/raw/master/KarmaAPI/JVMDriver.jar",
+                            "https://karmadev.es/karma-repository/JVMDriver.jar",
+                            "https://karmaconfigs.ml/karma-repository/JVMDriver.jar",
+                            "https://karmarepo.ml/karma-repository/JVMDriver.jar",
+                            "https://backup.karmadev.es/karma-repository/JVMDriver.jar",
+                            "https://backup.karmaconfigs.ml/karma-repository/JVMDriver.jar",
+                            "https://backup.karmarepo.ml/karma-repository/JVMDriver.jar");
+
+                    if (bw_url != null && jv_url != null) {
+
+                        ResourceDownloader bw_downloader = new ResourceDownloader(bw_file, bw_url);
+                        ResourceDownloader jvm_downloader = new ResourceDownloader(jv_file, jv_url);
+
+                        bw_downloader.download();
+                        jvm_downloader.download();
+                    }
+                }
+
+                URL[] urls = {
+                        new URL("jar:file:" + bw_file + "!/"),
+                        new URL("jar:file:" + jv_file + "!/")
+                };
+                URLClassLoader cl = new URLClassLoader(urls, ucl);
+                Class<?> loader = cl.loadClass("org.burningwave.core.assembler.StaticComponentContainer");
+                Field modules = loader.getDeclaredField("Modules");
+
+                Object module = modules.get(loader);
+                Method exportAllToAll = module.getClass().getDeclaredMethod("exportAllToAll");
+                exportAllToAll.invoke(module);
+            } catch (Throwable ignored) {}
         }
     }
 
@@ -112,7 +201,9 @@ public final class BruteLoader {
 
         if (downloadURL != null) {
             ResourceDownloader downloader = ResourceDownloader.toCache(source(true), name.getName() + "." + name.findExtension(), downloadURL.toString(), name.getParents());
-            downloader.download();
+            if (!Files.exists(downloader.getDestPath())) {
+                downloader.download();
+            }
 
             add(downloader.getDestFile());
             if (failed.contains(name.getName())) {
@@ -180,7 +271,6 @@ public final class BruteLoader {
 
             return true;
         } catch (Throwable ex) {
-            ex.printStackTrace();
             return false;
         }
     }
@@ -235,7 +325,6 @@ public final class BruteLoader {
 
             return true;
         } catch (Throwable ex) {
-            ex.printStackTrace();
             return false;
         }
     }
@@ -291,7 +380,6 @@ public final class BruteLoader {
 
             return true;
         } catch (Throwable ex) {
-            ex.printStackTrace();
             return false;
         }
     }

@@ -6,10 +6,12 @@ import ml.karmaconfigs.api.bukkit.listener.JoinHandler;
 import ml.karmaconfigs.api.bukkit.modern.ModernHelper;
 import ml.karmaconfigs.api.bukkit.nms.NMSHelper;
 import ml.karmaconfigs.api.bukkit.old.OldHelper;
+import ml.karmaconfigs.api.bukkit.reflection.BossMessage;
 import ml.karmaconfigs.api.bukkit.server.BukkitServer;
 import ml.karmaconfigs.api.bukkit.server.Version;
 import ml.karmaconfigs.api.common.karma.source.APISource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.minecraft.boss.ProgressiveBar;
 import ml.karmaconfigs.api.common.timer.SchedulerUnit;
 import ml.karmaconfigs.api.common.timer.SourceScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
@@ -22,6 +24,7 @@ import ml.karmaconfigs.api.common.version.spigot.SpigotChecker;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
@@ -126,6 +129,48 @@ public final class Main extends KarmaPlugin {
                 }
             }
         }
+
+        getCommand("test_boss").setExecutor(((commandSender, command, s, strings) -> {
+            if (commandSender.isOp()) {
+                if (commandSender instanceof Player) {
+                    Player player = (Player) commandSender;
+                    String message = "&cTest BossBar";
+                    double duration = 10;
+                    try {
+                        duration = Double.parseDouble(strings[0]);
+                        try {
+                            StringBuilder builder = new StringBuilder();
+                            for (int i = 1; i < strings.length; i++) {
+                                builder.append(strings[i]).append(" ");
+                            }
+
+                            message = builder.substring(0, builder.length() - 1);
+                        } catch (Throwable ignored) {}
+                    } catch (Throwable ex) {
+                        try {
+                            StringBuilder builder = new StringBuilder();
+                            for (String string : strings) {
+                                builder.append(string).append(" ");
+                            }
+
+                            message = builder.substring(0, builder.length() - 1);
+                        } catch (Throwable ignored) {}
+                    }
+
+                    BossMessage boss = new BossMessage(this, message, duration);
+                    if (player.isSneaking()) {
+                        boss.progress(ProgressiveBar.DOWN);
+                    } else {
+                        if (player.isFlying()) {
+                            boss.progress(ProgressiveBar.UP);
+                        }
+                    }
+                    boss.scheduleBar(player);
+                }
+            }
+
+            return false;
+        }));
 
         if (BukkitServer.isUnder(Version.v1_8)) {
             console().send("Initializing legacy support for titles and actionbars. This will create invisible entities in front of the player.", Level.WARNING);

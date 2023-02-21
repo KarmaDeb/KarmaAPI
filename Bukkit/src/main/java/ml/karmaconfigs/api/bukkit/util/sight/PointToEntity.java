@@ -4,6 +4,8 @@ import ml.karmaconfigs.api.bukkit.util.LineOfSight;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Ageable;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
@@ -26,13 +28,22 @@ public class PointToEntity extends LineOfSight {
     private double precision = 0.5;
 
     private boolean ignoreMiddleEntities = false;
+    private final SightPart initial_sight;
 
-    public PointToEntity(final Location a, final Entity b) {
+    public PointToEntity(final Location a, final Entity b, final SightPart initial) {
+        initial_sight = initial;
         pointA = a.clone();
         pointB = b;
     }
 
-    public PointToEntity precission(final double pre) {
+    /**
+     * Set the line of sight precision
+     *
+     * @param pre the sight precision
+     * @return this line of sight
+     */
+    @Override
+    public PointToEntity precision(final double pre) {
         if (pre <= 1.0 && pre >= 0.1) {
             precision = pre;
         }
@@ -95,171 +106,13 @@ public class PointToEntity extends LineOfSight {
     }
 
     /**
-     * Get if line of sight
-     *
-     * @return if line of sight
-     */
-    @Override
-    public boolean inLineOfSight() {
-        Location standLocation = pointA.clone().add(a_offset[0], a_offset[1], a_offset[2]);
-        Location trackLocation = pointB.getLocation().clone().add(b_offset[0], b_offset[1], b_offset[2]);
-
-        Vector direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
-        World world = standLocation.getWorld();
-        assert world != null;
-
-        Entity ray_entity = null;
-
-        for (double i = precision; i < 64; i += precision) {
-            direction.multiply(i);
-            standLocation.add(direction);
-
-            Block block = standLocation.getBlock();
-            if (block.getType().isOccluding() && block.getType().isSolid()) {
-                break;
-            } else {
-                Collection<Entity> entities = world.getEntities();
-                for (Entity entity : entities) {
-                    if (!ignored.contains(entity.getUniqueId())) {
-                        Location ent_location = entity.getLocation().clone();
-                        ent_location.setY(standLocation.clone().getY());
-
-                        if (ent_location.distance(standLocation.clone()) <= Math.max(0.5, precision)) {
-                            ray_entity = entity;
-                        }
-                    }
-                }
-
-                standLocation.subtract(direction);
-                direction.normalize();
-
-                if (!ignoreMiddleEntities) {
-                    if (ray_entity != null) {
-                        break;
-                    }
-                } else {
-                    if (ray_entity != null && ray_entity.getUniqueId().equals(pointB.getUniqueId())) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return ray_entity != null && ray_entity.getUniqueId().equals(pointB.getUniqueId());
-    }
-
-    /**
-     * Get if line of sight with max distance
-     *
-     * @param max_distance the maximum distance
-     * @return if line of sight inside the range
-     */
-    @Override
-    public boolean inLineOfSight(final double max_distance) {
-        Location standLocation = pointA.clone().add(a_offset[0], a_offset[1], a_offset[2]);
-        Location trackLocation = pointB.getLocation().clone().add(b_offset[0], b_offset[1], b_offset[2]);
-
-        Vector direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
-        World world = standLocation.getWorld();
-        assert world != null;
-
-        Entity ray_entity = null;
-
-        for (double i = precision; i < max_distance; i += precision) {
-            direction.multiply(i);
-            standLocation.add(direction);
-
-            Block block = standLocation.getBlock();
-            if (block.getType().isOccluding() && block.getType().isSolid()) {
-                break;
-            } else {
-                Collection<Entity> entities = world.getEntities();
-                for (Entity entity : entities) {
-                    if (!ignored.contains(entity.getUniqueId())) {
-                        Location ent_location = entity.getLocation().clone();
-                        ent_location.setY(standLocation.clone().getY());
-
-                        if (ent_location.distance(standLocation.clone()) <= Math.max(0.5, precision)) {
-                            ray_entity = entity;
-                        }
-                    }
-                }
-
-                standLocation.subtract(direction);
-                direction.normalize();
-
-                if (!ignoreMiddleEntities) {
-                    if (ray_entity != null) {
-                        break;
-                    }
-                } else {
-                    if (ray_entity != null && ray_entity.getUniqueId().equals(pointB.getUniqueId())) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return ray_entity != null && ray_entity.getUniqueId().equals(pointB.getUniqueId());
-    }
-
-    /**
      * Get line of sight
      *
      * @return the line of sight
      */
     @Override
-    public Iterator<Location> getLineOfSight() {
-        List<Location> locations = new ArrayList<>();
-
-        Location standLocation = pointA.clone().add(a_offset[0], a_offset[1], a_offset[2]);
-        Location trackLocation = pointB.getLocation().clone().add(b_offset[0], b_offset[1], b_offset[2]);
-
-        Vector direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
-        World world = standLocation.getWorld();
-        assert world != null;
-
-        for (double i = precision; i < 64; i += precision) {
-            direction.multiply(i);
-            standLocation.add(direction);
-
-            locations.add(standLocation.clone());
-            Block block = standLocation.getBlock();
-            if (block.getType().isOccluding() && block.getType().isSolid()) {
-                break;
-            } else {
-                Entity ray_entity = null;
-
-                Collection<Entity> entities = world.getEntities();
-                for (Entity entity : entities) {
-                    if (!ignored.contains(entity.getUniqueId())) {
-                        Location ent_location = entity.getLocation().clone();
-                        ent_location.setY(standLocation.clone().getY());
-
-                        if (ent_location.distance(standLocation.clone()) <= Math.max(0.5, precision)) {
-                            ray_entity = entity;
-                        }
-                    }
-                }
-
-                standLocation.subtract(direction);
-                direction.normalize();
-
-                if (!ignoreMiddleEntities) {
-                    if (ray_entity != null) {
-                        break;
-                    }
-                } else {
-                    if (ray_entity != null && ray_entity.getUniqueId().equals(pointB.getUniqueId())) {
-                        break;
-                    }
-                }
-
-                locations.add(standLocation.clone());
-            }
-        }
-
-        return locations.iterator();
+    public SightPart getLineOfSight() {
+        return getLineOfSight(64);
     }
 
     /**
@@ -269,7 +122,7 @@ public class PointToEntity extends LineOfSight {
      * @return the line of sight inside the range
      */
     @Override
-    public Iterator<Location> getLineOfSight(final double max_distance) {
+    public SightPart getLineOfSight(final double max_distance) {
         List<Location> locations = new ArrayList<>();
 
         Location standLocation = pointA.clone().add(a_offset[0], a_offset[1], a_offset[2]);
@@ -279,6 +132,11 @@ public class PointToEntity extends LineOfSight {
         World world = standLocation.getWorld();
         assert world != null;
 
+        Block hit_block = null;
+        Entity hit_entity = null;
+        SightPart final_sight_part = initial_sight;
+
+        int trie = 0;
         for (double i = precision; i < max_distance; i += precision) {
             direction.multiply(i);
             standLocation.add(direction);
@@ -286,7 +144,105 @@ public class PointToEntity extends LineOfSight {
             locations.add(standLocation.clone());
             Block block = standLocation.getBlock();
             if (block.getType().isOccluding() && block.getType().isSolid()) {
-                break;
+                if (trie == 2) {
+                    hit_block = block;
+                    break;
+                }
+
+                switch (initial_sight) {
+                    case HEAD:
+                        double h_offset = 1.5;
+                        if (pointB instanceof Ageable) {
+                            Ageable age = (Ageable) pointB;
+                            if (!age.isAdult()) {
+                                h_offset = 0.5;
+                            }
+                        }
+                        if (pointB instanceof ArmorStand) {
+                            ArmorStand stand = (ArmorStand) pointB;
+                            if (stand.isSmall()) {
+                                h_offset = 0.5;
+                            }
+                        }
+                        b_offset[1] -= h_offset;
+                        trackLocation = pointB.getLocation().clone().add(b_offset[0], b_offset[1], b_offset[2]);
+                        direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
+                        if (final_sight_part.equals(SightPart.HEAD)) {
+                            final_sight_part = SightPart.BODY;
+                        } else {
+                            final_sight_part = SightPart.FEET;
+                        }
+                        break;
+                    case BODY:
+                        switch (trie) {
+                            case 0:
+                                //From body to head
+                                double c_offset = 1.5;
+                                if (pointB instanceof Ageable) {
+                                    Ageable age = (Ageable) pointB;
+                                    if (!age.isAdult()) {
+                                        c_offset = 0.5;
+                                    }
+                                }
+                                if (pointB instanceof ArmorStand) {
+                                    ArmorStand stand = (ArmorStand) pointB;
+                                    if (stand.isSmall()) {
+                                        c_offset = 0.5;
+                                    }
+                                }
+                                b_offset[1] += c_offset;
+                                trackLocation = pointB.getLocation().clone().add(b_offset[0], b_offset[1], b_offset[2]);
+                                direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
+                                final_sight_part = SightPart.HEAD;
+                                break;
+                            case 1:
+                                //From head to feet
+                                double c_offset_2 = 1.75;
+                                if (pointB instanceof Ageable) {
+                                    Ageable age = (Ageable) pointB;
+                                    if (!age.isAdult()) {
+                                        c_offset_2 = 0.75;
+                                    }
+                                }
+                                if (pointB instanceof ArmorStand) {
+                                    ArmorStand stand = (ArmorStand) pointB;
+                                    if (stand.isSmall()) {
+                                        c_offset_2 = 1.25;
+                                    }
+                                }
+                                b_offset[1] -= c_offset_2;
+                                trackLocation = pointB.getLocation().clone().add(b_offset[0], b_offset[1], b_offset[2]);
+                                direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
+                                final_sight_part = SightPart.HEAD;
+                                break;
+                        }
+                        break;
+                    case FEET:
+                        double f_offset = 1.5;
+                        if (pointB instanceof Ageable) {
+                            Ageable age = (Ageable) pointB;
+                            if (!age.isAdult()) {
+                                f_offset = 0.5;
+                            }
+                        }
+                        if (pointB instanceof ArmorStand) {
+                            ArmorStand stand = (ArmorStand) pointB;
+                            if (stand.isSmall()) {
+                                f_offset = 0.5;
+                            }
+                        }
+                        b_offset[1] += f_offset;
+                        trackLocation = pointB.getLocation().clone().add(b_offset[0], b_offset[1], b_offset[2]);
+                        direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
+                        if (final_sight_part.equals(SightPart.FEET)) {
+                            final_sight_part = SightPart.BODY;
+                        } else {
+                            final_sight_part = SightPart.HEAD;
+                        }
+                        break;
+                }
+
+                trie++;
             } else {
                 Entity ray_entity = null;
 
@@ -305,21 +261,117 @@ public class PointToEntity extends LineOfSight {
                 standLocation.subtract(direction);
                 direction.normalize();
 
-                if (!ignoreMiddleEntities) {
-                    if (ray_entity != null) {
+                if ((!ignoreMiddleEntities && ray_entity != null) || (ray_entity != null && ray_entity.getUniqueId().equals(pointB.getUniqueId()))) {
+                    if (trie == 2) {
+                        hit_entity = ray_entity;
                         break;
                     }
-                } else {
-                    if (ray_entity != null && ray_entity.getUniqueId().equals(pointB.getUniqueId())) {
-                        break;
+
+                    switch (initial_sight) {
+                        case HEAD:
+                            double h_offset = 1.5;
+                            if (pointB instanceof Ageable) {
+                                Ageable age = (Ageable) pointB;
+                                if (!age.isAdult()) {
+                                    h_offset = 0.5;
+                                }
+                            }
+                            if (pointB instanceof ArmorStand) {
+                                ArmorStand stand = (ArmorStand) pointB;
+                                if (stand.isSmall()) {
+                                    h_offset = 0.5;
+                                }
+                            }
+                            b_offset[1] -= h_offset;
+                            trackLocation = pointB.getLocation().clone().add(b_offset[0], b_offset[1], b_offset[2]);
+                            direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
+                            if (final_sight_part.equals(SightPart.HEAD)) {
+                                final_sight_part = SightPart.BODY;
+                            } else {
+                                final_sight_part = SightPart.FEET;
+                            }
+                            break;
+                        case BODY:
+                            switch (trie) {
+                                case 0:
+                                    //From body to head
+                                    double c_offset = 1.5;
+                                    if (pointB instanceof Ageable) {
+                                        Ageable age = (Ageable) pointB;
+                                        if (!age.isAdult()) {
+                                            c_offset = 0.5;
+                                        }
+                                    }
+                                    if (pointB instanceof ArmorStand) {
+                                        ArmorStand stand = (ArmorStand) pointB;
+                                        if (stand.isSmall()) {
+                                            c_offset = 0.5;
+                                        }
+                                    }
+                                    b_offset[1] += c_offset;
+                                    trackLocation = pointB.getLocation().clone().add(b_offset[0], b_offset[1], b_offset[2]);
+                                    direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
+                                    final_sight_part = SightPart.HEAD;
+                                    break;
+                                case 1:
+                                    //From head to feet
+                                    double c_offset_2 = 1.75;
+                                    if (pointB instanceof Ageable) {
+                                        Ageable age = (Ageable) pointB;
+                                        if (!age.isAdult()) {
+                                            c_offset_2 = 0.75;
+                                        }
+                                    }
+                                    if (pointB instanceof ArmorStand) {
+                                        ArmorStand stand = (ArmorStand) pointB;
+                                        if (stand.isSmall()) {
+                                            c_offset_2 = 1.25;
+                                        }
+                                    }
+                                    b_offset[1] -= c_offset_2;
+                                    trackLocation = pointB.getLocation().clone().add(b_offset[0], b_offset[1], b_offset[2]);
+                                    direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
+                                    final_sight_part = SightPart.HEAD;
+                                    break;
+                            }
+                            break;
+                        case FEET:
+                            double f_offset = 1.5;
+                            if (pointB instanceof Ageable) {
+                                Ageable age = (Ageable) pointB;
+                                if (!age.isAdult()) {
+                                    f_offset = 0.5;
+                                }
+                            }
+                            if (pointB instanceof ArmorStand) {
+                                ArmorStand stand = (ArmorStand) pointB;
+                                if (stand.isSmall()) {
+                                    f_offset = 0.5;
+                                }
+                            }
+                            b_offset[1] += f_offset;
+                            trackLocation = pointB.getLocation().clone().add(b_offset[0], b_offset[1], b_offset[2]);
+                            direction = trackLocation.toVector().subtract(standLocation.toVector()).normalize();
+                            if (final_sight_part.equals(SightPart.FEET)) {
+                                final_sight_part = SightPart.BODY;
+                            } else {
+                                final_sight_part = SightPart.HEAD;
+                            }
+                            break;
                     }
+
+                    trie++;
                 }
 
                 locations.add(standLocation.clone());
             }
         }
 
-        return locations.iterator();
+        return final_sight_part
+                .setHitBlock(hit_block)
+                .setHitEntity(hit_entity)
+                .setHitLocation(standLocation.clone())
+                .setTraceLocation(locations.toArray(new Location[0]));
     }
 }
 

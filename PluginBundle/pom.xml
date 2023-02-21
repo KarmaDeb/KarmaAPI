@@ -17,96 +17,35 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <additionalOptions>
-                        <additionalOption>-Xdoclint:none</additionalOption>
-                    </additionalOptions>
-                </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <dependencies>
         <dependency>
             <groupId>ml.karmaconfigs</groupId>
             <artifactId>KarmaAPI-BukkitPlugin</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>ml.karmaconfigs</groupId>
-                    <artifactId>KarmaAPI-Common</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>ml.karmaconfigs</groupId>
             <artifactId>BungeePlugin</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>ml.karmaconfigs</groupId>
-                    <artifactId>KarmaAPI-Common</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>ml.karmaconfigs</groupId>
             <artifactId>VelocityPlugin</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>ml.karmaconfigs</groupId>
-                    <artifactId>KarmaAPI-Common</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
+        <!-- The PluginBundle is jut the bundle of plugins with the default bundle -->
         <dependency>
             <groupId>ml.karmaconfigs</groupId>
-            <artifactId>KarmaAPI-Common</artifactId>
-            <version>1.3.3-SNAPSHOT</version>
+            <artifactId>KarmaAPI-Bundle</artifactId>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

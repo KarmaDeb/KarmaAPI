@@ -19,7 +19,7 @@
 
     <properties>
         <plugin.name>KarmaAPI</plugin.name>
-        <plugin.version>1.3.4-2</plugin.version>
+        <plugin.version>1.3.4-9</plugin.version>
         <java.version>1.8</java.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -75,6 +75,156 @@
                 </configuration>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <source>8</source>
+                        <target>8</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.2.4</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <createDependencyReducedPom>false</createDependencyReducedPom>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <additionalOptions>
+                            <additionalOption>-Xdoclint:none</additionalOption>
+                        </additionalOptions>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>templating-maven-plugin</artifactId>
+                    <version>1.0.0</version>
+                    <executions>
+                        <execution>
+                            <id>filter-src</id>
+                            <goals>
+                                <goal>filter-sources</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.9.1</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>net.trajano.wagon</groupId>
+                            <artifactId>wagon-git</artifactId>
+                            <version>2.0.4</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.apache.maven.doxia</groupId>
+                            <artifactId>doxia-module-markdown</artifactId>
+                            <version>1.9.1</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                    <configuration>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <tagNameFormat>@{project.version}</tagNameFormat>
+                        <scmCommentPrefix xml:space="preserve">[RELEASE] </scmCommentPrefix>
+                        <goals>install deploy site-deploy
+                        </goals> <!-- install is here to fix javadoc generation in multi-module projects -->
+                        <releaseProfiles>release</releaseProfiles>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.7</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.7</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 
     <modules>
@@ -89,7 +239,39 @@
         <module>PluginBundle</module>
     </modules>
 
-    <repositories/>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+
+        <repository>
+            <id>spigotmc-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>bungeecord-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>velocity</id>
+            <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
+        </repository>
+
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>MG-Dev Jenkins CI Maven Repository</id>
+            <url>https://ci.mg-dev.eu/plugin/repository/everything/</url>
+        </repository>
+
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+    </repositories>
 
     <distributionManagement>
         <snapshotRepository>
@@ -102,20 +284,224 @@
         </repository>
     </distributionManagement>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>22.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-artifact</artifactId>
-            <version>3.8.1</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <!-- Internal dependencies -->
+            <dependency>
+                <groupId>ml.karmaconfigs</groupId>
+                <artifactId>KarmaAPI-Common</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>ml.karmaconfigs</groupId>
+                <artifactId>KarmaAPI-Bungee</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ml.karmaconfigs</groupId>
+                        <artifactId>KarmaAPI-Common</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>ml.karmaconfigs</groupId>
+                <artifactId>KarmaAPI-Bukkit</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ml.karmaconfigs</groupId>
+                        <artifactId>KarmaAPI-Common</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>ml.karmaconfigs</groupId>
+                <artifactId>KarmaAPI-Velocity</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ml.karmaconfigs</groupId>
+                        <artifactId>KarmaAPI-Common</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>ml.karmaconfigs</groupId>
+                <artifactId>KarmaAPI-BukkitPlugin</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ml.karmaconfigs</groupId>
+                        <artifactId>KarmaAPI-Bukkit</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ml.karmaconfigs</groupId>
+                        <artifactId>KarmaAPI-Common</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>ml.karmaconfigs</groupId>
+                <artifactId>BungeePlugin</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ml.karmaconfigs</groupId>
+                        <artifactId>KarmaAPI-Bungee</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ml.karmaconfigs</groupId>
+                        <artifactId>KarmaAPI-Common</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>ml.karmaconfigs</groupId>
+                <artifactId>VelocityPlugin</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ml.karmaconfigs</groupId>
+                        <artifactId>KarmaAPI-Velocity</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ml.karmaconfigs</groupId>
+                        <artifactId>KarmaAPI-Common</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- Global dependencies -->
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>22.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-artifact</artifactId>
+                <version>3.8.1</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Dependencies for: Velocity -->
+            <dependency>
+                <groupId>com.velocitypowered</groupId>
+                <artifactId>velocity-api</artifactId>
+                <version>1.1.5</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Dependencies for: Common -->
+            <dependency>
+                <groupId>org.burningwave</groupId>
+                <artifactId>core</artifactId>
+                <version>12.39.6</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>1.32</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.8.9</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5</artifactId>
+                <version>5.2.1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>4.0.2</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.trove4j</groupId>
+                <artifactId>core</artifactId>
+                <version>3.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okio</groupId>
+                <artifactId>okio</artifactId>
+                <version>1.17.2</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>3.14.9</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kefirsf</groupId>
+                <artifactId>kefirbb</artifactId>
+                <version>1.5</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Dependencies for: BungeePlugin and KarmaAPI-Bungee -->
+            <dependency>
+                <groupId>net.md-5</groupId>
+                <artifactId>bungeecord-api</artifactId>
+                <version>1.16-R0.4</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Dependencies for: BukkitPlugin -->
+            <dependency>
+                <groupId>org.spigotmc</groupId>
+                <artifactId>spigot-api</artifactId>
+                <version>1.19.3-R0.1-SNAPSHOT</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.bukkit</groupId>
+                <artifactId>craftbukkit</artifactId>
+                <version>1.7.10-R0.1-SNAPSHOT</version>
+                <scope>system</scope>
+                <systemPath>D:/Documentos/Mis Documentos/Projects/java/KarmaAPI/BukkitPlugin/legacy/spigot.jar</systemPath>
+            </dependency>
+
+            <!-- Dependencies for: Bukkit -->
+            <dependency>
+                <groupId>com.bergerkiller.bukkit</groupId>
+                <artifactId>BKCommonLib</artifactId>
+                <version>1.19-v1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.github.classgraph</groupId>
+                <artifactId>classgraph</artifactId>
+                <version>4.8.138</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Utilities -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.26</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <profiles>
         <profile>

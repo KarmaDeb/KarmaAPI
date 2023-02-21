@@ -1,5 +1,7 @@
 package ml.karmaconfigs.api.common.karma.file.element.types.primitive;
 
+import ml.karmaconfigs.api.common.string.StringUtils;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -42,6 +44,17 @@ public class StringPrimitive implements PrimitiveType<String> {
      */
     @Override
     public String get() {
+        return StringUtils.unEscapeString(value);
+    }
+
+    /**
+     * If the final value have some modifications
+     * this method should return the raw type
+     *
+     * @return the literal (raw)
+     */
+    @Override
+    public String getLiteral() {
         return value;
     }
 

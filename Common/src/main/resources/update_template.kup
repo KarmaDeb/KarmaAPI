@@ -1,7 +1,9 @@
 (
     'version' -> ""
 
-    'update_url' -> ""
+    'update_url' -> {
+        ''
+    }
 
     'changelog' -> {
         ''

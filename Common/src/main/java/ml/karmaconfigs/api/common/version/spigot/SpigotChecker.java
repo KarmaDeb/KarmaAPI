@@ -27,11 +27,15 @@ package ml.karmaconfigs.api.common.version.spigot;
 
 import com.google.gson.*;
 import ml.karmaconfigs.api.common.karma.KarmaAPI;
+import ml.karmaconfigs.api.common.timer.scheduler.BiLateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
+import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncBiLateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
 import ml.karmaconfigs.api.common.string.StringUtils;
 import ml.karmaconfigs.api.common.utils.url.HttpUtil;
 import ml.karmaconfigs.api.common.utils.url.URLUtils;
+import org.kefirsf.bb.BBProcessorFactory;
+import org.kefirsf.bb.TextProcessor;
 
 import java.net.URL;
 
@@ -89,68 +93,170 @@ public final class SpigotChecker {
     }
 
     /**
+     * Fetch the project latest's update
+     *
+     * @return the project latest's update
+     */
+    public BiLateScheduler<URL, String> fetchLatest() {
+        BiLateScheduler<URL, String> result = new AsyncBiLateScheduler<>();
+
+        KarmaAPI.source(false).async().queue("plugin_version_check", () -> {
+            try {
+                URL version_url = new URL(StringUtils.formatString(fetch_version, resource_id));
+                HttpUtil version_utils = URLUtils.extraUtils(version_url);
+
+                if (version_utils != null) {
+                    String version_response = version_utils.getResponse();
+
+                    if (!StringUtils.isNullOrEmpty(version_response)) {
+                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        JsonElement element = gson.fromJson(version_response, JsonElement.class);
+
+                        if (element.isJsonObject()) {
+                            JsonObject version_object = element.getAsJsonObject();
+
+                            if (version_object.has("stats")) {
+                                int updates = version_object.getAsJsonObject("stats").get("updates").getAsInt();
+                                int last_page = (int) Math.ceil((double) updates / 10);
+
+                                URL url = new URL(StringUtils.formatString(fetch_update, resource_id, last_page));
+                                HttpUtil utils = URLUtils.extraUtils(url);
+
+                                String response = "[]";
+                                if (utils != null) {
+                                    response = utils.getResponse();
+                                    if (response.equals("[]")) {
+                                        last_page--;
+
+                                        url = new URL(StringUtils.formatString(fetch_update, resource_id, last_page));
+                                        utils = URLUtils.extraUtils(url);
+
+                                        if (utils != null) {
+                                            response = utils.getResponse();
+                                        }
+                                    }
+                                }
+
+                                if (!response.equals("403 - Connection refused") && !response.equals("[]")) {
+                                    JsonArray array = gson.fromJson(response, JsonArray.class);
+
+                                    JsonElement last = array.get(array.size() - 1);
+                                    if (last.isJsonObject()) {
+                                        JsonObject object = last.getAsJsonObject();
+                                        if (object.has("id")) {
+                                            int updateId = object.get("id").getAsInt();
+                                            String update_entry = object.get("message").getAsString();
+
+                                            TextProcessor processor = BBProcessorFactory.getInstance().create();
+                                            String real_changelog = processor.process(update_entry)
+                                                    .replace("<br/>", "\n")
+                                                    .replace("<li>", "\t- ")
+                                                    .replaceAll("<.*?>", "");
+
+                                            URL updateInfo = new URL(StringUtils.formatString(update_url, resource_id, updateId));
+                                            result.complete(updateInfo, removeBBCode(real_changelog));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Throwable ex) {
+                result.complete(null, "", ex);
+            } finally {
+                result.complete(null, "");
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * Remove the bbcode from the string
+     *
+     * @param original the original string
+     * @return the string without bbcode
+     */
+    private String removeBBCode(final String original) {
+        StringBuilder builder = new StringBuilder();
+        int reading = 0;
+        for (int i = 0; i < original.length(); i++) {
+            char character = original.charAt(i);
+            if (character == '[') {
+                reading++;
+            }
+            if (reading == 0) {
+                builder.append(character);
+            }
+
+            if (reading > 0) {
+                if (character == ']') {
+                    reading--;
+                }
+            }
+        }
+
+        return builder.toString();
+    }
+
+    /**
      * Get the project update URL
      *
      * @return the project update URL
+     * @deprecated
      */
+    @Deprecated
     public LateScheduler<URL> getUpdateURL() {
         LateScheduler<URL> result = new AsyncLateScheduler<>();
 
         KarmaAPI.source(false).async().queue("plugin_version_check", () -> {
             try {
-                int page = 0;
-                URL url = new URL(StringUtils.formatString(fetch_update, resource_id, page));
-                HttpUtil utils = URLUtils.extraUtils(url);
+                URL version_url = new URL(StringUtils.formatString(fetch_version, resource_id));
+                HttpUtil version_utils = URLUtils.extraUtils(version_url);
 
-                if (utils != null) {
-                    String response = utils.getResponse();
+                if (version_utils != null) {
+                    String version_response = version_utils.getResponse();
 
-                    while (!response.equalsIgnoreCase("[]")) {
-                        page++;
-                        url = new URL(StringUtils.formatString(fetch_update, resource_id, page));
+                    if (!StringUtils.isNullOrEmpty(version_response)) {
+                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        JsonElement element = gson.fromJson(version_response, JsonElement.class);
 
-                        utils = URLUtils.extraUtils(url);
-                        if (utils != null) {
-                            response = utils.getResponse();
-                        } else {
-                            break;
-                        }
-                    }
+                        if (element.isJsonObject()) {
+                            JsonObject version_object = element.getAsJsonObject();
 
-                    page--;
-                    url = new URL(StringUtils.formatString(fetch_update, resource_id, page));
-                    utils = URLUtils.extraUtils(url);
+                            if (version_object.has("stats")) {
+                                int updates = version_object.getAsJsonObject("stats").get("updates").getAsInt();
+                                int last_page = (int) Math.ceil((double) updates / 10);
 
-                    if (utils != null) {
-                        response = utils.getResponse();
+                                URL url = new URL(StringUtils.formatString(fetch_update, resource_id, last_page));
+                                HttpUtil utils = URLUtils.extraUtils(url);
 
-                        if (!response.equals("403 - Connection refused")) {
-                            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                            JsonArray array = gson.fromJson(response, JsonArray.class);
+                                if (utils != null) {
+                                    String response = utils.getResponse();
+                                    if (!response.equals("403 - Connection refused")) {
+                                        JsonArray array = gson.fromJson(response, JsonArray.class);
 
-                            JsonElement last = array.get(array.size() - 1);
-                            if (last.isJsonObject()) {
-                                JsonObject object = last.getAsJsonObject();
-                                if (object.has("id")) {
-                                    int updateId = object.get("id").getAsInt();
+                                        JsonElement last = array.get(array.size() - 1);
+                                        if (last.isJsonObject()) {
+                                            JsonObject object = last.getAsJsonObject();
+                                            if (object.has("id")) {
+                                                int updateId = object.get("id").getAsInt();
 
-                                    URL updateInfo = new URL(StringUtils.formatString(update_url, resource_id, updateId));
-                                    result.complete(updateInfo, null);
-                                } else {
-                                    result.complete(null, new Exception("Failed to fetch last update id for project with id " + resource_id + " #001"));
+                                                URL updateInfo = new URL(StringUtils.formatString(update_url, resource_id, updateId));
+                                                result.complete(updateInfo, null);
+                                            }
+                                        }
+                                    }
                                 }
-                            } else {
-                                result.complete(null, new Exception("Failed to fetch last update for project with id " + resource_id + " #002"));
                             }
-                        } else {
-                            result.complete(null, new Exception("Failed to fetch last update for project with id " + resource_id + " #003"));
                         }
-                    } else {
-                        result.complete(null, new Exception("Failed to fetch last update for project with id " + resource_id + " #004"));
                     }
                 }
             } catch (Throwable ex) {
                 result.complete(null, ex);
+            } finally {
+                result.complete(null);
             }
         });
 

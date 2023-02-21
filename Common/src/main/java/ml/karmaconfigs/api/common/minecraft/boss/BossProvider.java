@@ -64,10 +64,19 @@ public abstract class BossProvider<T> {
     public abstract void cancel();
 
     /**
+     * Display the boss bar to the specified player
+     *
+     * @param target the player to display to
+     */
+    protected abstract void displayBar(T target);
+
+    /**
      * Display the boss bar to the specified players
      *
      * @param paramCollection the players to display to
+     * @deprecated This can result in bar duplicates; Use {@link BossProvider#displayBar(Object) single target} alternative
      */
+    @Deprecated
     protected abstract void displayBar(Collection<T> paramCollection);
 
     /**
@@ -82,14 +91,15 @@ public abstract class BossProvider<T> {
      *
      * @param paramT the player to display to
      */
-    public abstract void scheduleBar(T paramT);
+    public abstract void scheduleBar(T[] paramT);
 
     /**
      * Get the amount of bars that exist
      *
+     * @param source the bar source
      * @return the amount of bars created
      */
-    public abstract int getBarsAmount();
+    public abstract int getBarsAmount(final T source);
 
     /**
      * Get the current boss bar id

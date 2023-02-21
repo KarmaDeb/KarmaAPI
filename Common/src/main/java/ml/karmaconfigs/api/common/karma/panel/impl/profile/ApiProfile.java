@@ -13,7 +13,7 @@ import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncBiLateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
 import ml.karmaconfigs.api.common.string.StringUtils;
 import ml.karmaconfigs.api.common.utils.url.HttpUtil;
-import ml.karmaconfigs.api.common.utils.url.Post;
+import ml.karmaconfigs.api.common.utils.url.request.Post;
 import ml.karmaconfigs.api.common.utils.url.URLUtils;
 import org.jetbrains.annotations.Nullable;
 
