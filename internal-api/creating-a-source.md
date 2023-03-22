@@ -2,7 +2,7 @@
 description: Here you will learn how to setup a source
 ---
 
-# Creating a source
+# 🛠 Creating a source
 
 First of all, we will need to create a class, and make it implement KarmaSource
 

@@ -2,7 +2,7 @@
 description: The best way to access your source is by registering it as a source provider.
 ---
 
-# Registering a source
+# 🖊 Registering a source
 
 After you have created your source, you can register it in order to access it only via its name by the source registrar. Registering a source requires only one method, and your source object. If you haven't created one yet, please check [how to create a source](creating-a-source.md).
 

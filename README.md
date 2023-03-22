@@ -4,7 +4,7 @@ description: >-
   extense and this will help you to understand what you are able to do with it.
 ---
 
-# Welcome
+# 👋 Welcome
 
 Before we start, you should know a few things before using this API:
 
