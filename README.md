@@ -11,6 +11,6 @@ Before we start, you should know a few things before using this API:
 {% hint style="warning" %}
 The API may be unstable under certain conditions, for example, the API may not work as expected on very old minecraft servers, such as 1.8.X or 1.7.X, that's because this API depends on some other third party libraries, such as GSon, with methods that does not exist on those versions.\
 \
-This API will also download third-party libraries in order to ensure everything works. More information can be found here
+This API will also download third-party libraries in order to ensure everything works. More information can be found [here](page-2.md)
 {% endhint %}
 
