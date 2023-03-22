@@ -14,4 +14,4 @@
       * [❓ InventoryPage methods](bukkit-api/inventory-api/inventory-book/inventorypage-methods.md)
       * [❓ ItemFunction methods](bukkit-api/inventory-api/inventory-book/itemfunction-methods.md)
       * [❓ ItemFunction actions](bukkit-api/inventory-api/inventory-book/itemfunction-actions.md)
-* [📚 Libraries](page-2.md)
+* [📚 Used libraries](libraries.md)
