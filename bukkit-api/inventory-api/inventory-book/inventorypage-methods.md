@@ -2,7 +2,7 @@
 description: The inventory page has some methods that may be usefull in some situations
 ---
 
-# InventoryPage methods
+# ❓ InventoryPage methods
 
 ```java
 /**

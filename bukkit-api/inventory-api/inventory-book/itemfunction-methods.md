@@ -2,7 +2,7 @@
 description: The ItemFunction is created automatically by the InventoryPage
 ---
 
-# ItemFunction methods
+# ❓ ItemFunction methods
 
 ```java
 /**

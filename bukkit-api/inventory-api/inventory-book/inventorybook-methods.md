@@ -2,7 +2,7 @@
 description: The inventory book has some methods that may be usefull in some situations
 ---
 
-# InventoryBook methods
+# ❓ InventoryBook methods
 
 ```java
 /**
