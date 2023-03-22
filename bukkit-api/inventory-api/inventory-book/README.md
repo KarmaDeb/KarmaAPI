@@ -12,6 +12,8 @@ KarmaPlugin is not required for this API
 
 To start, you simply need to create a new InventoryBook object. This will store all the inventories, and each instance of a book stores different inventories, which means you should create one per player and store it on some variable, or if you want it to be shared, just store it on some variable.
 
+### Example
+
 ```java
 package me.amazing.plugin.inventory;
 
