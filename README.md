@@ -1,9 +1,10 @@
+### [Check out the documentation](https://api.karmadev.es/)
+
+
+
 # KarmaAPI
 
 KarmaAPI source code...
-
-[![CI](https://github.com/KarmaConfigs/KarmaAPI/actions/workflows/codacy.yml/badge.svg)](https://github.com/KarmaConfigs/KarmaAPI/actions/workflows/codacy.yml)<br>
-[![CI](https://github.com/KarmaConfigs/KarmaAPI/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/KarmaConfigs/KarmaAPI/actions/workflows/dependency-review.yml)
 
 [Please take a look at the license before using the source code, legal actions could be performed if you break any condition](https://karmadev.es/license/)<br>
 To resume, you are allowed to:
