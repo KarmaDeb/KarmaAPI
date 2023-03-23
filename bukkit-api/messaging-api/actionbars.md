@@ -6,7 +6,11 @@ description: >-
 
 # ⚙ ActionBars
 
-This API allows the use of ActionBars in any minecraft version, including those that does not include native actionbar support (1.7.10). Instead, in those versions, an hologram is created and bottom front of the player location, so it acts like an actionbar.
+{% hint style="info" %}
+KarmaPlugin is not required for this API
+{% endhint %}
+
+This API allows the use of ActionBars in any minecraft version, including those that does not include native actionbar support (1.7.10). Instead, in those versions, an hologram is created at the bottom front of the player location, so it acts like an actionbar.
 
 {% embed url="https://www.youtube.com/watch?v=ZVRj0VKt9qw" %}
 video demostration
