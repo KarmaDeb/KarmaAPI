@@ -11,21 +11,21 @@ description: The inventory book has some methods that may be usefull in some sit
  * @param UUID the book id
  * @return the book
  */
-InventoryBook #getBook(UUID): InventoryBook
+InventoryBook#getBook(UUID): InventoryBook
 
 /**
  * Get the book unique ID
  *
  * @return the book unique ID
  */
-InventoryBook #getUniqueId(): UUID
+InventoryBook#getUniqueId(): UUID
 
 /**
  * Allow a player to close the inventory
  *
  * @param Player the player to allow
  */
-InventoryBook #allowClose(Player): void
+InventoryBook#allowClose(Player): void
 
 /**
  * Deny a player from closing the inventory
@@ -40,7 +40,7 @@ InventoryBook #denyClose(Player): void
  * @param Player the player to check
  * @return if the player can close the inventory
  */
-InventoryBook #canClose(Player): Boolean
+InventoryBook#canClose(Player): Boolean
 
 /**
  * Sorts the inventory pages, by shifting if there's a page jump.
@@ -49,7 +49,7 @@ InventoryBook #canClose(Player): Boolean
  *
  * @return this instance
  */
-InventoryBook #sort(): InventoryBook
+InventoryBook#sort(): InventoryBook
 
 /**
  * Add a page to the book
@@ -64,7 +64,7 @@ InventoryBook #addPage(): InventoryPage
  * @param String the page title
  * @return this instance
  */
-InventoryBook #addPage(String): InventoryPage
+InventoryBook#addPage(String): InventoryPage
 
 /**
  * Set a page of the book
@@ -72,7 +72,7 @@ InventoryBook #addPage(String): InventoryPage
  * @param Integer the page number
  * @return this instance
  */
-InventoryBook #setPage(Integer): InventoryPage
+InventoryBook#setPage(Integer): InventoryPage
 
 /**
  * Set a page of the book
@@ -90,7 +90,7 @@ InventoryBook #setPage(Integer, String): InventoryPage
  * @return the removed page
  * @throws NoIndexPageException if the page does not exist
  */
-InventoryBook #removePage(Integer): InventoryPage throws NoIndexPageException
+InventoryBook#removePage(Integer): InventoryPage throws NoIndexPageException
 
 /**
  * Get the page the player has open
@@ -98,7 +98,7 @@ InventoryBook #removePage(Integer): InventoryPage throws NoIndexPageException
  * @param Player the player
  * @return the player page
  */
-InventoryBook #getPage(Player): InventoryPage
+InventoryBook#getPage(Player): InventoryPage
 
 /**
  * Get the previous page number for the player
@@ -106,7 +106,7 @@ InventoryBook #getPage(Player): InventoryPage
  * @param Player the player
  * @return the previous page index for the player
  */
-InventoryBook #getPreviousPageIndex(Player): Integer
+InventoryBook#getPreviousPageIndex(Player): Integer
 
 /**
  * Get the page index of the player
@@ -122,7 +122,7 @@ InventoryBook #getPageIndex(Player): Integer
  * @param Player the player
  * @return the next page index for the player
  */
-InventoryBook #getNextPageIndex(Player): Integer
+InventoryBook#getNextPageIndex(Player): Integer
 
 /**
  * Get the page from its index
@@ -139,7 +139,7 @@ InventoryBook #getPage(Integer): InventoryPage
  * @throws EmptyBookException if the book is empty
  * @throws NoIndexPageException if the book has no page 0
  */
-InventoryBook #open(Player): void throws EmptyBookException, NoIndexPageException
+InventoryBook#open(Player): void throws EmptyBookException, NoIndexPageException
 
 /**
  * Open the book to the player
@@ -149,12 +149,12 @@ InventoryBook #open(Player): void throws EmptyBookException, NoIndexPageExceptio
  * @throws EmptyBookException if the book is empty
  * @throws NoIndexPageException if the book has no page X
  */
-InventoryBook #open(Player, Integer): void throws EmptyBookException, NoIndexPageException
+InventoryBook#open(Player, Integer): void throws EmptyBookException, NoIndexPageException
 
 /**
  * Get the open page
  *
  * @return the open page
  */
-public InventoryBook getPages(): Integer
+InventoryBook#getPages(): Integer
 ```
