@@ -114,7 +114,7 @@ InventoryBook#getPreviousPageIndex(Player): Integer
  * @param Player the player
  * @return the page index
  */
-InventoryBook #getPageIndex(Player): Integer
+InventoryBook#getPageIndex(Player): Integer
 
 /**
  * Get the next page number for the player
@@ -130,7 +130,7 @@ InventoryBook#getNextPageIndex(Player): Integer
  * @param Integer the page index
  * @return the page
  */
-InventoryBook #getPage(Integer): InventoryPage
+InventoryBook#getPage(Integer): InventoryPage
 
 /**
  * Open the book to the player
