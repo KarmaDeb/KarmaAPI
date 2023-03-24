@@ -1,4 +1,4 @@
-### [Check out the documentation](https://api.karmadev.es/)
+### [Check out the documentation](https://docs.karmadev.es/)
 
 
 
