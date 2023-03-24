@@ -86,3 +86,7 @@ public class BookHandler {
 }
 
 ```
+
+{% hint style="info" %}
+For more information, we highly recommend you to check the [javadocs](https://reddo.es/karmadev/api/ml/karmaconfigs/api/bukkit/inventory/infinity/package-summary.html).
+{% endhint %}

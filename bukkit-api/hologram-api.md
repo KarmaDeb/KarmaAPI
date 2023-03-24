@@ -105,5 +105,5 @@ public class HologramManager {
 ```
 
 {% hint style="warning" %}
-It's recommended that you read the [javadocs](https://reddo.es/karmadev/api/docs) for more information about holograms usage.
+It's recommended that you read the [javadocs](https://reddo.es/karmadev/api/) for more information about holograms usage.
 {% endhint %}
