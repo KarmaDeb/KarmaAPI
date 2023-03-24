@@ -12,7 +12,7 @@ You can use the fetch to fetch a bunch of data, or to fetch a single user data. 
 Please we aware of a responsible the API usage. It has a rate limit and request delayer. It will start to delay requests by 500 ms (0,5 seconds) for every 25 requests in less than 15 minutes. And will block further requests after 100 requests in less than 15 minutes.
 {% endhint %}
 
-### Fetch single (known) data
+## Fetch single (known) data
 
 > https://karmadev.es/api/fetch/KarmaDev
 
@@ -381,5 +381,87 @@ Please we aware of a responsible the API usage. It has a rate limit and request 
       ]
     }
   }
+}
+```
+
+## API Implementation
+
+This method also has an internal API implementation, which is highly recommended over creating a custom handle.
+
+### Single fetch
+
+```java
+import ml.karmaconfigs.api.common.minecraft.api.MineAPI;
+import ml.karmaconfigs.api.common.utils.uuid.UUIDType;
+
+public class Main {
+
+    public static void main(String[] args) {
+        MineAPI.fetch(args[0]).whenComplete((response) -> {
+            System.out.printf("URL: %s%n", response.getUri()); //The request URL
+            System.out.printf("ID: %d%n", response.getId()); //The user ID
+            System.out.printf("Nick: %s%n", response.getNick()); //The user name
+            System.out.printf("Offline: %s%n", response.getUUID(UUIDType.OFFLINE)); //The user offline mode UUID
+            System.out.printf("Online: %s%n", response.getUUID(UUIDType.ONLINE)); //The user online mode UUID
+            System.out.printf("Skin: %s%n", response.getSkin()); //The user skin textures
+            System.out.printf("Cape: %s%n", response.getCape()); //The user cape textures
+        });
+    }
+}
+```
+
+### Multiple fetch
+
+```java
+import ml.karmaconfigs.api.common.minecraft.api.MineAPI;
+import ml.karmaconfigs.api.common.utils.uuid.UUIDType;
+
+public class Main {
+
+    public static void main(String[] args) {
+        long page = Long.parseLong(args[0]);
+    
+        long start = System.currentTimeMillis();
+        MineAPI.fetchAll(page ).whenComplete((response) -> {
+            long end = System.currentTimeMillis();
+            long diff = (end - start);
+
+            System.out.printf("Fetched %d accounts in %d ms%n", response.getFetched(), diff);
+            response.getAll().forEach((account) -> {
+                System.out.printf("URL: %s%n", account.getUri());
+                System.out.printf("ID: %d%n", account.getId());
+                System.out.printf("Nick: %s%n", account.getNick());
+                System.out.printf("Offline: %s%n", account.getUUID(UUIDType.OFFLINE));
+                System.out.printf("Online: %s%n", account.getUUID(UUIDType.ONLINE));
+                System.out.printf("Skin: %s%n", account.getSkin());
+                System.out.printf("Cape: %s%n", account.getCape());
+                System.out.println("---------------------------------------------");
+            });
+
+            Optional<OKARequest> user = response.find("KarmaDev");
+            user.ifPresent((account) -> {
+                System.out.printf("URL: %s%n", account.getUri());
+                System.out.printf("ID: %d%n", account.getId());
+                System.out.printf("Nick: %s%n", account.getNick());
+                System.out.printf("Offline: %s%n", account.getUUID(UUIDType.OFFLINE));
+                System.out.printf("Online: %s%n", account.getUUID(UUIDType.ONLINE));
+                System.out.printf("Skin: %s%n", account.getSkin());
+                System.out.printf("Cape: %s%n", account.getCape());
+                System.out.println("---------------------------------------------");
+            });
+
+            Optional<OKARequest> uuidUser = response.find(UUID.nameUUIDFromBytes(("OfflinePlayer:KarmaDev").getBytes()));
+            uuidUser.ifPresent((account) -> {
+                System.out.printf("URL: %s%n", account.getUri());
+                System.out.printf("ID: %d%n", account.getId());
+                System.out.printf("Nick: %s%n", account.getNick());
+                System.out.printf("Offline: %s%n", account.getUUID(UUIDType.OFFLINE));
+                System.out.printf("Online: %s%n", account.getUUID(UUIDType.ONLINE));
+                System.out.printf("Skin: %s%n", account.getSkin());
+                System.out.printf("Cape: %s%n", account.getCape());
+                System.out.println("---------------------------------------------");
+            });
+        });
+    }
 }
 ```
