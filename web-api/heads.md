@@ -12,7 +12,7 @@ Please we aware of a responsible the API usage. It has a rate limit and request 
 
 ## Fetching a head
 
-> https://karmadev.es/api/head/KarmaDev
+> https://api.karmadev.es/head/KarmaDev
 
 The head request also supports head image sizing:
 
@@ -26,13 +26,13 @@ For example
 
 | Size | URL                                        |
 | ---- | ------------------------------------------ |
-| 64   | https://karmadev.es/api/head/KarmaDev/64   |
-| 128  | https://karmadev.es/api/head/KarmaDev/128  |
-| 256  | https://karmadev.es/api/head/KarmaDev/256  |
-| 512  | https://karmadev.es/api/head/KarmaDev/512  |
-| 1024 | https://karmadev.es/api/head/KarmaDev/1024 |
+| 64   | https://api.karmadev.es/head/KarmaDev/64   |
+| 128  | https://api.karmadev.es/head/KarmaDev/128  |
+| 256  | https://api.karmadev.es/head/KarmaDev/256  |
+| 512  | https://api.karmadev.es/head/KarmaDev/512  |
+| 1024 | https://api.karmadev.es/head/KarmaDev/1024 |
 
-<figure><img src="https://karmadev.es/api/head/KarmaDev/128" alt=""><figcaption><p>https://karmadev.es/api/head/KarmaDev/128</p></figcaption></figure>
+<figure><img src="https://karmadev.es/api/head/KarmaDev/128" alt=""><figcaption><p>https://api.karmadev.es/head/KarmaDev/128</p></figcaption></figure>
 
 ## API Implementation
 

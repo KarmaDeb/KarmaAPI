@@ -14,7 +14,7 @@ Please we aware of a responsible the API usage. It has a rate limit and request 
 
 ## Pushing user information
 
-> https://karmadev.es/api/push/jeb\_
+> https://api.karmadev.es/push/jeb\_
 
 ```json
 {

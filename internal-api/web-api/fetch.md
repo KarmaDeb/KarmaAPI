@@ -14,7 +14,7 @@ Please we aware of a responsible the API usage. It has a rate limit and request 
 
 ## Fetch single (known) data
 
-> https://karmadev.es/api/fetch/KarmaDev
+> https://api.karmadev.es/fetch/KarmaDev
 
 ```json
 {
@@ -56,7 +56,7 @@ Please we aware of a responsible the API usage. It has a rate limit and request 
 
 ### Fetch single (unknown) data
 
-> https://karmadev.es/api/fetch/SomeUnknownUser
+> https://api.karmadev.es/fetch/SomeUnknownUser
 
 ```json
 {
@@ -92,7 +92,7 @@ Please we aware of a responsible the API usage. It has a rate limit and request 
 
 ### Fetch multiple data
 
-> https://karmadev.es/api/fetch/@all?page=1
+> https://api.karmadev.es/fetch/@all?page=1
 
 ```json
 {
