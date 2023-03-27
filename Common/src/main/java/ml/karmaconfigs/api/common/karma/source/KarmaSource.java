@@ -28,6 +28,7 @@ package ml.karmaconfigs.api.common.karma.source;
 import ml.karmaconfigs.api.common.console.Console;
 import ml.karmaconfigs.api.common.logger.Logger;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
+import ml.karmaconfigs.api.common.string.random.RandomString;
 import ml.karmaconfigs.api.common.timer.scheduler.Scheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
 import ml.karmaconfigs.api.common.timer.worker.AsyncScheduler;
@@ -130,7 +131,7 @@ public interface KarmaSource extends Serializable {
         File dataFolder, mainJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
         File parent = mainJar.getParentFile();
         if (StringUtils.isNullOrEmpty(name())) {
-            dataFolder = new File(parent, StringUtils.generateString().create());
+            dataFolder = new File(parent, new RandomString().create());
         } else {
             dataFolder = new File(parent, name());
         }
@@ -167,6 +168,8 @@ public interface KarmaSource extends Serializable {
      * Save a resource
      *
      * @param stream the resource
+     * @param name the resource name
+     * @param directory the resource directory
      * @return the resource path
      */
     default Path saveResource(final InputStream stream, final String name, final String... directory) {

@@ -299,6 +299,7 @@ public final class InventoryBook {
      * Open the book to the player
      *
      * @param player the player
+     * @param page the page to open
      * @throws EmptyBookException if the book is empty
      * @throws NoIndexPageException if the book has no page X
      */

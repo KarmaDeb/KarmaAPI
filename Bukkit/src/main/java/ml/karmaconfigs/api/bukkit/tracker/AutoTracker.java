@@ -1,11 +1,9 @@
 package ml.karmaconfigs.api.bukkit.tracker;
 
-import ml.karmaconfigs.api.common.utils.Decliner;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-import javax.xml.ws.Provider;
 import java.util.Collection;
 
 /**

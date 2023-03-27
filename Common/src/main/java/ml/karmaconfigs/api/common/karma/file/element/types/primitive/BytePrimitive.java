@@ -1,5 +1,8 @@
 package ml.karmaconfigs.api.common.karma.file.element.types.primitive;
 
+/**
+ * Byte primitive type
+ */
 public class BytePrimitive implements PrimitiveType<Byte> {
 
     private final byte value;

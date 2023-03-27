@@ -28,6 +28,7 @@ package ml.karmaconfigs.api.common.version;
 import ml.karmaconfigs.api.common.logger.Logger;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
 import ml.karmaconfigs.api.common.karma.source.KarmaSource;
+import ml.karmaconfigs.api.common.string.random.RandomString;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
 import ml.karmaconfigs.api.common.utils.enums.Level;
@@ -121,7 +122,7 @@ public final class LegacyVersionUpdater extends VersionUpdater {
                     boolean updated;
                     URLConnection connection = this.checkURL.openConnection();
                     InputStream file = connection.getInputStream();
-                    Path temp = Files.createTempFile("kfetcher_", StringUtils.generateString().create());
+                    Path temp = Files.createTempFile("kfetcher_", new RandomString().create());
                     File tempFile = FileUtilities.getFixedFile(temp.toFile());
                     tempFile.deleteOnExit();
                     if (!tempFile.exists())
@@ -144,7 +145,7 @@ public final class LegacyVersionUpdater extends VersionUpdater {
                             builder = VersionComparator.createBuilder()
                                     .currentVersion(versionResolver.resolve(source.version()))
                                     .checkVersion(versionResolver.resolve(version));
-                            comparator = StringUtils.compareTo(builder);
+                            comparator = new VersionComparator(builder);
 
                             updated = comparator.isUpToDate();
                             break;
@@ -152,7 +153,7 @@ public final class LegacyVersionUpdater extends VersionUpdater {
                             builder = VersionComparator.createBuilder()
                                     .currentVersion(source.version())
                                     .checkVersion(version);
-                            comparator = StringUtils.compareTo(builder);
+                            comparator = new VersionComparator(builder);
 
                             updated = comparator.isUpToDate();
                             break;

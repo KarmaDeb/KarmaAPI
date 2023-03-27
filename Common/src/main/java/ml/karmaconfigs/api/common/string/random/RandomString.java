@@ -81,7 +81,7 @@ public final class RandomString {
         StringBuilder result = new StringBuilder();
         int last_int = 0;
         for (int i = 0; i < options.getSize(); i++) {
-            int random = (new Random()).nextInt(salt.length);
+            int random = Math.max(1, (new Random()).nextInt(salt.length));
             if (last_int != random) {
                 int random_s;
                 String lower = String.valueOf(salt[random]);

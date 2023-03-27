@@ -35,6 +35,11 @@ import java.util.Collection;
 public abstract class BossProvider<T> {
 
     /**
+     * Create a new boss bar provider
+     */
+    public BossProvider() {}
+
+    /**
      * Set the boss bar color
      *
      * @param paramBossColor the boss bar color

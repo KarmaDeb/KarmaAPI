@@ -43,6 +43,7 @@ import java.nio.file.Path;
  * KarmaSource modules at runtime
  * making a bridge with a main loader
  * provided by Bukkit or Bungee loader
+ * @param <T> the bridge type
  */
 public abstract class BridgeLoader<T extends KarmaSource> {
 

@@ -9,6 +9,7 @@ import ml.karmaconfigs.api.common.karma.file.element.types.*;
 import ml.karmaconfigs.api.common.karma.source.APISource;
 import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.karma.file.error.KarmaFormatException;
+import ml.karmaconfigs.api.common.security.file.FileEncryptor;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.data.path.PathUtilities;
 import ml.karmaconfigs.api.common.string.ListTransformation;
@@ -71,19 +72,6 @@ public class KarmaMain {
      * @throws IllegalStateException if something goes wrong
      */
     public KarmaMain(final Path doc) throws RuntimeException {
-        document = doc;
-        preCache();
-    }
-
-    /**
-     * Initialize the file
-     *
-     * @param doc the file that must be read
-     * @throws IllegalStateException if something goes wrong
-     * @deprecated source is no longer used by anything, instead use {@link KarmaMain#KarmaMain(Path)}
-     */
-    @Deprecated
-    public KarmaMain(final KarmaSource source, final Path doc) throws RuntimeException {
         document = doc;
         preCache();
     }
@@ -985,6 +973,7 @@ public class KarmaMain {
      *
      * @param key the value key
      * @param def the default value
+     * @param <T> the element type
      * @return the value
      */
     public <T extends Element<?>> Element<?> get(final String key, final T def) {
@@ -1083,6 +1072,7 @@ public class KarmaMain {
      *
      * @param key     the value key
      * @param element the value
+     * @param <T> the element type
      */
     public <T extends Element<?>> void set(final String key, final T element) {
         String tmpKey = key;
@@ -1345,6 +1335,7 @@ public class KarmaMain {
     /**
      * Save the file
      *
+     * @return if the file was able to be saved
      * @throws KarmaFormatException if the file could not be parsed correctly
      */
     public boolean save() {
@@ -1356,6 +1347,7 @@ public class KarmaMain {
      *
      * @param flName the target file name
      * @param sub    the file subdirectories
+     * @return if the file was able to be saved
      * @throws KarmaFormatException if the file could not be parsed correctly
      */
     public boolean save(final String flName, final String... sub) throws KarmaFormatException {
@@ -1366,6 +1358,7 @@ public class KarmaMain {
      * Save the file
      *
      * @param target the target file
+     * @return if the file was able to be saved
      * @throws KarmaFormatException if the file could not be parsed correctly
      */
     public boolean save(final Path target) throws KarmaFormatException {

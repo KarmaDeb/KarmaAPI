@@ -21,8 +21,10 @@ public class TrackerTargetDiedEvent extends Event {
      * Initialize the event
      *
      * @param t the tracker
+     * @param l the target
      */
     public TrackerTargetDiedEvent(final Tracker t, final LivingEntity l) {
+        super(true);
         tracker = t;
         target = l;
     }

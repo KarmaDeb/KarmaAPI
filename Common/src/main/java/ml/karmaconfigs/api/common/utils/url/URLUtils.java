@@ -29,9 +29,13 @@ import ml.karmaconfigs.api.common.karma.KarmaAPI;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Karma URL utilities
@@ -78,7 +82,7 @@ public final class URLUtils {
         try {
             URL u = new URL(url);
 
-            HttpURLConnection.setFollowRedirects(false);
+            HttpURLConnection.setFollowRedirects(true);
             HttpURLConnection con = (HttpURLConnection) u.openConnection();
             KarmaConfig config = new KarmaConfig();
 
@@ -90,7 +94,8 @@ public final class URLUtils {
             int code = con.getResponseCode();
             con.disconnect();
             return code;
-        } catch (Throwable e) {
+        } catch (Throwable ex) {
+            ex.printStackTrace();
             return 503;
         }
     }
@@ -103,7 +108,7 @@ public final class URLUtils {
      */
     public static int getResponseCode(final URL url) {
         try {
-            HttpURLConnection.setFollowRedirects(false);
+            HttpURLConnection.setFollowRedirects(true);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             KarmaConfig config = new KarmaConfig();
 

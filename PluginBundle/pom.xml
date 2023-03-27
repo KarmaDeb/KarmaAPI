@@ -36,11 +36,13 @@
             <artifactId>BungeePlugin</artifactId>
             <scope>compile</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>ml.karmaconfigs</groupId>
             <artifactId>VelocityPlugin</artifactId>
             <scope>compile</scope>
         </dependency>
+        -->
         <!-- The PluginBundle is jut the bundle of plugins with the default bundle -->
         <dependency>
             <groupId>ml.karmaconfigs</groupId>

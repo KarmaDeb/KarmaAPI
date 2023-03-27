@@ -35,6 +35,15 @@ public final class SerializedInventory {
     }
 
     /**
+     * Get if the serialized inventory exists
+     *
+     * @return if the inventory exists
+     */
+    public boolean exists() {
+        return container.exists();
+    }
+
+    /**
      * Get the inventory identifier
      *
      * @return the inventory identifier

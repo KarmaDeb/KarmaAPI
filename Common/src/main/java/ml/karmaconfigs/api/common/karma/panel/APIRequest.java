@@ -21,6 +21,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+/**
+ * API request
+ */
 public final class APIRequest {
 
     private final static String[] hosts = {

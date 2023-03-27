@@ -1,5 +1,8 @@
 package ml.karmaconfigs.api.common.karma.file.element.types.primitive;
 
+/**
+ * Character primitive type
+ */
 public class CharacterPrimitive implements PrimitiveType<Character> {
 
     private final char value;

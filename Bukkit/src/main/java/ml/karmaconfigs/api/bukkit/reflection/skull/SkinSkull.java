@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class SkinSkull {
 
@@ -107,6 +107,7 @@ public final class SkinSkull {
      *
      * @param value the game profile value
      * @param signature the game profile signature
+     * @return the skull
      */
     public static ItemStack createSkull(final String value, final String signature) {
         try {
@@ -120,6 +121,7 @@ public final class SkinSkull {
      * Update the meta game profile
      *
      * @param profile the game profile
+     * @return the skull
      */
     public static ItemStack createSkull(final Object profile) {
         return createSkull(profile, null);
@@ -131,8 +133,9 @@ public final class SkinSkull {
      * @param value the game profile value
      * @param signature the game profile signature
      * @param custom_meta the custom meta
+     * @return the skull
      */
-    public static ItemStack createSkull(final String value, final String signature, final Consumer<SkullMeta> custom_meta) {
+    public static ItemStack createSkull(final String value, final String signature, final Function<SkullMeta, SkullMeta> custom_meta) {
         try {
             return createSkull(createGameProfile(createProperty(value, signature)), custom_meta);
         } catch (Throwable ex) {
@@ -145,8 +148,9 @@ public final class SkinSkull {
      *
      * @param profile the game profile
      * @param custom_meta the custom item meta
+     * @return the skull
      */
-    public static ItemStack createSkull(final Object profile, final Consumer<SkullMeta> custom_meta) {
+    public static ItemStack createSkull(final Object profile, final Function<SkullMeta, SkullMeta> custom_meta) {
         ItemStack item;
         try {
             item = new ItemStack(Material.PLAYER_HEAD, 1);
@@ -162,7 +166,9 @@ public final class SkinSkull {
         assert meta != null;
 
         if (custom_meta != null) {
-            custom_meta.accept(meta);
+            SkullMeta clone = meta.clone();
+            clone = custom_meta.apply(clone);
+            if (clone != null) meta = clone;
         }
 
         try {

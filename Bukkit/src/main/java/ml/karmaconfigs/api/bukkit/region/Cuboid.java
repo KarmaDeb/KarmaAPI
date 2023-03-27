@@ -58,7 +58,7 @@ import java.util.UUID;
 
 /**
  * Karma cuboid region
- * <p></p>
+ * <br>
  * Code from:
  * <a href="https://www.spigotmc.org/threads/region-cuboid.329859/">spigotmc</a>
  */
@@ -370,7 +370,7 @@ public abstract class Cuboid implements Serializable {
      * Get the region token, this is another
      * unique identifier for the region ( UUID
      * is also used as identifier ).
-     * <p></p>
+     * <br>
      * The difference between this one and UUID one
      * is that this token is randomly generated, and
      * UUID name-base generated
@@ -403,7 +403,7 @@ public abstract class Cuboid implements Serializable {
 
     /**
      * Save the region to memory
-     * <p></p>
+     * <br>
      * WARNING: THIS METHOD SHOULD CONTAIN
      * A {@link Cuboid#exists(KarmaPlugin)} CHECK
      * BEFORE BEING PROCESSED, OTHERWISE EXISTING

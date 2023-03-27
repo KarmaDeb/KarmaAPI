@@ -121,6 +121,7 @@ public class KarmaPrimitive implements ElementPrimitive {
     /**
      * Create a primitive for object
      *
+     * @param obj the primitive object
      * @return the primitive
      */
     public static KarmaPrimitive forObject(final Object obj) {

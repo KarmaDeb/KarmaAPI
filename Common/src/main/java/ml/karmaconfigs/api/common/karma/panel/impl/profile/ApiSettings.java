@@ -6,7 +6,6 @@ import ml.karmaconfigs.api.common.karma.panel.wrapper.SettingsWrapper;
 import ml.karmaconfigs.api.common.string.StringUtils;
 
 import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -27,7 +26,7 @@ public class ApiSettings extends SettingsWrapper {
      * @param s the profile string
      */
     public ApiSettings(final String s) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().create();
         profile_data = gson.fromJson(s, JsonObject.class);
     }
 
@@ -310,7 +309,7 @@ public class ApiSettings extends SettingsWrapper {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ImageIO.write(buffer, "png", out);
 
-            profile.addProperty("image", DatatypeConverter.printBase64Binary(out.toByteArray()));
+            //profile.addProperty("image", DatatypeConverter.printBase64Binary(out.toByteArray()));
             profile_data.add("profile", profile);
         } catch (Throwable ex) {
             ex.printStackTrace();

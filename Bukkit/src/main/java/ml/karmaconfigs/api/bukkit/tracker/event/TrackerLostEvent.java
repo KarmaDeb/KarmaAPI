@@ -24,6 +24,7 @@ public class TrackerLostEvent extends Event {
      * @param l the tracker target
      */
     public TrackerLostEvent(final Tracker t, final LivingEntity l) {
+        super(true);
         tracker = t;
         target = l;
     }

@@ -50,6 +50,7 @@ public final class InventoryPage implements FunctionalInventory, InventoryHolder
      *
      * @param page the page number
      * @param book the inventory book
+     * @param title the page title
      */
     @SuppressWarnings("deprecation")
     public InventoryPage(final int page, final InventoryBook book, final String title) {
@@ -65,10 +66,14 @@ public final class InventoryPage implements FunctionalInventory, InventoryHolder
             NEXT = SkinSkull.createSkull(NEXT_VALUE, NEXT_SIGNATURE, (meta) -> {
                 meta.setDisplayName(StringUtils.toColor("&aNext"));
                 meta.addItemFlags(ItemFlag.values());
+
+                return meta;
             });
             PREV = SkinSkull.createSkull(PREV_VALUE, PREV_SIGNATURE, (meta) -> {
                 meta.setDisplayName(StringUtils.toColor("&cPrevious"));
                 meta.addItemFlags(ItemFlag.values());
+
+                return meta;
             });
         }
 

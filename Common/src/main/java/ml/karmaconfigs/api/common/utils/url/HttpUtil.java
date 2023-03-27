@@ -146,7 +146,7 @@ public final class HttpUtil {
 
                 postRequest.setEntity(new UrlEncodedFormEntity(params));
             } else {
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                Gson gson = new GsonBuilder().create();
 
                 JsonObject json = gson.fromJson(data.getJson(), JsonObject.class);
 
@@ -210,7 +210,7 @@ public final class HttpUtil {
 
                 postRequest.setEntity(new UrlEncodedFormEntity(params));
             } else {
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                Gson gson = new GsonBuilder().create();
 
                 JsonObject json = gson.fromJson(data.getJson(), JsonObject.class);
 
@@ -244,7 +244,7 @@ public final class HttpUtil {
                 response = sb.toString();
                 if (json) {
                     try {
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        Gson gson = new GsonBuilder().create();
                         JsonElement object = gson.fromJson(response, JsonElement.class);
 
                         //Set json to pretty print
@@ -305,7 +305,7 @@ public final class HttpUtil {
                 response = sb.toString();
 
                 if (json) {
-                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    Gson gson = new GsonBuilder().create();
                     JsonElement object = gson.fromJson(response, JsonElement.class);
 
                     //Set json to pretty print

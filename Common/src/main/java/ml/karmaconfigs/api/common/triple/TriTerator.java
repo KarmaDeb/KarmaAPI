@@ -45,8 +45,6 @@ public interface TriTerator<A, B, C> {
      * iteration is in progress in any way other than by calling this
      * method.
      *
-     * @implSpec
-     * The default implementation throws an instance of
      * {@link UnsupportedOperationException} and performs no other action.
      *
      * @throws UnsupportedOperationException if the {@code remove}
@@ -67,12 +65,6 @@ public interface TriTerator<A, B, C> {
      * performed in the order of iteration, if that order is specified.
      * Exceptions thrown by the action are relayed to the caller.
      *
-     * @implSpec
-     * <p>The default implementation behaves as if:
-     * <pre>{@code
-     *     while (hasNext())
-     *         action.accept(next());
-     * }</pre>
      *
      * @param action The action to be performed for each element
      * @throws NullPointerException if the specified action is null

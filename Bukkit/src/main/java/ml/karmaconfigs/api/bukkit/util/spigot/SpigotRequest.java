@@ -42,7 +42,7 @@ public final class SpigotRequest {
     /**
      * Google gson
      */
-    private final static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final static Gson gson = new GsonBuilder().create();
 
     /**
      * Request method

@@ -54,7 +54,10 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 /**
  * Karma UUID fetcher
+ * @deprecated Deprecated since 1.3.4-SNAPSHOT 1.3.4-10. Has been replaced by {@link ml.karmaconfigs.api.common.minecraft.api.MineAPI mine api}. Which
+ * provides a more consistent and stable API usage with the latest features implemented into the web API
  */
+@Deprecated @ApiStatus.ScheduledForRemoval(inVersion = "1.3.5")
 public final class UUIDUtil {
 
     static {
@@ -115,7 +118,7 @@ public final class UUIDUtil {
                         InputStreamReader responseReader = new InputStreamReader(response, StandardCharsets.UTF_8);
                         BufferedReader reader = new BufferedReader(responseReader);
 
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        Gson gson = new GsonBuilder().create();
                         JsonObject json = gson.fromJson(reader, JsonObject.class);
 
                         if (json.has("online")) {
@@ -202,7 +205,7 @@ public final class UUIDUtil {
                     String response = utils.getResponse();
 
                     if (!StringUtils.isNullOrEmpty(response)) {
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        Gson gson = new GsonBuilder().create();
                         JsonObject json = gson.fromJson(response, JsonObject.class);
 
                         //For UUID cases, it's impossible to give more than 2 results
@@ -255,7 +258,7 @@ public final class UUIDUtil {
                         String response = utils.getResponse();
 
                         if (!StringUtils.isNullOrEmpty(response)) {
-                            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                            Gson gson = new GsonBuilder().create();
                             JsonObject json = gson.fromJson(response, JsonObject.class);
 
                             //More than 1 result
@@ -375,7 +378,7 @@ public final class UUIDUtil {
                         if (!StringUtils.isNullOrEmpty(response)) {
                             api.console().debug("Response is valid at {0}", Level.INFO, url);
 
-                            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                            Gson gson = new GsonBuilder().create();
                             JsonObject json = gson.fromJson(response, JsonObject.class);
 
                             if (json.has("stored")) {
@@ -418,89 +421,6 @@ public final class UUIDUtil {
 
             result.complete(stored, error);
             api.console().debug("Completing oka_fetch_accounts", Level.WARNING);
-        });
-
-        return result;
-    }
-
-    /**
-     * Fetch all stored users in the OKA database
-     *
-     * @return all the stored users
-     * @deprecated This method will be removed as fetching all accounts is currently
-     * inviable by the API
-     */
-    @Deprecated
-    @Unstable(reason = "This does not work as currently, fetching all accounts results in a very long wait for the API.")
-    public static @ApiStatus.ScheduledForRemoval LateScheduler<Set<OKAResponse>> fetchAll(final int page) {
-        LateScheduler<Set<OKAResponse>> result = new AsyncLateScheduler<>();
-
-        KarmaAPI.source(false).async().queue("oka_fetch_clients", () -> {
-            Set<OKAResponse> okaData = new HashSet<>();
-
-            try {
-                URL url = URLUtils.getOrBackup(
-                        "https://karmadev.es/api/?fetch=@all&page=" + page,
-                        "https://karmaconfigs.ml/api/?fetch=@all&page=" + page,
-                        "https://karmarepo.ml/api/?fetch=@all&page=" + page,
-                        "https://backup.karmadev.es/api/?fetch=@all&page=" + page,
-                        "https://backup.karmaconfigs.ml/api/?fetch=@all&page=" + page,
-                        "https://backup.karmarepo.ml/api/?fetch=@all&page=" + page);
-
-                if (url != null) {
-                    HttpUtil utils = URLUtils.extraUtils(url);
-                    if (utils != null) {
-                        String response = utils.getResponse();
-
-                        if (!StringUtils.isNullOrEmpty(response)) {
-                            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                            JsonObject json = gson.fromJson(response, JsonObject.class);
-
-                            if (json.has("fetched")) {
-                                JsonElement element = json.get("fetched");
-                                if (element.isJsonArray()) {
-                                    JsonArray array = element.getAsJsonArray();
-
-                                    for (JsonElement data : array) {
-                                        if (data.isJsonObject()) {
-                                            JsonObject obj = data.getAsJsonObject();
-
-                                            obj.entrySet().forEach((account) -> {
-                                                String nick = account.getKey();
-                                                UUID off = null;
-                                                UUID on = null;
-
-                                                JsonObject info = account.getValue().getAsJsonObject();
-
-                                                JsonArray offline = info.getAsJsonArray("offline");
-                                                JsonArray online = info.getAsJsonArray("online");
-
-                                                JsonObject offlineData = offline.get(0).getAsJsonObject().get("data").getAsJsonObject();
-                                                JsonObject onlineData = online.get(0).getAsJsonObject().get("data").getAsJsonObject();
-
-                                                try {
-                                                    off = UUID.fromString(offlineData.get("id").getAsString());
-                                                } catch (Throwable ignored) {
-                                                }
-                                                try {
-                                                    on = UUID.fromString(onlineData.get("id").getAsString());
-                                                } catch (Throwable ignored) {
-                                                }
-
-                                                OKAResponse tmp = new OKAResponse(nick, off, on);
-                                                okaData.add(tmp);
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (Throwable ignored) {
-            }
-
-            result.complete(okaData);
         });
 
         return result;

@@ -28,6 +28,7 @@ public class SyncScheduler<T extends KarmaSource> extends Scheduler {
 
     private final KarmaSource source;
 
+    private static boolean executing_task = false;
     private static ScheduledExecutorService runner;
     private static int taskId = 0;
     private static int current_task = 0;
@@ -50,46 +51,52 @@ public class SyncScheduler<T extends KarmaSource> extends Scheduler {
 
         if (initialize) {
             runner.scheduleAtFixedRate(() -> {
-                Integer[] ids = tasks.keySet().toArray(new Integer[0]);
-                Arrays.sort(ids);
+                if (!executing_task) {
+                    Integer[] ids = tasks.keySet().toArray(new Integer[0]);
+                    Arrays.sort(ids);
 
-                current_task = ids[0];
-                if (tasks.containsKey(current_task)) {
-                    ScheduledTask task = tasks.remove(current_task);
-                    if (task != null) {
-                        try {
-                            SwingUtilities.invokeAndWait(() -> {
-                                Set<TaskListener> registered = listeners.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-                                registered.forEach((listener) -> listener.onSyncTaskStart(task));
-
-                                task.getTask().run();
-
-                                registered.forEach((listener) -> listener.onSyncTaskComplete(task));
-                            });
-                        } catch (Throwable ex) {
+                    current_task = ids[0];
+                    if (tasks.containsKey(current_task)) {
+                        ScheduledTask task = tasks.remove(current_task);
+                        if (task != null) {
+                            executing_task = true;
                             try {
-                                synchronized (known_main_thread) { //Synchronize at main thread
+                                SwingUtilities.invokeAndWait(() -> {
                                     Set<TaskListener> registered = listeners.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
                                     registered.forEach((listener) -> listener.onSyncTaskStart(task));
 
                                     task.getTask().run();
+                                    executing_task = false;
 
                                     registered.forEach((listener) -> listener.onSyncTaskComplete(task));
-                                }
-                            } catch (Throwable exc) {
-                                KarmaConfig config = new KarmaConfig();
-                                if (config.log(Level.GRAVE)) {
-                                    source.logger().scheduleLog(Level.GRAVE, ex);
-                                }
-                                if (config.log(Level.INFO)) {
-                                    source.logger().scheduleLog(Level.INFO, "Failed to schedule synchronous task {0} ({0}). Will run asynchronous", task.getName(), task.getId());
-                                }
+                                });
+                            } catch (Throwable ex) {
+                                try {
+                                    synchronized (known_main_thread) { //Synchronize at main thread
+                                        Set<TaskListener> registered = listeners.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
+                                        registered.forEach((listener) -> listener.onSyncTaskStart(task));
 
-                                if (config.debug(Level.GRAVE)) {
-                                    source.console().send("Failed to schedule sync task {0} with id {1}. Will run asynchronous", Level.GRAVE, task.getName(), task.getId());
-                                }
+                                        task.getTask().run();
+                                        executing_task = false;
 
-                                task.getTask().run();
+                                        registered.forEach((listener) -> listener.onSyncTaskComplete(task));
+                                    }
+                                } catch (Throwable exc) {
+                                    KarmaConfig config = new KarmaConfig();
+                                    if (config.log(Level.GRAVE)) {
+                                        source.logger().scheduleLog(Level.GRAVE, ex);
+                                    }
+                                    if (config.log(Level.INFO)) {
+                                        source.logger().scheduleLog(Level.INFO, "Failed to schedule synchronous task {0} ({0}). Will run asynchronous", task.getName(), task.getId());
+                                    }
+
+                                    if (config.debug(Level.GRAVE)) {
+                                        source.console().send("Failed to schedule sync task {0} with id {1}. Will run asynchronous", Level.GRAVE, task.getName(), task.getId());
+                                    }
+
+                                    task.getTask().run();
+                                    executing_task = false;
+                                }
                             }
                         }
                     }

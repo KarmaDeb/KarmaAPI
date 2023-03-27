@@ -23,10 +23,16 @@ public class AsyncScheduler<T extends KarmaSource> extends Scheduler {
 
     private final KarmaSource source;
 
+    private static boolean executing_task = false;
     private static ScheduledExecutorService runner;
     private static int taskId = 0;
     private static int current_task = 0;
 
+    /**
+     * Create an asynchronous scheduler
+     *
+     * @param src the scheduler source
+     */
     public AsyncScheduler(final T src) {
         source = src;
         boolean initialize = false;
@@ -53,21 +59,25 @@ public class AsyncScheduler<T extends KarmaSource> extends Scheduler {
 
         if (initialize) {
             runner.scheduleAtFixedRate(() -> {
-                Integer[] ids = tasks.keySet().toArray(new Integer[0]);
-                Arrays.sort(ids);
+                if (!executing_task) {
+                    Integer[] ids = tasks.keySet().toArray(new Integer[0]);
+                    Arrays.sort(ids);
 
-                current_task = ids[0];
-                if (tasks.containsKey(current_task)) {
-                    ScheduledTask task = tasks.remove(current_task);
-                    if (task != null) {
-                        runner.execute(() -> {
-                            Set<TaskListener> registered = listeners.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
-                            registered.forEach((listener) -> listener.onAsyncTaskStart(task));
+                    current_task = ids[0];
+                    if (tasks.containsKey(current_task)) {
+                        ScheduledTask task = tasks.remove(current_task);
+                        if (task != null) {
+                            executing_task = true;
+                            runner.execute(() -> {
+                                Set<TaskListener> registered = listeners.getOrDefault(source, Collections.newSetFromMap(new ConcurrentHashMap<>()));
+                                registered.forEach((listener) -> listener.onAsyncTaskStart(task));
 
-                            task.getTask().run();
+                                task.getTask().run();
+                                executing_task = false;
 
-                            registered.forEach((listener) -> listener.onAsyncTaskComplete(task));
-                        });
+                                registered.forEach((listener) -> listener.onAsyncTaskComplete(task));
+                            });
+                        }
                     }
                 }
             }, 1, 1, TimeUnit.SECONDS);

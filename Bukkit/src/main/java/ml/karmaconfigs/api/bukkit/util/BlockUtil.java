@@ -43,6 +43,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class BlockUtil {
 
     /**
+     * This class does not need initialization
+     */
+    private BlockUtil() {}
+
+    /**
      * Get the blocks between two locations
      *
      * @param loc1 the first location

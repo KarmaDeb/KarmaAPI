@@ -21,6 +21,7 @@ public class TrackerSpawnEvent extends Event {
      * Initialize the event
      *
      * @param t the tracker
+     * @param r respawn status
      */
     public TrackerSpawnEvent(final Tracker t, final boolean r) {
         tracker = t;

@@ -180,6 +180,9 @@ public abstract class Tracker {
 
     /**
      * Create a random period
+     * @param max the maximum period
+     *
+     * @return the generated period
      */
     public final long randomPeriod(final int max) {
         return (long) ((Math.random() * (Math.max(10, Math.abs(max)) - 1)) + 1);

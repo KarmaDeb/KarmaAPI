@@ -242,30 +242,31 @@ public final class BruteLoader {
                 define.setAccessible(true);
                 load.setAccessible(true);
 
-                JarFile jarFile = new JarFile(source.getFile());
-                Enumeration<JarEntry> e = jarFile.entries();
+                try (JarFile jarFile = new JarFile(source.getFile())) {
+                    Enumeration<JarEntry> e = jarFile.entries();
 
-                URL[] urls = {new URL("jar:file:" + FileUtilities.getPrettyFile(new File(source.getFile())) + "!/")};
-                URLClassLoader cl = URLClassLoader.newInstance(urls);
+                    URL[] urls = {new URL("jar:file:" + FileUtilities.getPrettyFile(new File(source.getFile())) + "!/")};
+                    try (URLClassLoader cl = URLClassLoader.newInstance(urls)) {
+                        while (e.hasMoreElements()) {
+                            JarEntry je = e.nextElement();
+                            if (je.isDirectory() || !je.getName().endsWith(".class")) {
+                                continue;
+                            }
 
-                while (e.hasMoreElements()) {
-                    JarEntry je = e.nextElement();
-                    if (je.isDirectory() || !je.getName().endsWith(".class")) {
-                        continue;
-                    }
+                            String className = je.getName().substring(0, je.getName().length() - 6);
+                            className = className.replace('/', '.');
+                            if (!className.endsWith("module-info")) {
+                                Class<?> clazz = cl.loadClass(className);
+                                method.invoke(loader, clazz);
+                                byte[] data = (byte[]) load.invoke(loader, className);
+                                define.invoke(loader, className, data, 0, data.length);
+                            }
+                        }
 
-                    String className = je.getName().substring(0, je.getName().length() - 6);
-                    className = className.replace('/', '.');
-                    if (!className.endsWith("module-info")) {
-                        Class<?> clazz = cl.loadClass(className);
-                        method.invoke(loader, clazz);
-                        byte[] data = (byte[]) load.invoke(loader, className);
-                        define.invoke(loader, className, data, 0, data.length);
+                        load.setAccessible(false);
+                        define.setAccessible(false);
                     }
                 }
-
-                load.setAccessible(false);
-                define.setAccessible(false);
             }
             method.setAccessible(false);
 
@@ -297,29 +298,30 @@ public final class BruteLoader {
                 define.setAccessible(true);
                 load.setAccessible(true);
 
-                JarFile jarFile = new JarFile(source);
-                Enumeration<JarEntry> e = jarFile.entries();
+                try (JarFile jarFile = new JarFile(source)) {
+                    Enumeration<JarEntry> e = jarFile.entries();
 
-                URL[] urls = {new URL("jar:file:" + FileUtilities.getPrettyFile(source) + "!/")};
-                URLClassLoader cl = URLClassLoader.newInstance(urls);
+                    URL[] urls = {new URL("jar:file:" + FileUtilities.getPrettyFile(source) + "!/")};
+                    try (URLClassLoader cl = URLClassLoader.newInstance(urls)) {
+                        while (e.hasMoreElements()) {
+                            JarEntry je = e.nextElement();
+                            if (je.isDirectory() || !je.getName().endsWith(".class")) {
+                                continue;
+                            }
 
-                while (e.hasMoreElements()) {
-                    JarEntry je = e.nextElement();
-                    if (je.isDirectory() || !je.getName().endsWith(".class")) {
-                        continue;
-                    }
+                            String className = je.getName().substring(0, je.getName().length() - 6);
+                            if (!className.endsWith("module-info")) {
+                                Class<?> clazz = cl.loadClass(className);
+                                method.invoke(loader, clazz);
+                                byte[] data = (byte[]) load.invoke(loader, className);
+                                define.invoke(loader, className, data, 0, data.length);
+                            }
+                        }
 
-                    String className = je.getName().substring(0, je.getName().length() - 6);
-                    if (!className.endsWith("module-info")) {
-                        Class<?> clazz = cl.loadClass(className);
-                        method.invoke(loader, clazz);
-                        byte[] data = (byte[]) load.invoke(loader, className);
-                        define.invoke(loader, className, data, 0, data.length);
+                        load.setAccessible(false);
+                        define.setAccessible(false);
                     }
                 }
-
-                load.setAccessible(false);
-                define.setAccessible(false);
             }
             method.setAccessible(false);
 
@@ -352,29 +354,30 @@ public final class BruteLoader {
                 define.setAccessible(true);
                 load.setAccessible(true);
 
-                JarFile jarFile = new JarFile(source.toFile());
-                Enumeration<JarEntry> e = jarFile.entries();
+                try (JarFile jarFile = new JarFile(source.toFile())) {
+                    Enumeration<JarEntry> e = jarFile.entries();
 
-                URL[] urls = {new URL("jar:file:" + PathUtilities.getPrettyPath(source) + "!/")};
-                URLClassLoader cl = URLClassLoader.newInstance(urls);
+                    URL[] urls = {new URL("jar:file:" + PathUtilities.getPrettyPath(source) + "!/")};
+                    try (URLClassLoader cl = URLClassLoader.newInstance(urls)) {
+                        while (e.hasMoreElements()) {
+                            JarEntry je = e.nextElement();
+                            if (je.isDirectory() || !je.getName().endsWith(".class")) {
+                                continue;
+                            }
 
-                while (e.hasMoreElements()) {
-                    JarEntry je = e.nextElement();
-                    if (je.isDirectory() || !je.getName().endsWith(".class")) {
-                        continue;
-                    }
+                            String className = je.getName().substring(0, je.getName().length() - 6);
+                            if (!className.endsWith("module-info")) {
+                                Class<?> clazz = cl.loadClass(className);
+                                method.invoke(loader, clazz);
+                                byte[] data = (byte[]) load.invoke(loader, className);
+                                define.invoke(loader, className, data, 0, data.length);
+                            }
+                        }
 
-                    String className = je.getName().substring(0, je.getName().length() - 6);
-                    if (!className.endsWith("module-info")) {
-                        Class<?> clazz = cl.loadClass(className);
-                        method.invoke(loader, clazz);
-                        byte[] data = (byte[]) load.invoke(loader, className);
-                        define.invoke(loader, className, data, 0, data.length);
+                        load.setAccessible(false);
+                        define.setAccessible(false);
                     }
                 }
-
-                load.setAccessible(false);
-                define.setAccessible(false);
             }
             method.setAccessible(false);
 

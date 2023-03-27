@@ -33,6 +33,7 @@ import ml.karmaconfigs.api.common.logger.Logger;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
 import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.karma.file.KarmaMain;
+import ml.karmaconfigs.api.common.string.random.RandomString;
 import ml.karmaconfigs.api.common.timer.scheduler.LateScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.worker.AsyncLateScheduler;
 import ml.karmaconfigs.api.common.utils.enums.Level;
@@ -114,7 +115,6 @@ public abstract class VersionUpdater {
      *              of returning the cached result
      * @return the fetch result
      */
-    @SuppressWarnings({"deprecation", "unchecked"})
     public LateScheduler<VersionFetchResult> fetch(boolean force) {
         KarmaConfig config = new KarmaConfig();
         AsyncLateScheduler<VersionFetchResult> asyncLateScheduler = new AsyncLateScheduler<>();
@@ -127,7 +127,7 @@ public abstract class VersionUpdater {
                     boolean updated;
                     URLConnection connection = this.checkURL.openConnection();
                     InputStream file = connection.getInputStream();
-                    Path temp = Files.createTempFile("kfetcher_", StringUtils.generateString().create());
+                    Path temp = Files.createTempFile("kfetcher_", new RandomString().create());
                     File tempFile = FileUtilities.getFixedFile(temp.toFile());
                     tempFile.deleteOnExit();
                     if (!tempFile.exists())
@@ -138,7 +138,7 @@ public abstract class VersionUpdater {
                     AtomicReference<String[]> update = new AtomicReference<>(new String[0]);
                     AtomicReference<String[]> changelog = new AtomicReference<>(new String[0]);
 
-                    KarmaMain kFile = new KarmaMain(source, temp);
+                    KarmaMain kFile = new KarmaMain(temp);
                     Element<?> v = kFile.get("version");
                     Element<?> u = kFile.get("update_url");
                     Element<?> c = kFile.get("changelog");
@@ -174,14 +174,14 @@ public abstract class VersionUpdater {
                             builder = VersionComparator.createBuilder()
                                     .currentVersion(versionResolver.resolve(source.version()))
                                     .checkVersion(versionResolver.resolve(version.get()));
-                            comparator = StringUtils.compareTo(builder);
+                            comparator = new VersionComparator(builder);
                             updated = comparator.isUpToDate();
                             break;
                         default:
                             builder = VersionComparator.createBuilder()
                                     .currentVersion(source.version())
                                     .checkVersion(version.get());
-                            comparator = StringUtils.compareTo(builder);
+                            comparator = new VersionComparator(builder);
 
                             updated = comparator.isUpToDate();
                             break;

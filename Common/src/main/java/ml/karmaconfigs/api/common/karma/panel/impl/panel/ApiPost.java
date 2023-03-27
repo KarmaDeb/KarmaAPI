@@ -485,7 +485,7 @@ public class ApiPost extends PostWrapper {
      */
     @Override
     public String toString() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().create();
         return gson.toJson(post);
     }
 

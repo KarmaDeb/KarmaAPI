@@ -73,7 +73,7 @@ public final class SpigotChecker {
                 String response = utils.getResponse();
 
                 if (!StringUtils.isNullOrEmpty(response)) {
-                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    Gson gson = new GsonBuilder().create();
                     JsonElement element = gson.fromJson(response, JsonElement.class);
 
                     if (element.isJsonObject()) {
@@ -109,7 +109,7 @@ public final class SpigotChecker {
                     String version_response = version_utils.getResponse();
 
                     if (!StringUtils.isNullOrEmpty(version_response)) {
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        Gson gson = new GsonBuilder().create();
                         JsonElement element = gson.fromJson(version_response, JsonElement.class);
 
                         if (element.isJsonObject()) {
@@ -204,7 +204,7 @@ public final class SpigotChecker {
      * Get the project update URL
      *
      * @return the project update URL
-     * @deprecated
+     * @deprecated replaced by {@link SpigotChecker#fetchLatest()}
      */
     @Deprecated
     public LateScheduler<URL> getUpdateURL() {
@@ -219,7 +219,7 @@ public final class SpigotChecker {
                     String version_response = version_utils.getResponse();
 
                     if (!StringUtils.isNullOrEmpty(version_response)) {
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        Gson gson = new GsonBuilder().create();
                         JsonElement element = gson.fromJson(version_response, JsonElement.class);
 
                         if (element.isJsonObject()) {

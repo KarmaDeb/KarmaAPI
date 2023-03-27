@@ -21,6 +21,7 @@ public class TrackerDiedEvent extends Event {
      * @param t the tracker
      */
     public TrackerDiedEvent(final Tracker t) {
+        super(true);
         tracker = t;
     }
 

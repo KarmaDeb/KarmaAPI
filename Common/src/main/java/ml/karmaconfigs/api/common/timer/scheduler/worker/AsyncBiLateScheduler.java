@@ -84,6 +84,11 @@ public final class AsyncBiLateScheduler<A, B> implements BiLateScheduler<A, B> {
     private Throwable typeE = null;
 
     /**
+     * Create the late scheduler
+     */
+    public AsyncBiLateScheduler() {}
+
+    /**
      * Set the complete action
      *
      * @param action the action to perform

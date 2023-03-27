@@ -8,6 +8,7 @@ public class NoIndexPageException extends Exception {
 
     /**
      * Initialize the exception
+     * @param index the page index
      */
     public NoIndexPageException(final int index) {
         super("Cannot open inventory book which doesn't has index page (" + index + ") to player");

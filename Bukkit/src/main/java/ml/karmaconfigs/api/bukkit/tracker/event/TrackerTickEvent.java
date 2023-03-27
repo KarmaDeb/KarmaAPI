@@ -27,6 +27,7 @@ public class TrackerTickEvent extends Event {
      * @param s the tick
      */
     public TrackerTickEvent(final Tracker t, final LivingEntity l, final int s) {
+        super(true);
         tracker = t;
         target = l;
         tick = s;

@@ -44,6 +44,11 @@ public final class BukkitServer {
     private final static Server server = Bukkit.getServer();
 
     /**
+     * This class does not need initialization
+     */
+    public BukkitServer() {}
+
+    /**
      * Get the full version string of
      * the server
      *

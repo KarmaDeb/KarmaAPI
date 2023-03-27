@@ -32,7 +32,11 @@ import java.util.UUID;
 
 /**
  * Online Karma API response ( OKA Response )
+ * @deprecated Deprecated since 1.3.4-10. As this API is now
+ * provided by {@link ml.karmaconfigs.api.common.minecraft.api.response.OKARequest requests} and
+ * the {@link ml.karmaconfigs.api.common.minecraft.api.MineAPI minecraft api}
  */
+@Deprecated
 public final class OKAResponse {
 
     private final String nick;

@@ -78,6 +78,11 @@ public final class AsyncLateScheduler<A> implements LateScheduler<A> {
     private Throwable typeE = null;
 
     /**
+     * Create the late scheduler
+     */
+    public AsyncLateScheduler() {}
+
+    /**
      * Set the complete action
      *
      * @param action the action to perform

@@ -216,7 +216,7 @@ public abstract class KarmaLogger implements AutoCloseable {
      * <p>
      * WARNING: This will replace all the log file
      * content, this should be used only for applications
-     * that runs once -> generate a log file and then
+     * that runs once, generate a log file and then
      * switch log file. You can change the log file
      * by overriding {@link KarmaLogger#getLoggerFile(LogExtension)}
      * <p>

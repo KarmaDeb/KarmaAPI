@@ -8,8 +8,8 @@ import javax.swing.text.html.HTMLEditorKit;
 public class HtmlPostReader extends HTMLEditorKit.ParserCallback {
 
     /**
-     * @param errorMsg
-     * @param pos
+     * @param errorMsg the error message
+     * @param pos the error position
      */
     @Override
     public void handleError(final String errorMsg, final int pos) {

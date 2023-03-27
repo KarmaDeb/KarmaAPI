@@ -40,6 +40,7 @@ import ml.karmaconfigs.api.common.placeholder.util.Placeholder;
 import ml.karmaconfigs.api.common.placeholder.util.PlaceholderEngine;
 import ml.karmaconfigs.api.common.security.token.TokenGenerator;
 import ml.karmaconfigs.api.common.string.StringUtils;
+import ml.karmaconfigs.api.common.timer.scheduler.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -66,6 +67,11 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
     private final KarmaLogger logger;
 
     /**
+     * The plugin synchronous scheduler
+     */
+    private final BukkitSyncScheduler scheduler;
+
+    /**
      * Initialize the KarmaPlugin
      */
     public KarmaPlugin() {
@@ -78,6 +84,8 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
         console = new Console(this, (msg) -> Bukkit.getServer().getConsoleSender().sendMessage(StringUtils.toColor(StringUtils.fromAnyOsColor(msg))));
         logger = new Logger(this);
         loadIdentifier("DEFAULT");
+
+        scheduler = new BukkitSyncScheduler(this);
     }
 
     /**
@@ -101,6 +109,8 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
         console = new Console(this, (msg) -> Bukkit.getServer().getConsoleSender().sendMessage(StringUtils.toColor(StringUtils.fromAnyOsColor(msg))));
         logger = new Logger(this);
         loadIdentifier("DEFAULT");
+
+        scheduler = new BukkitSyncScheduler(this);
     }
 
     /**
@@ -177,6 +187,16 @@ public abstract class KarmaPlugin extends JavaPlugin implements KarmaSource, Ide
     @Override
     public @NotNull KarmaLogger logger() {
         return logger;
+    }
+
+    /**
+     * Get the source sync scheduler
+     *
+     * @return the source sync scheduler
+     */
+    @Override
+    public Scheduler sync() {
+        return scheduler;
     }
 
     /**

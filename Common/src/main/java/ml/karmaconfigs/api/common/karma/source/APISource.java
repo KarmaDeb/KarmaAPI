@@ -30,7 +30,9 @@ import ml.karmaconfigs.api.common.console.prefix.PrefixConsoleData;
 import ml.karmaconfigs.api.common.utils.enums.Level;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 /**
  * Karma API source
@@ -77,6 +79,19 @@ public final class APISource implements KarmaSource {
      */
     public static void addProvider(final KarmaSource src) throws IllegalStateException {
         String identifier = src.name().toLowerCase();
+        Stream<KarmaSource> filtered = sources.values().stream().filter((source) -> source.getClass().getCanonicalName().equals(src.getClass().getCanonicalName()));
+        Optional<KarmaSource> optionalSource = filtered.findAny();
+        if (optionalSource.isPresent()) {
+            KarmaSource stored = optionalSource.get();
+
+            throw new IllegalStateException("A source from " +
+                    src.getClass().getName() +
+                    " tried to add an already added source " +
+                    stored.name() +
+                    " by author(s): " +
+                    stored.authors(false, ", "));
+        }
+
         KarmaSource stored = sources.getOrDefault(identifier, null);
 
         if (stored == null) {
@@ -157,6 +172,20 @@ public final class APISource implements KarmaSource {
                 return new APISource();
             }
         }
+    }
+
+    /**
+     * Load a provider
+     *
+     * @param clazz the provider class
+     * @param <T> the inner class
+     * @return the karma source attached to that name
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends KarmaSource> T loadProvider(final Class<T> clazz) throws IllegalArgumentException {
+        Stream<KarmaSource> filtered = sources.values().stream().filter((source) -> source.getClass().getCanonicalName().equals(clazz.getCanonicalName()));
+        Optional<KarmaSource> optionalSource = filtered.findAny();
+        return (T) optionalSource.orElse(null);
     }
 
     /**

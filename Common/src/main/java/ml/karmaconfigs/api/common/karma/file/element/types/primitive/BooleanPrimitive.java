@@ -1,5 +1,8 @@
 package ml.karmaconfigs.api.common.karma.file.element.types.primitive;
 
+/**
+ * Primitive boolean type
+ */
 public class BooleanPrimitive implements PrimitiveType<Boolean> {
 
     private final boolean value;

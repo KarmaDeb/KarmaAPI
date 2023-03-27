@@ -24,6 +24,7 @@ public interface TriCollection<A, B, C> extends TriTerable<A, B, C> {
      * @param key the data key
      * @param value the data value
      * @param secondary the data secondary value
+     * @return the inserted id
      * @throws BufferOverflowException Implementations may
      */
     int add(final A key, final B value, final C secondary);

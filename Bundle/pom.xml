@@ -36,11 +36,13 @@
             <artifactId>KarmaAPI-Bungee</artifactId>
             <scope>compile</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>ml.karmaconfigs</groupId>
             <artifactId>KarmaAPI-Velocity</artifactId>
             <scope>compile</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>ml.karmaconfigs</groupId>
             <artifactId>KarmaAPI-Common</artifactId>

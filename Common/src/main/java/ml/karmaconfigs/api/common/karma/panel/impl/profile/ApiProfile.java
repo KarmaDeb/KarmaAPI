@@ -566,7 +566,7 @@ public final class ApiProfile extends ProfileWrapper {
      */
     @Override
     public @Nullable JsonElement getLastAuth() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().create();
 
         return gson.fromJson(LAST_AUTH_MESSAGE, JsonElement.class);
     }
@@ -578,7 +578,7 @@ public final class ApiProfile extends ProfileWrapper {
      */
     @Override
     public @Nullable JsonElement getLastCreate() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().create();
 
         return gson.fromJson(LAST_REGI_MESSAGE, JsonElement.class);
     }

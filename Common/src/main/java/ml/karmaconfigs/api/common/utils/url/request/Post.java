@@ -3,6 +3,7 @@ package ml.karmaconfigs.api.common.utils.url.request;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import ml.karmaconfigs.api.common.string.StringUtils;
+import ml.karmaconfigs.api.common.string.random.RandomString;
 
 import java.time.Instant;
 import java.util.Map;
@@ -23,7 +24,7 @@ public final class Post {
      */
     Post() {
         data = new ConcurrentHashMap<>();
-        data.put("KarmaAPI_" + StringUtils.generateString().create(), Instant.now().toString());
+        data.put("KarmaAPI_" + new RandomString().create(), Instant.now().toString());
     }
 
     /**
@@ -63,7 +64,7 @@ public final class Post {
      * @return the post json
      */
     public Post setJson(final JsonObject j) {
-        json = new GsonBuilder().setPrettyPrinting().create().toJson(j);
+        json = new GsonBuilder().create().toJson(j);
 
         return this;
     }

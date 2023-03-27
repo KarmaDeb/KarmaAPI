@@ -185,7 +185,7 @@ public final class KarmaUpdaterGenerator {
      */
     public KarmaMain generate(final String name) {
         Path destination = PathUtilities.getFixedPath(source.getDataPath().resolve(name + ".kup"));
-        KarmaMain file = new KarmaMain(source, destination)
+        KarmaMain file = new KarmaMain(destination)
                 .internal(KarmaUpdaterGenerator.class.getResourceAsStream("/update_template.kup"));
 
         try {

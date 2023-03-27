@@ -41,7 +41,7 @@ public final class ScheduledTask {
      * @param tsk the task to run
      * @param id  the task id
      */
-    ScheduledTask(final String nm, final Runnable tsk, final int id) {
+    public ScheduledTask(final String nm, final Runnable tsk, final int id) {
         name = nm;
         task = tsk;
         task_id = id;

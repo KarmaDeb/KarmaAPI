@@ -32,6 +32,7 @@ public class KarmaArray implements ElementArray<ElementPrimitive> {
      * Load a java array into the karma array
      *
      * @param array the array
+     * @param sort if the array should be sorted
      * @return the karma array
      */
     public static KarmaArray fromJavaArray(final Object[] array, final boolean sort) {

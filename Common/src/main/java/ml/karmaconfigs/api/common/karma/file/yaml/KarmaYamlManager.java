@@ -29,6 +29,7 @@ import ml.karmaconfigs.api.common.karma.source.KarmaSource;
 import ml.karmaconfigs.api.common.data.file.FileUtilities;
 import ml.karmaconfigs.api.common.karma.file.reader.BoundedBufferedReader;
 import ml.karmaconfigs.api.common.string.StringUtils;
+import ml.karmaconfigs.api.common.string.random.RandomString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
@@ -176,7 +177,7 @@ public final class KarmaYamlManager {
         } else {
             try {
                 Yaml yaml = new Yaml();
-                Path file = Files.createTempFile("karmayaml", StringUtils.generateString().create());
+                Path file = Files.createTempFile("karmayaml", new RandomString().create());
                 Files.write(file, configuration.getBytes(StandardCharsets.UTF_8));
                 Map<String, Object> values = yaml.load(new InputStreamReader(new FileInputStream(file.toFile()), StandardCharsets.UTF_8));
                 if (values != null)

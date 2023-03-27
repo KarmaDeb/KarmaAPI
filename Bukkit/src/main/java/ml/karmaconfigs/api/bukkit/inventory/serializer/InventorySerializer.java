@@ -71,4 +71,46 @@ public final class InventorySerializer {
             return null;
         }
     }
+
+    /**
+     * Serialize the inventory
+     *
+     * @param inventory the inventory to serialize
+     * @param name the inventory name, as spigot deprecated the Inventory#getTitle method
+     * @param id the inventory unique id
+     * @return the serialized inventory
+     */
+    public SerializedInventory serialize(final Inventory inventory, final String name, final UUID id) {
+        String fl_name = id.toString().replace("-", "") + ".kf";
+
+        KarmaMain container = new KarmaMain(plugin, fl_name, "cache", "inventory");
+        if (!container.exists())
+            container.create();
+
+        container.setRaw("title", name);
+        container.setRaw("size", inventory.getSize());
+        container.setRaw("type", inventory.getType().name());
+
+        Gson gson = new GsonBuilder().create();
+        JsonArray array = new JsonArray();
+
+        for (int i  = 0; i < inventory.getSize(); i++) {
+            ItemStack item = inventory.getItem(i);
+            if (item == null) {
+                item = new ItemStack(Material.AIR);
+            }
+
+            Map<String, Object> serialized = item.serialize();
+            String as_json = gson.toJson(serialized);
+            JsonElement json_item = gson.fromJson(as_json, JsonElement.class);
+            array.add(json_item);
+        }
+
+        container.setRaw("items", Base64.getEncoder().encodeToString(gson.toJson(array).getBytes()));
+        if (container.save()) {
+            return new SerializedInventory(id, plugin);
+        } else {
+            return null;
+        }
+    }
 }

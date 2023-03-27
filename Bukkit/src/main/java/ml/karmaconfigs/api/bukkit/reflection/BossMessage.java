@@ -2,6 +2,7 @@ package ml.karmaconfigs.api.bukkit.reflection;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +26,6 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 /**
  * Boss message
@@ -189,21 +189,22 @@ public final class BossMessage extends BossProvider<Player> {
                 Object world_server = craft_world_handle.invoke(c_world);
 
                 Object wither = wither_constructor.newInstance(world_server);
-
-                Method customName = wither.getClass().getMethod("setCustomName", String.class);
-                Method setInvisible = wither.getClass().getMethod("setInvisible", boolean.class);
-                Method setLocation = wither.getClass().getMethod("setLocation", double.class, double.class, double.class, float.class, float.class);
-
-                customName.invoke(wither, StringUtils.toColor(message));
-                setInvisible.invoke(wither, true);
-                setLocation.invoke(wither, location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-
-                Object packetPlayOutEntityLiving = entity_living_constructor.newInstance(wither);
                 Object c_player = craft_player.cast(target);
                 Object entity_player = craft_player_handle.invoke(c_player);
 
                 Field playerConnection = entity_player.getClass().getField("playerConnection");
                 Object connection = playerConnection.get(entity_player);
+
+                Method setInvisible = wither.getClass().getMethod("setInvisible", boolean.class);
+                Method setVisible = wither.getClass().getMethod("setCustomNameVisible", boolean.class);
+                Method setLocation = wither.getClass().getMethod("setLocation", double.class, double.class, double.class, float.class, float.class);
+                setCustomName(wither, message);
+
+                setVisible.invoke(wither, true);
+                setInvisible.invoke(wither, false);
+                setLocation.invoke(wither, location.getX(), location.getY() - 10, location.getZ(), location.getYaw(), location.getPitch());
+
+                Object packetPlayOutEntityLiving = entity_living_constructor.newInstance(wither);
 
                 packet_connect_send.invoke(packet_connection.cast(connection), packetPlayOutEntityLiving);
                 try {
@@ -226,7 +227,7 @@ public final class BossMessage extends BossProvider<Player> {
 
                         wither_set_location_method.invoke(wither,
                                 new_location.getX(),
-                                new_location.getY(),
+                                new_location.getY()  - 10,
                                 new_location.getZ(),
 
                                 new_location.getYaw(),
@@ -544,8 +545,7 @@ public final class BossMessage extends BossProvider<Player> {
                 if (legacy) {
                     Object wither = wither_objects.getOrDefault(id, null);
                     if (wither != null) {
-                        Method customName = wither.getClass().getMethod("setCustomName", String.class);
-                        customName.invoke(wither, StringUtils.toColor(title));
+                        setCustomName(wither, title);
 
                         try {
                             Method getId = wither.getClass().getMethod("getId");
@@ -571,8 +571,10 @@ public final class BossMessage extends BossProvider<Player> {
                     }
                 } else {
                     BossBar bar = (BossBar) wither_objects.getOrDefault(id, null);
-                    bar.setTitle(StringUtils.toColor(title));
-                    bar.getPlayers().forEach(bar::addPlayer);
+                    if (bar != null) {
+                        bar.setTitle(StringUtils.toColor(title));
+                        bar.getPlayers().forEach(bar::addPlayer);
+                    }
                 }
 
                 message = title;
@@ -706,6 +708,7 @@ public final class BossMessage extends BossProvider<Player> {
      *
      * @param id the boss id
      * @return the boss id
+     * @throws BossNotFoundException if there's no boss bar with the specified ID
      */
     public static BossMessage fromId(final int id) throws BossNotFoundException {
         BossMessage provider = boss_bars.getOrDefault(id, null);
@@ -713,6 +716,50 @@ public final class BossMessage extends BossProvider<Player> {
             return provider;
         } else {
             throw new BossNotFoundException(id, BossMessage.boss_bars.keySet());
+        }
+    }
+
+    /**
+     * Set the custom name of the wither
+     *
+     * @param wither the wither object
+     * @param message the name
+     * @throws InvocationTargetException as part of the method
+     * @throws InstantiationException as part of the method
+     * @throws IllegalAccessException as part of the method
+     */
+    private void setCustomName(final Object wither, final String message) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+        Method customName = null;
+        boolean component = false;
+        try {
+            customName = wither.getClass().getMethod("setCustomName", String.class);
+        } catch (NoSuchMethodException e) {
+            Class<?> iChatBaseComponent = BukkitServer.getMinecraftClass("IChatBaseComponent");
+            try {
+                customName = wither.getClass().getMethod("setCustomName", iChatBaseComponent);
+                component = true;
+            } catch (NoSuchMethodException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        if (customName != null) {
+            if (component) {
+                Class<?> chatMessage = BukkitServer.getMinecraftClass("ChatMessage");
+                if (chatMessage != null) {
+                    try {
+                        Constructor<?> constructor = chatMessage.getConstructor(String.class, Object[].class);
+                        Object chatMessageComponent = constructor.newInstance(StringUtils.toColor(message), new Object[0]);
+                        customName.invoke(wither, chatMessageComponent);
+                    } catch (NoSuchMethodException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            } else {
+                customName.invoke(wither, StringUtils.toColor(message));
+            }
+        } else {
+            source.console().send("Cannot name a boss bar with invalid name method", Level.GRAVE);
         }
     }
 }

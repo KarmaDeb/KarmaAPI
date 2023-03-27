@@ -44,7 +44,7 @@ public class ImmutableTryEntry<A, B, C> implements TriEntry<A, B, C> {
     /**
      * Returns the value corresponding to this entry.  If the mapping
      * has been removed from the backing map (by the iterator's
-     * <tt>remove</tt> operation), the results of this call are undefined.
+     * remove operation), the results of this call are undefined.
      *
      * @return the value corresponding to this entry
      * @throws IllegalStateException implementations may, but are not
@@ -59,7 +59,7 @@ public class ImmutableTryEntry<A, B, C> implements TriEntry<A, B, C> {
     /**
      * Returns the sub value corresponding to this entry.  If the mapping
      * has been removed from the backing map (by the iterator's
-     * <tt>remove</tt> operation), the results of this call are undefined.
+     * remove operation), the results of this call are undefined.
      *
      * @return the value corresponding to this entry
      * @throws IllegalStateException implementations may, but are not
@@ -75,7 +75,7 @@ public class ImmutableTryEntry<A, B, C> implements TriEntry<A, B, C> {
      * Replaces the value corresponding to this entry with the specified
      * value (optional operation).  (Writes through to the map.)  The
      * behavior of this call is undefined if the mapping has already been
-     * removed from the map (by the iterator's <tt>remove</tt> operation).
+     * removed from the map (by the iterator's remove operation).
      *
      * @param v new value to be stored in this entry
      * @return old value corresponding to the entry
@@ -90,7 +90,7 @@ public class ImmutableTryEntry<A, B, C> implements TriEntry<A, B, C> {
      * Replaces the sub value corresponding to this entry with the specified
      * value (optional operation).  (Writes through to the map.)  The
      * behavior of this call is undefined if the mapping has already been
-     * removed from the map (by the iterator's <tt>remove</tt> operation).
+     * removed from the map (by the iterator's remove operation).
      *
      * @param sub new value to be stored in this entry
      * @return old value corresponding to the entry

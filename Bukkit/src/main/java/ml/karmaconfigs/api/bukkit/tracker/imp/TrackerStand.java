@@ -43,7 +43,6 @@ public class TrackerStand extends Tracker {
 
     private final static ArrayList<UUID> kill_queue = new ArrayList<>(25); //Should be enough
 
-    //private final Map<String, Object> properties = new HashMap<>();
     private final Set<PropertyValue<?>> properties = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Set<PropertyValue<?>> updated_properties = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final KarmaPlugin plugin;
@@ -365,7 +364,7 @@ public class TrackerStand extends Tracker {
         if (task == null) {
             long track_period = Math.max(1, ((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "trackPeriod").getUnsafe()).longValue());
 
-            track_task = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+            track_task = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
                 boolean always_track = getProperty(TrackerFlag.TRACKER_BOOLEAN, "ignoreLineOfSight").getUnsafe();
                 double offset = ((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "angleOffset").getUnsafe()).doubleValue();
                 double max_dist = Math.abs(((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "scanDistance").getUnsafe()).doubleValue());
@@ -464,7 +463,7 @@ public class TrackerStand extends Tracker {
             AtomicInteger last_second = new AtomicInteger(0);
             long period = Math.max(1, ((Number) getProperty(TrackerFlag.TRACKER_NUMBER, "scanPeriod").getUnsafe()).longValue());
 
-            task = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+            task = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
                 if (reset_task) {
                     reset_task = false;
 
@@ -1221,6 +1220,7 @@ public class TrackerStand extends Tracker {
         /**
          * Create a new value
          *
+         * @param <T> the property type
          * @return a new property value
          */
         public final <T> PropertyValue<T> createValue() {

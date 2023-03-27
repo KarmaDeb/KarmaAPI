@@ -19,12 +19,6 @@ public interface TriTerable<A, B, C> {
      * is specified).  Exceptions thrown by the action are relayed to the
      * caller.
      *
-     * @implSpec
-     * <p>The default implementation behaves as if:
-     * <pre>{@code
-     *     for (T t : this)
-     *         action.accept(t);
-     * }</pre>
      *
      * @param action The action to be performed for each element
      * @throws NullPointerException if the specified action is null

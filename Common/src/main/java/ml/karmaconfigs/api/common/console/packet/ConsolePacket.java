@@ -19,6 +19,7 @@ public final class ConsolePacket {
 
     /**
      * Only for deserializing utilities
+     * @param raw the packet message
      */
     public ConsolePacket(final byte[] raw) {
         message = raw;

@@ -79,6 +79,7 @@ public enum TrackerFlag {
     /**
      * Create a property for this tracker flag
      *
+     * @param name the property name
      * @param <T> the property type
      * @return a new property for this flag
      */
@@ -116,6 +117,7 @@ public enum TrackerFlag {
      * Get the tracker flag from the specified key
      *
      * @param key the tracker key
+     * @param <T> the property type
      * @return the tracker flag
      */
     public static <T> PropertyValue<T> fromKey(final String key) {

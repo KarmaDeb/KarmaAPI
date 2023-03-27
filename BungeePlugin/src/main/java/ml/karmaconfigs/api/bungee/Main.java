@@ -3,6 +3,7 @@ package ml.karmaconfigs.api.bungee;
 import ml.karmaconfigs.api.bungee.listener.JoinHandler;
 import ml.karmaconfigs.api.common.karma.source.APISource;
 import ml.karmaconfigs.api.common.karma.KarmaConfig;
+import ml.karmaconfigs.api.common.minecraft.api.MineAPI;
 import ml.karmaconfigs.api.common.timer.SchedulerUnit;
 import ml.karmaconfigs.api.common.timer.SourceScheduler;
 import ml.karmaconfigs.api.common.timer.scheduler.SimpleScheduler;
@@ -10,7 +11,6 @@ import ml.karmaconfigs.api.common.utils.enums.Level;
 import ml.karmaconfigs.api.common.data.path.PathUtilities;
 import ml.karmaconfigs.api.common.placeholder.util.Placeholder;
 import ml.karmaconfigs.api.common.string.StringUtils;
-import ml.karmaconfigs.api.common.utils.uuid.UUIDUtil;
 import ml.karmaconfigs.api.common.version.spigot.SpigotChecker;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.Server;
@@ -18,6 +18,7 @@ import net.md_5.bungee.api.connection.Server;
 import java.nio.file.Path;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public final class Main extends KarmaPlugin {
 
     private final SpigotChecker checker;
@@ -34,7 +35,7 @@ public final class Main extends KarmaPlugin {
 
         console().send("Registered KarmaAPI bukkit listener for panel API utilities");
 
-        UUIDUtil.getStored().whenComplete((result, error) -> {
+        MineAPI.size().whenComplete((result, error) -> {
             if (error == null) {
                 console().send("Currently there are {0} accounts in the API", Level.INFO, result);
             } else {
@@ -46,14 +47,18 @@ public final class Main extends KarmaPlugin {
         try {
             SimpleScheduler scheduler = new SourceScheduler(this, 5, SchedulerUnit.MINUTE, true).multiThreading(true);
             scheduler.restartAction(() -> {
-                checker.getUpdateURL().whenComplete((url, error) -> {
+                checker.fetchLatest().whenComplete((url, changelog, error) -> {
                     if (error == null) {
                         String latest = checker.getLatest();
-                        String current = version();
+                        if (latest != null) {
+                            String current = version();
 
-                        if (!latest.equals(current)) {
-                            console().send("There's an update for the KarmaAPI platform. We highly recommend you to update now! ({0} -> {1})", Level.WARNING, current, latest);
-                            console().send("Download from: {0}", url);
+                            if (!latest.equals(current)) {
+                                console().send("There's an update for the KarmaAPI platform. We highly recommend you to update now! ({0} -> {1})", Level.WARNING, current, latest);
+                                console().send("Download from: {0}", url);
+                                console().send("Changelog:", Level.INFO);
+                                console().send(changelog);
+                            }
                         }
                     } else {
                         logger().scheduleLog(Level.GRAVE, error);

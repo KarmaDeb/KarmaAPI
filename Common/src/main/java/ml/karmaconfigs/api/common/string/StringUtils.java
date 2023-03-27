@@ -842,29 +842,6 @@ public final class StringUtils {
     }
 
     /**
-     * Generate a new random text
-     *
-     * @return a random text creator
-     * @deprecated Use directly the constructor {@link RandomString}
-     */
-    @Deprecated
-    public static RandomString generateString() {
-        return new RandomString();
-    }
-
-    /**
-     * Generate a new random text
-     *
-     * @param options the random text options
-     * @return a random text creator
-     * @deprecated Use directly the constructor {@link RandomString(OptionsBuilder)}
-     */
-    @Deprecated
-    public static RandomString generateString(final OptionsBuilder options) {
-        return new RandomString(options);
-    }
-
-    /**
      * Generate a random color
      *
      * @return a random color
@@ -1422,19 +1399,6 @@ public final class StringUtils {
     }
 
     /**
-     * Get the version difference between two versions
-     *
-     * @param builder the version difference builder
-     * @return a new version comparator
-     * @deprecated Use directly the constructor {@link VersionComparator(ComparatorBuilder)}
-     */
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public static VersionComparator compareTo(final ComparatorBuilder builder) {
-        return new VersionComparator(builder);
-    }
-
-    /**
      * Remove the numbers from text
      *
      * @param original the original text
@@ -1533,7 +1497,7 @@ public final class StringUtils {
      *
      * @param array the array
      * @param <T>   the array type
-     * @return the {@link T[] array} as {@link Set<T> set}
+     * @return the array as {@link Set set}
      */
     public static <T> Set<T> arrayToSet(final T[] array) {
         return new HashSet<>(Arrays.asList(array));
