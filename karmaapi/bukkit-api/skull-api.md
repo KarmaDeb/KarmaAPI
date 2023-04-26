@@ -12,7 +12,7 @@ KarmaPlugin is not required for this API
 
 So, let's imagine you want to create a skull with the skin of `KarmaDev`.&#x20;
 
-You can make use of the [web api](../internal-api/web-api/), to fetch data about the client, and then use it to get the skull item.
+You can make use of the [web api](../web-api/), to fetch data about the client, and then use it to get the skull item.
 
 ```java
 package me.amazing.plugin.inventory;
