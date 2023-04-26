@@ -2,7 +2,7 @@
 description: Updating LockLogin is a very easy to do task
 ---
 
-# Updating
+# ⬆ Updating
 
 To update LockLogin, you only need to download the plugin again, and replace the existing plugin instance, this is the same for any installation scenario you have (Spigot, Bungee or Multiple bungee).&#x20;
 

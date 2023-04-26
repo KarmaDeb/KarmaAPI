@@ -4,7 +4,7 @@ description: >-
   forks, such as Waterfall, Mohist, etc...)
 ---
 
-# Installation
+# ⬇ Installation
 
 But before going to the installation, you might need to know a few things
 

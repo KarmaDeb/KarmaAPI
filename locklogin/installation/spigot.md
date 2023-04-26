@@ -4,7 +4,7 @@ description: >-
   plugin.
 ---
 
-# Spigot
+# 🚰 Spigot
 
 To install LockLogin correctly without any errors, please follow these steps
 

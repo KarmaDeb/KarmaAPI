@@ -2,7 +2,7 @@
 description: Common issues that people usually report
 ---
 
-# Common issues
+# 👷 Common issues
 
 > My plugin does not have a license
 

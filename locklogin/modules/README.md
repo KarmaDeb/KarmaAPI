@@ -5,7 +5,7 @@ description: >-
   suspicious actions
 ---
 
-# Modules
+# 🔌 Modules
 
 LockLogin modules are small pieces of software designed to work with LockLogin, these modules are specifically designed to work with LockLogin and cannot be used with any other software.
 

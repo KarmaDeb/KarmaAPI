@@ -27,11 +27,11 @@
 
 ## LockLogin
 
-* [Installation](locklogin/installation/README.md)
-  * [Spigot](locklogin/installation/spigot.md)
-  * [Bungee](locklogin/installation/bungee.md)
-  * [Multiple bungee](locklogin/installation/multiple-bungee.md)
-  * [Common issues](locklogin/installation/common-issues.md)
-* [Updating](locklogin/updating.md)
-* [Modules](locklogin/modules/README.md)
-  * [Installing](locklogin/modules/installing.md)
+* [⬇ Installation](locklogin/installation/README.md)
+  * [🚰 Spigot](locklogin/installation/spigot.md)
+  * [🟠 Bungee](locklogin/installation/bungee.md)
+  * [🎛 Multiple bungee](locklogin/installation/multiple-bungee.md)
+  * [👷 Common issues](locklogin/installation/common-issues.md)
+* [⬆ Updating](locklogin/updating.md)
+* [🔌 Modules](locklogin/modules/README.md)
+  * [🔰 Installing](locklogin/modules/installing.md)

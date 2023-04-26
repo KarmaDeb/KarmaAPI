@@ -4,7 +4,7 @@ description: >-
   instances is not a problem for LockLogin
 ---
 
-# Multiple bungee
+# 🎛 Multiple bungee
 
 {% hint style="danger" %}
 PLEASE NOTE. IF YOU ALREADY DOWNLOADED THE PLUGIN PREVIOUSLY, AND YOU ARE JUST EXPANDING YOUR NETWORK, WE URGE YOU TO SIMPLY COPY THE EXISTING RUNNING LOCKLOGIN INSTANCE AND PASTE IN THE NEW SERVER, AS LONG AS THE CONTENTS INSIDE OF <mark style="color:purple;">plugins/LockLogin/cache</mark> WHICH INCLUDES THE LICENSE
